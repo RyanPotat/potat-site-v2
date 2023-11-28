@@ -7,7 +7,7 @@ const userState = reactive({ value: localStorage.getItem('userState') });
 const twitchUser = ref(null);
 
 const isAuthenticated = computed(() => {
-  return authorizationToken.value !== null || userState.value !== null;
+  return authorizationToken.value !== null && userState.value !== null;
 });
 
 async function signIn() {

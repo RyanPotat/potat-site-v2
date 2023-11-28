@@ -1,5 +1,3 @@
-import { ref } from 'vue';
-
 class CustomEventBus {
   constructor() {
     this.events = {};

@@ -12,33 +12,42 @@ const isAuthenticated = computed(() => {
 const newState = reactive({value: JSON.parse(userState.value)?.is_channel})
 
 const isChannel = computed(() => {
-  return userState.value !== null && (JSON.parse(userState.value).is_channel && newState.value);
+  return userState.value !== null && newState.value;
 });
 
+const isOperationInProgress = ref(false);
 const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
 
 async function join() {
+  if (isOperationInProgress.value) return;
+
+isOperationInProgress.value = true;
   newState.value = true
-  const joinData = await fetch('https://api.potat.app/join', {
+  fetch('https://api.potat.app/join', {
     method: 'POST',
     headers: {
       authorization: 'Bearer ' + authorizationToken.value
     }
-  }).then(res => res.json()).then(data => console.log(data))
+  })
 
-  await delay(2000);
+  await delay(3000);
+  isOperationInProgress.value = false;
 }
 
 async function part() {
+  if (isOperationInProgress.value) return;
+
+isOperationInProgress.value = true;
   newState.value = false
-  const partData = await fetch('https://api.potat.app/part', {
+  fetch('https://api.potat.app/part', {
     method: 'POST',
     headers: {
       authorization: 'Bearer ' + authorizationToken.value
     }
-  }).then(res => res.json()).then(data => console.log(data))
+  })
 
-  await delay(2000);
+  await delay(3000);
+  isOperationInProgress.value = false;
 }
 
 const isShaking = ref(false);
@@ -51,12 +60,21 @@ const shakeButton = () => {
   }, 500);
 };
 
-onMounted(() => {
+onMounted(async () => {
   eventBus.$on('newToken', ({token, user}) => {
     authorizationToken.value = token;
     userState.value = user;
     newState.value = JSON.parse(user).is_channel
   });
+
+  if (isAuthenticated) {
+    const user = JSON.parse(userState.value)
+    const userData = await fetch(
+      `https://api.potat.app/users/${user?.login}`
+    ).then(res => res.json())
+
+    newState.value = userData[0]?.channel?.isChannel
+  }
 });
 </script>
 
