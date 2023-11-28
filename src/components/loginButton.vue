@@ -12,31 +12,15 @@ const isAuthenticated = computed(() => {
 
 async function signIn() {
   window.open('https://api.potat.app/login', '_blank', 'width=600,height=400');
-
-  const handleMessage = (event) => {
-    const { id, login, name, stv_id, token, is_channel } = event.data;
-
-    localStorage.setItem('authorization', token);
-    localStorage.setItem('userState', JSON.stringify({ id, login, name, stv_id, is_channel }));
-
-    authorizationToken.value = token;
-    eventBus.$emit('newToken', { 
-      token, 
-      user: JSON.stringify({ id, login, name, stv_id, is_channel })
-    });
-    userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
-    assignUser(token);
-    window.removeEventListener('message', handleMessage);
-  };
-
-  window.addEventListener('message', handleMessage);
 }
 
 async function assignUser(token) {
+  if (!isAuthenticated) return;
+  
   const userData = await fetch('https://api.potat.app/twitch', {
     method: 'GET',
     headers: {
-      authorization: 'Bearer ' + (token || authorizationToken.value)
+      authorization: 'Bearer ' + token
     }
   })
     .then(res => res.json())
@@ -48,7 +32,30 @@ async function assignUser(token) {
   }
 }
 
-onMounted(assignUser);
+onMounted(() => {
+  assignUser(authorizationToken.value)
+
+
+  const handleMessage = (event) => {
+    const { id, login, name, stv_id, token, is_channel } = event.data;
+
+    if (token) {
+      localStorage.setItem('authorization', token);
+      localStorage.setItem('userState', JSON.stringify({ id, login, name, stv_id, is_channel }));
+
+      authorizationToken.value = token;
+      eventBus.$emit('newToken', { 
+        token, 
+        user: JSON.stringify({ id, login, name, stv_id, is_channel })
+      });
+      userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
+      assignUser(token);
+      window.removeEventListener('message', handleMessage);
+    }
+  };
+
+  window.addEventListener('message', handleMessage);
+});
 </script>
 
 <template>
