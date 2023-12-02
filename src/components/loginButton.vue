@@ -1,13 +1,14 @@
 <script setup>
 import { ref, onMounted, reactive, computed } from 'vue';
 import { eventBus } from '../assets/eventBus.js';
+import { applyPaint } from '../assets/applyPaint';
 
-const authorizationToken = reactive({ value: localStorage.getItem('authorization') });
-const userState = reactive({ value: localStorage.getItem('userState') });
-const twitchUser = ref(null);
-
-const isAuthenticated = computed(() => {
-  return authorizationToken.value !== null && userState.value !== null;
+const 
+  authToken = reactive({ value: localStorage.getItem('authorization') }),
+  userState = reactive({ value: localStorage.getItem('userState') }),
+  twitchUser = ref(null),
+  isAuthenticated = computed(() => {
+  return authToken.value !== null && userState.value !== null;
 });
 
 async function signIn() {
@@ -16,7 +17,7 @@ async function signIn() {
 
 async function assignUser(token) {
   if (!isAuthenticated) return;
-  
+
   const userData = await fetch('https://api.potat.app/twitch', {
     method: 'GET',
     headers: {
@@ -26,32 +27,33 @@ async function assignUser(token) {
     .then(res => res.json())
     .then(data => twitchUser.value = data)
 
-  if (userData?.chatColor) {
-    const userColor = userData.chatColor;
-    document.querySelector('.twitch-user span').style.color = userColor;
-  }
+  if (
+    userData?.chatColor && !userData?.userPaint
+  ) document.querySelector('.twitch-user span').style.color = userData.chatColor;
+
+  if (userData?.userPaint) applyPaint(userData?.userPaint, '.twitch-user span')
 }
 
 onMounted(() => {
-  assignUser(authorizationToken.value)
+  assignUser(authToken.value)
 
 
   const handleMessage = (event) => {
     const { id, login, name, stv_id, token, is_channel } = event.data;
 
-    if (token) {
-      localStorage.setItem('authorization', token);
-      localStorage.setItem('userState', JSON.stringify({ id, login, name, stv_id, is_channel }));
+    if (!token) return;
 
-      authorizationToken.value = token;
-      eventBus.$emit('newToken', { 
-        token, 
-        user: JSON.stringify({ id, login, name, stv_id, is_channel })
-      });
-      userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
-      assignUser(token);
-      window.removeEventListener('message', handleMessage);
-    }
+    localStorage.setItem('authorization', token);
+    localStorage.setItem('userState', JSON.stringify({ id, login, name, stv_id, is_channel }));
+
+    authToken.value = token;
+    eventBus.$emit('newToken', { 
+      token, 
+      user: JSON.stringify({ id, login, name, stv_id, is_channel })
+    });
+    userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
+    assignUser(token);
+    window.removeEventListener('message', handleMessage);
   };
 
   window.addEventListener('message', handleMessage);
@@ -62,10 +64,9 @@ onMounted(() => {
   <div class="my-component">
     <template v-if="isAuthenticated">
       <div class="twitch-user">
-        <!-- Circular cropped image scaled to text size here -->
         <img box-shadow="0 0 0 2px #8763b8" v-if="twitchUser && twitchUser.twitch_pfp"
           :src="twitchUser.stv_pfp ? twitchUser.stv_pfp : twitchUser.twitch_pfp" alt="Twitch Profile Picture"
-          class="profile-picture" :style="{ boxShadow: `0 0 0 1px ${twitchUser.chatColor}` }" />
+          class="profile-picture" :style="{ boxShadow: `0 0 0 2px ${twitchUser.userPaint ? '#808080' : twitchUser?.chatColor}` }" />
         <span>{{ twitchUser?.name }}</span>
       </div>
     </template>
@@ -97,6 +98,7 @@ onMounted(() => {
   align-items: center;
   font: inherit;
   font-size: 1.5em;
+  font-weight: bolder;
 }
 
 .profile-picture {

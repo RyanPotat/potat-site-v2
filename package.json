@@ -8,7 +8,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "lint": "eslint ./ & npx depcheck",
-    "lint:fix": "eslint ./src --fix",
+    "lint:fix": "eslint ./ --fix",
     "format": "prettier --check './**/*.{js,ts}'",
     "format:fix": "prettier --write './**/*.{js,ts,json}'"
   },

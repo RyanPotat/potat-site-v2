@@ -1,6 +1,6 @@
 <script setup>
-import JoinButton from './components/joinButton.vue'
-import loginButton from './components/loginButton.vue'
+import JoinButton from './components/joinButton.vue';
+import loginButton from './components/loginButton.vue';
 </script>
 
 <template>
@@ -10,7 +10,9 @@ import loginButton from './components/loginButton.vue'
         <div class='title-container'>
           <img src="/tatoExplode.gif" class="logo"/>
           <a> 
-            <h1>PotatBotat</h1>
+            <h1 class='paint'>
+              <span>PotatBotat</span>
+            </h1>
             <h2>A twitch chatbot with no unique features</h2>
           </a>
           <div class="login-button-container">
@@ -29,7 +31,7 @@ import loginButton from './components/loginButton.vue'
   position: relative;
   height: 100vh;
   display: flex;
-  flex-direction: row; /* Change to row */
+  flex-direction: row;
   align-items: center;
   justify-content: center;
 }
@@ -44,6 +46,15 @@ import loginButton from './components/loginButton.vue'
   background-size: cover;
   background-position: center;
   z-index: -1;
+}
+
+.paint span{
+  background-image: url('https://cdn.7tv.app/misc/img_paints/tc23lasvegas.webp');
+  filter: drop-shadow(#9d31a5 0px 0px 0.1px);
+  -webkit-background-clip: text; 
+  background-clip: text;
+  color: transparent;
+  background-size: 100% auto;
 }
 
 .title-container {
