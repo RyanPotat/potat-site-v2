@@ -55,6 +55,7 @@ import loginButton from './components/loginButton.vue';
   background-clip: text;
   color: transparent;
   background-size: 100% auto;
+  margin-right: 150px;
 }
 
 .title-container {
@@ -68,7 +69,11 @@ import loginButton from './components/loginButton.vue';
   padding: 20px;
   text-align: center;
   position: relative;
-  margin-right: 300px;
+  margin-right: 150px;
+}
+
+h1 {
+  margin-bottom: 0px;
 }
 
 .join-box {
