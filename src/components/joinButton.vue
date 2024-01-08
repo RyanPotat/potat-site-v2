@@ -1,34 +1,49 @@
-<script setup>
+<script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
-import { eventBus } from '../assets/eventBus.js';
+import { default as eventBus } from '../assets/eventBus';
 
-const authorizationToken = reactive({ value: localStorage.getItem('authorization') });
-const userState = reactive({ value: localStorage.getItem('userState') });
+interface UserState {
+  value: string | null;
+}
 
-const isAuthenticated = computed(() => {
+interface AuthorizationToken {
+  value: string | null;
+}
+
+interface TokenUserData {
+  token: string;
+  user: string;
+}
+
+const authorizationToken: AuthorizationToken = reactive({ value: localStorage.getItem('authorization') });
+const userState: UserState = reactive({ value: localStorage.getItem('userState') });
+
+const isAuthenticated = computed<boolean>(() => {
   return authorizationToken.value !== null || userState.value !== null;
 });
 
-const newState = reactive({value: JSON.parse(userState.value)?.is_channel})
+const newState = reactive<{ value: boolean }>({ value: JSON.parse(userState.value as string)?.is_channel });
 
-const isChannel = computed(() => {
+const isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
 });
 
 const isOperationInProgress = ref(false);
-const delay = ms => new Promise(resolve => setTimeout(resolve, ms));
+
+const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 async function join() {
   if (isOperationInProgress.value) return;
 
-isOperationInProgress.value = true;
-  newState.value = true
+  isOperationInProgress.value = true;
+  newState.value = true;
+
   fetch('https://api.potat.app/join', {
     method: 'POST',
     headers: {
-      authorization: 'Bearer ' + authorizationToken.value
-    }
-  })
+      authorization: 'Bearer ' + authorizationToken.value,
+    },
+  });
 
   await delay(3000);
   isOperationInProgress.value = false;
@@ -37,14 +52,15 @@ isOperationInProgress.value = true;
 async function part() {
   if (isOperationInProgress.value) return;
 
-isOperationInProgress.value = true;
-  newState.value = false
+  isOperationInProgress.value = true;
+  newState.value = false;
+
   fetch('https://api.potat.app/part', {
     method: 'POST',
     headers: {
-      authorization: 'Bearer ' + authorizationToken.value
-    }
-  })
+      authorization: 'Bearer ' + authorizationToken.value,
+    },
+  });
 
   await delay(3000);
   isOperationInProgress.value = false;
@@ -61,21 +77,21 @@ const shakeButton = () => {
 };
 
 onMounted(async () => {
-  eventBus.$on('newToken', ({token, user}) => {
+  eventBus.$on('newToken', ({ token, user }: TokenUserData) => {
     authorizationToken.value = token;
     userState.value = user;
-    newState.value = JSON.parse(user).is_channel
+    newState.value = JSON.parse(user).is_channel;
   });
 
-  if (isAuthenticated) {
-    const user = JSON.parse(userState.value)
-    const userData = await fetch(
-      `https://api.potat.app/users/${user?.login}`
-  ).then(res => res.json())
+  if (isAuthenticated.value) {
+    const user = JSON.parse(userState.value as string);
+    const userData = await fetch(`https://api.potat.app/users/${user?.login}`)
+      .then(res => res.json());
 
-    newState.value = userData[0]?.channel?.isChannel
+    newState.value = userData[0]?.channel?.isChannel;
   }
 });
+
 </script>
 
 <template>
