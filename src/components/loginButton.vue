@@ -1,13 +1,29 @@
-<script setup>
+<script setup lang="ts">
 import { ref, onMounted, reactive, computed } from 'vue';
-import { eventBus } from '../assets/eventBus.js';
-import { applyPaint } from '../assets/applyPaint';
+import { default as eventBus } from '../assets/eventBus';
+import { applyPaint, Paint } from '../assets/applyPaint';
 
-const 
-  authToken = reactive({ value: localStorage.getItem('authorization') }),
-  userState = reactive({ value: localStorage.getItem('userState') }),
-  twitchUser = ref(null),
-  isAuthenticated = computed(() => {
+interface AuthToken {
+  value: string | null;
+}
+
+interface UserState {
+  value: string | null;
+}
+
+interface TwitchUser {
+  chatColor: string | null;
+  userPaint: Paint | null;
+  stv_pfp: string | null;
+  twitch_pfp: string | null;
+  name: string | null;
+}
+
+const authToken: AuthToken = reactive({ value: localStorage.getItem('authorization') });
+const userState: UserState = reactive({ value: localStorage.getItem('userState') });
+const twitchUser = ref<TwitchUser | null>(null);
+
+const isAuthenticated = computed(() => {
   return authToken.value !== null && userState.value !== null;
 });
 
@@ -15,41 +31,42 @@ async function signIn() {
   window.open('https://api.potat.app/login', '_blank', 'width=600,height=400');
 }
 
-async function assignUser(token) {
-  if (!isAuthenticated) return;
+async function assignUser(token: string) {
+  if (!isAuthenticated.value) return;
 
   const userData = await fetch('https://api.potat.app/twitch', {
     method: 'GET',
     headers: {
-      authorization: 'Bearer ' + token
-    }
+      authorization: 'Bearer ' + token,
+    },
   })
-    .then(res => res.json())
-    .then(data => twitchUser.value = data)
+    .then((res) => res.json())
+    .then((data) => (twitchUser.value = data));
 
-  if (
-    userData?.chatColor && !userData?.userPaint
-  ) document.querySelector('.twitch-user span').style.color = userData.chatColor;
+  if (userData?.chatColor && !userData?.userPaint)
+    document.querySelector('.twitch-user span')?.setAttribute('style', `color: ${userData.chatColor}`);
 
-  if (userData?.userPaint) applyPaint(userData?.userPaint, '.twitch-user span')
+  if (userData?.userPaint) applyPaint(userData.userPaint, '.twitch-user span');
 }
 
 onMounted(() => {
-  assignUser(authToken.value)
+  assignUser(authToken.value as string);
 
-
-  const handleMessage = (event) => {
+  const handleMessage = (event: MessageEvent) => {
     const { id, login, name, stv_id, token, is_channel } = event.data;
 
     if (!token) return;
 
     localStorage.setItem('authorization', token);
-    localStorage.setItem('userState', JSON.stringify({ id, login, name, stv_id, is_channel }));
+    localStorage.setItem(
+      'userState',
+      JSON.stringify({ id, login, name, stv_id, is_channel })
+    );
 
     authToken.value = token;
-    eventBus.$emit('newToken', { 
-      token, 
-      user: JSON.stringify({ id, login, name, stv_id, is_channel })
+    eventBus.$emit('newToken', {
+      token,
+      user: JSON.stringify({ id, login, name, stv_id, is_channel }),
     });
     userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
     assignUser(token);
@@ -58,6 +75,7 @@ onMounted(() => {
 
   window.addEventListener('message', handleMessage);
 });
+
 </script>
 
 <template>

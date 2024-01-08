@@ -1,4 +1,4 @@
-<script setup>
+<script setup lang="ts">
 import JoinButton from './components/joinButton.vue';
 import loginButton from './components/loginButton.vue';
 </script>
