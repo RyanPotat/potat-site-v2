@@ -1,29 +1,41 @@
 <script setup lang="ts">
 import JoinButton from './components/joinButton.vue';
-import loginButton from './components/loginButton.vue';
+import LoginButton from './components/loginButton.vue';
+import PartnerList from './components/partnerList.vue';
+import StatsBox from './components/statsBox.vue';
+import HelpButton from './components/helpButton.vue';
 </script>
 
 <template>
   <div class="app-container">
     <div class="background"></div>
+    <div class="title-join-help-container">
       <div class="title-box">    
-        <div class='title-container'>
-          <img src="/tatoExplode.gif" class="logo"/>
-          <a> 
-            <h1 class='paint'>
-              <span>PotatBotat</span>
-            </h1>
-            <h2>A twitch chatbot with no unique features</h2>
-          </a>
-          <div class="login-button-container">
-            <loginButton/>
-          </div>
+        <a href="https://twitch.tv/potatbotat">
+        <img src="/tatoExplode.gif" class="logo"/>
+        </a>
+        <a> 
+          <h1 class='paint'>
+            <span>PotatBotat</span>
+          </h1>
+          <h2>A twitch chatbot with no unique features</h2>
+        </a>
+        <div class="login-button-container">
+          <LoginButton/>
         </div>
-    </div>
-    <div class="join-box">    
+      </div>
+      <div class="buttons-container">
         <JoinButton/>
+        <HelpButton/>
+      </div>
     </div>
+    <div class="stats-container">
+      <PartnerList/>
+      <StatsBox/>
+    </div>
+
   </div>
+
 </template>
 
 <style scoped>
@@ -31,7 +43,7 @@ import loginButton from './components/loginButton.vue';
   position: relative;
   height: 100vh;
   display: flex;
-  flex-direction: row;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
 }
@@ -48,7 +60,7 @@ import loginButton from './components/loginButton.vue';
   z-index: -1;
 }
 
-.paint span{
+.paint span {
   background-image: url('https://cdn.7tv.app/misc/img_paints/tc23lasvegas.webp');
   filter: drop-shadow(#9d31a5 0px 0px 0.1px);
   -webkit-background-clip: text; 
@@ -58,33 +70,37 @@ import loginButton from './components/loginButton.vue';
   margin-right: 150px;
 }
 
-.title-container {
+.title-join-help-container {
   display: flex;
+  user-select: none;
+  flex-direction: row;
   align-items: center;
+  justify-content: center;
 }
 
 .title-box {
   background-color: rgba(31, 31, 31, 0.8);
-  border-radius: 10px;
+  border-radius: 15px;
   padding: 20px;
-  text-align: center;
+  display: flex;
   position: relative;
   margin-right: 150px;
+  margin-bottom: 20px;
+}
+
+.buttons-container {
+  margin-left: 20px; 
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
 }
 
 h1 {
   margin-bottom: 0px;
-}
-
-.join-box {
-  background-color: rgba(31, 31, 31, 0.8);
-  border-radius: 10px;
-  padding: 20px;
-  text-align: center;
-  position: relative;
-  top: 50;
-  right: 0;
-  transform: scale(1.5); 
 }
 
 .logo {
@@ -94,23 +110,4 @@ h1 {
   transition: filter 300ms;
 }
 
-.title-container h1 {
-  align-self: flex-end;
-}
-
-
-.login-button-container {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 10px;
-}
-
-.join-button-container {
-  height: 100vh; 
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
 </style>

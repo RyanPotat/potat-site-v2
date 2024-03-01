@@ -95,7 +95,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div>
+  <div class="button-box">
     <template v-if="isAuthenticated && isChannel">
       <button class="part-button" type="button" @click="part">Part</button>
     </template>
@@ -109,10 +109,21 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+.button-box {
+  background-color: rgba(31, 31, 31, 0.8);
+  border-radius: 10px;
+  padding: 20px;
+  display: flex;
+  user-select: none;
+  top: 50;
+  transform: scale(1.5); 
+  margin-bottom: 75px;
+}
+
 .part-button,
 .join-button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;

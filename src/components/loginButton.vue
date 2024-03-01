@@ -79,7 +79,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="my-component">
+  <div class="login-button-container">
     <template v-if="isAuthenticated">
       <div class="twitch-user">
         <img box-shadow="0 0 0 2px #8763b8" v-if="twitchUser && twitchUser.twitch_pfp"
@@ -131,15 +131,11 @@ onMounted(() => {
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
 }
 
-.pfp-component {
-  position: aboslute;
-  left: 0;
-}
-
-.my-component {
-  position: aboslute;
+.login-button-container {
+  position: absolute;
   top: 0;
   right: 0;
+  margin: 10px;
 }
 
 .twitch-button:focus-visible {
