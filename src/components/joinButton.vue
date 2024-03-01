@@ -114,8 +114,9 @@ onMounted(async () => {
   border-radius: 10px;
   padding: 20px;
   display: flex;
+  justify-content: center;
   user-select: none;
-  top: 50;
+  top: 50px;
   transform: scale(1.5); 
   margin-bottom: 75px;
 }

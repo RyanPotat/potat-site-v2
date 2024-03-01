@@ -72,7 +72,7 @@ onMounted(async () => {
               <img :src="current.stv_pfp ?? current.twitch_pfp">
             </a>
           </div>
-          <div class="text-container" :style="{ color: brightenColor(current.user_color, 20) }">
+          <div class="text-container" :style="{ color: brightenColor(current.user_color, 25) }">
             <div>
               <strong>{{ current.display }}</strong>
             </div>
@@ -106,7 +106,7 @@ onMounted(async () => {
 
 .slider-item {
   width: 350px;
-  height: 100px;
+  height: 110px;
   display: flex;
   align-items: center;
   overflow: hidden;
@@ -153,6 +153,9 @@ onMounted(async () => {
 }
 .text-container {
   height: 100px;
+  width: 210px;
   flex: 1;
+  background-color: rgba(31, 31, 31, 0.503);
+  border-radius: 15px;
 }
 </style>

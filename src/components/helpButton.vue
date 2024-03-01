@@ -32,7 +32,7 @@ const openPage = () => {
   cursor: pointer;
   transition: border-color 0.25s;
   text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
-  background-color: rgb(255, 255, 0);
+  background-color: rgb(77, 132, 234);
 }
 
 .help-button:hover {
