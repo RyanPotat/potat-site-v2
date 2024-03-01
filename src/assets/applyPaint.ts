@@ -21,6 +21,11 @@ export interface Paint {
   shadows?: Shadow[];
 }
 
+function convertColorStop(stop: ColorStop): string {
+  const colorString = `#${(stop.color >>> 0).toString(16).padStart(8, '0')}`;
+  return `${colorString} ${stop.at * 100}%`;
+}
+
 export function applyPaint(paint: Paint, cssClass: string): void {
   const editText = cssClass.includes('span')
     ? document.querySelector(cssClass) as HTMLElement
@@ -31,11 +36,6 @@ export function applyPaint(paint: Paint, cssClass: string): void {
   editText.style.color = 'transparent';
   editText.style.webkitBackgroundClip = 'text';
   editText.style.backgroundClip = 'text';
-
-  function convertColorStop(stop: ColorStop): string {
-    const colorString = `#${(stop.color >>> 0).toString(16).padStart(8, '0')}`;
-    return `${colorString} ${stop.at * 100}%`;
-  }
 
   if (paint.function === 'LINEAR_GRADIENT' && paint.stops && paint.stops.length > 0) {
     const gradientStops = paint.stops.map(convertColorStop);

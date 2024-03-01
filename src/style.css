@@ -13,12 +13,26 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+#app {
+  margin: 0 auto;
+  height: 100vh;
+  width: 100%; 
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  
+  position: relative;
+  text-align: center;
+  align-items: center;
+  justify-content: center;
+}
+
 a {
   font-weight: 500;
   color: #bebebe;
   text-decoration: inherit;
 }
-
 
 body {
   margin: 0;
@@ -55,12 +69,6 @@ button:focus-visible {
 
 .card {
   padding: 2em;
-}
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  text-align: center;
 }
 
 @media (prefers-color-scheme: light) {

@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, Ref } from 'vue';
 
-const data: any = ref({}); // Use ref to create reactive data
-
+const data: Ref = ref({});
 onMounted(async () => {
-  try {
-    data.value = await fetch('https://api.potat.app').then((res) => res.json());
-    console.log(data.value)
-  } catch (error) {
-    console.error('Error fetching data:', error);
-  }
+    data.value = await fetch('https://api.potat.app')
+      .then((res) => res.json())
+      .catch(console.error)
 });
 </script>
 

@@ -1,54 +1,67 @@
 <script setup lang="ts">
-import JoinButton from './components/joinButton.vue';
 import LoginButton from './components/loginButton.vue';
-import PartnerList from './components/partnerList.vue';
-import StatsBox from './components/statsBox.vue';
-import HelpButton from './components/helpButton.vue';
 </script>
 
 <template>
-  <div class="app-container">
-    <div class="background"></div>
-    <div class="title-join-help-container">
-      <div class="title-box">    
-        <a href="https://twitch.tv/potatbotat">
-        <img src="/tatoExplode.gif" class="logo"/>
-        </a>
-        <a> 
-          <h1 class='paint'>
-            <span>PotatBotat</span>
-          </h1>
-          <h2>A twitch chatbot with no unique features</h2>
-        </a>
-        <div class="login-button-container">
-          <LoginButton/>
-        </div>
+  <div id="app">
+    <div class="top-bar">
+      <strong><router-link to="/" class="nav-link">Home</router-link></strong>
+      <strong><router-link to="/leaderboard" class="nav-link">Leaderboard</router-link></strong>
+      <strong><router-link to="/channel/:username" class="nav-link">Channel</router-link></strong>
+      <strong><a href="https://haste.potat.app" class="nav-link external-link">Haste</a></strong>
+      <div class="login-button-container">
+        <LoginButton/>
       </div>
-      <div class="buttons-container">
-        <JoinButton/>
-        <HelpButton/>
-      </div>
-    </div>
-    <div class="stats-container">
-      <PartnerList/>
-      <StatsBox/>
     </div>
 
+    <div class="main-background"></div>
+    <div class="main-container">
+      <router-view></router-view>
+    </div>
   </div>
-
 </template>
 
 <style scoped>
-.app-container {
-  position: relative;
-  height: 100vh;
+
+.top-bar {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  color: #fff;
+  background-color: rgba(31, 31, 31, 0.8);
+  padding: 20px;
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
+  z-index: 1;
+  user-select: none;
+  margin-left: 40px;
 }
 
-.background {
+.nav-link {
+  margin-right: 20px; /* Adjust the pixel interval as needed */
+  padding: 12px;
+  outline: auto -webkit-focus-ring-color;
+  outline-color: #f4f4f4;
+  border-radius: 15px;
+  transition: background-color 0.3s ease;
+}
+
+.nav-link.router-link-active {
+  background-color: #6441a4; /* Adjust the color for the active link */
+  color: #fff; /* Text color for the active link */
+}
+
+.external-link {
+  text-decoration: none;
+}
+
+.main-container {
+  max-width: 1280px;
+  margin: 0 auto;
+  position: relative;
+  z-index: 0;
+}
+
+.main-background {
   position: fixed;
   top: 0;
   left: 0;
@@ -60,54 +73,9 @@ import HelpButton from './components/helpButton.vue';
   z-index: -1;
 }
 
-.paint span {
-  background-image: url('https://cdn.7tv.app/misc/img_paints/tc23lasvegas.webp');
-  filter: drop-shadow(#9d31a5 0px 0px 0.1px);
-  -webkit-background-clip: text; 
-  background-clip: text;
-  color: transparent;
-  background-size: 100% auto;
-  margin-right: 150px;
-}
-
-.title-join-help-container {
+.login-button-container {
   display: flex;
-  user-select: none;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
+  right: 50px;
+  top: 3px;
 }
-
-.title-box {
-  background-color: rgba(31, 31, 31, 0.8);
-  border-radius: 15px;
-  padding: 20px;
-  display: flex;
-  position: relative;
-  margin-right: 150px;
-  margin-bottom: 20px;
-}
-
-.buttons-container {
-  margin-left: 20px; 
-}
-
-.stats-container {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-}
-
-h1 {
-  margin-bottom: 0px;
-}
-
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-
 </style>

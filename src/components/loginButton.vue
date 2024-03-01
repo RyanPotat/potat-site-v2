@@ -91,7 +91,7 @@ onMounted(() => {
     <template v-else>
       <button class="twitch-button" type="button" @click="signIn">
         <img src="/Twitch-icon-white.png" style="width: 1.5em; height: 1.5em;" />
-        <span class="button-text">SIGN IN</span>
+        <span class="button-text">Sign in</span>
       </button>
     </template>
   </div>
@@ -126,6 +126,10 @@ onMounted(() => {
   margin-right: 0.3em;
 }
 
+.profile-picture:focus-visible {
+  outline: none;
+}
+
 .twitch-button:focus-visible {
   outline: 10px auto -webkit-focus-ring-color;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
@@ -144,7 +148,6 @@ onMounted(() => {
 
 button:hover {
   outline-color: #f4f4f4;
-
 }
 
 .button-text {
