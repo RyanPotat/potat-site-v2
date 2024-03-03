@@ -59,7 +59,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="slider-container" @click="cyclePartners(true)">
+  <div v-if="partners.length" class="slider-container" @click="cyclePartners(true)">
     <div class="partner-title">
       <h2><strong>Featured partners using the bot:</strong></h2>
     </div>

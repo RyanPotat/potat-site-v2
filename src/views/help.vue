@@ -4,10 +4,12 @@ import { humanizeDuration } from '../assets/utilities';
 
 export interface Command {
   name: string;
+  title: string;
   description: string;
   usage: string;
   category: string;
   aliases: string[];
+  params: Object
   cooldown: number;
   development: boolean;
   joinchannel: boolean;
@@ -22,18 +24,18 @@ export interface Command {
   botIgnore: boolean;
 }
 
-interface Permissions {
+interface Object {
   [key: number | string]: string;
 }
 
 const
-  permissions: Permissions = {
+  permissions: Object = {
     1: 'VIP',
     1.5: 'Moderator',
     2: 'Broadcaster or Ambassador',
   },
 
-  ranks: Permissions = {
+  ranks: Object = {
     0: 'Blacklisted',
     1: 'Standard users',
     2: 'Bot moderators',
@@ -41,7 +43,7 @@ const
     4: 'Bot developers'
   },
 
-  botPerms: Permissions = {
+  botPerms: Object = {
     'mod': 'Moderator',
     'vip': 'VIP'
   },
@@ -114,7 +116,7 @@ onMounted(() => {
 
     <div style="margin-left: 20px;">
         <div v-if="getCommand">
-          <h2 class="command-title">{{ upperCase(getCommand.name) }}</h2>
+          <h2 class="command-title">{{ getCommand.title }}</h2>
           <div class="command-details">
             <div>
               <p v-if="getCommand.description">
@@ -202,7 +204,7 @@ onMounted(() => {
 .sidebar {
   display: flex;
   flex-direction: column;
-  max-height: 60vh;
+  max-height: 405px;
   position: relative;
   overflow-y: auto;
   margin-left: 20px;

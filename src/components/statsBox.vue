@@ -10,18 +10,26 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="text-container">
+  <div v-if="data.misc" class="text-container">
     <div class="line" style="margin-bottom: 10px;">
       <strong>Commands executed:</strong>
       <span>{{ data?.misc?.commandsUsed.toLocaleString() }}</span>
+    </div>
+    <div class="line" style="margin-bottom: 10px;">
+      <strong>Potatoes farmed:</strong>
+      <span>{{ data?.potato?.total.toLocaleString() }}</span>
+    </div>
+    <div class="line" style="margin-bottom: 10px;">
+      <strong>Active channels:</strong>
+      <span>{{ data?.twitch?.activeChannels - 4000 }}</span>
     </div>
     <div class="line" style="margin-bottom: 10px;">
       <strong>Emotes added:</strong>
       <span>{{ data?.misc?.emotesAdded.toLocaleString() }}</span>
     </div>
     <div class="line">
-      <strong>Potatoes farmed:</strong>
-      <span>{{ data?.potato?.total.toLocaleString() }}</span>
+      <strong>Users seen:</strong>
+      <span>{{ parseInt(data?.twitch?.usersSeen).toLocaleString() }}</span>
     </div>
   </div>
 </template>
