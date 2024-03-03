@@ -79,36 +79,35 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="login-button-container">
-    <template v-if="isAuthenticated">
-      <div class="twitch-user">
-        <img box-shadow="0 0 0 2px #8763b8" v-if="twitchUser && twitchUser.twitch_pfp"
-          :src="twitchUser.stv_pfp ? twitchUser.stv_pfp : twitchUser.twitch_pfp" alt="Twitch Profile Picture"
-          class="profile-picture" :style="{ boxShadow: `0 0 0 2px ${twitchUser.userPaint ? '#808080' : twitchUser?.chatColor}` }" />
-        <span>{{ twitchUser?.name }}</span>
-      </div>
-    </template>
-    <template v-else>
-      <button class="twitch-button" type="button" @click="signIn">
-        <img src="/Twitch-icon-white.png" style="width: 1.5em; height: 1.5em;" />
-        <span class="button-text">Sign in</span>
-      </button>
-    </template>
-  </div>
+  <template v-if="isAuthenticated">
+    <div class="twitch-user">
+      <img box-shadow="0 0 0 2px #8763b8" v-if="twitchUser && twitchUser.twitch_pfp"
+        :src="twitchUser.stv_pfp ? twitchUser.stv_pfp : twitchUser.twitch_pfp" alt="Twitch Profile Picture"
+        class="profile-picture" />
+      <span>{{ twitchUser?.name }}</span>
+    </div>
+  </template>
+  <template v-else>
+    <button class="twitch-button" @click="signIn">
+      <img src="/Twitch-icon-white.png" style="width: 1.5em; height: 1.5em;" />
+      <span class="button-text">Sign in</span>
+    </button>
+  </template>
 </template>
 
 <style scoped>
 .twitch-button {
-  cursor: pointer;
-  border-radius: 0.5em;
-  border: 1px solid transparent;
-  padding: 0.25em;
-  font: inherit;
   font-size: 0.88em;
+  padding: 12px;
+  border-radius: 15px;
   transition: background-color 0.2s ease;
   background-color: #6441a4;
   color: #fff;
-  outline: 4px solid #8763b8;
+  outline: auto -webkit-focus-ring-color;
+  outline-color: #f4f4f4;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .twitch-user {
@@ -117,6 +116,7 @@ onMounted(() => {
   font: inherit;
   font-size: 1.5em;
   font-weight: bolder;
+  margin-top: 5px;
 }
 
 .profile-picture {
@@ -133,13 +133,6 @@ onMounted(() => {
 .twitch-button:focus-visible {
   outline: 10px auto -webkit-focus-ring-color;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
-}
-
-.login-button-container {
-  position: absolute;
-  top: 0;
-  right: 0;
-  margin: 10px;
 }
 
 .twitch-button:focus-visible {

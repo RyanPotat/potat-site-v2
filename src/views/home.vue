@@ -2,7 +2,6 @@
 import JoinButton from '../components/joinButton.vue';
 import PartnerList from '../components/partnerList.vue';
 import StatsBox from '../components/statsBox.vue';
-import HelpButton from '../components/helpButton.vue';
 </script>
 
 <template>
@@ -20,7 +19,6 @@ import HelpButton from '../components/helpButton.vue';
       </div>
       <div class="buttons-container">
         <JoinButton/>
-        <HelpButton/>
       </div>
     </div>
     <div class="stats-container">

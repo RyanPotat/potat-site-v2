@@ -7,7 +7,10 @@ import LoginButton from './components/loginButton.vue';
     <div class="top-bar">
       <strong><router-link to="/" class="nav-link">Home</router-link></strong>
       <strong><router-link to="/leaderboard" class="nav-link">Leaderboard</router-link></strong>
-      <strong><router-link to="/channel/:username" class="nav-link">Channel</router-link></strong>
+      <!-- <strong>
+        <router-link to="/channel/:username" class="nav-link">Channel</router-link>
+      </strong> -->
+      <strong><router-link to="/help" class="nav-link">Commands</router-link></strong>
       <strong><a href="https://haste.potat.app" class="nav-link external-link">Haste</a></strong>
       <div class="login-button-container">
         <LoginButton/>
@@ -37,7 +40,7 @@ import LoginButton from './components/loginButton.vue';
 }
 
 .nav-link {
-  margin-right: 20px; /* Adjust the pixel interval as needed */
+  margin-right: 20px;
   padding: 12px;
   outline: auto -webkit-focus-ring-color;
   outline-color: #f4f4f4;
@@ -46,8 +49,8 @@ import LoginButton from './components/loginButton.vue';
 }
 
 .nav-link.router-link-active {
-  background-color: #6441a4; /* Adjust the color for the active link */
-  color: #fff; /* Text color for the active link */
+  background-color: #6441a4;
+  color: #fff;
 }
 
 .external-link {
@@ -63,8 +66,6 @@ import LoginButton from './components/loginButton.vue';
 
 .main-background {
   position: fixed;
-  top: 0;
-  left: 0;
   width: 100%;
   height: 100%;
   background-image: url('/Home.png');
@@ -74,8 +75,9 @@ import LoginButton from './components/loginButton.vue';
 }
 
 .login-button-container {
-  display: flex;
-  right: 50px;
-  top: 3px;
+  margin-left: auto;
+  margin-right: 35px;
+  margin-top: -12px;
+  margin-bottom: -12px
 }
 </style>

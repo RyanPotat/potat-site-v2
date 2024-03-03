@@ -118,7 +118,7 @@ onMounted(async () => {
   user-select: none;
   top: 50px;
   transform: scale(1.5); 
-  margin-bottom: 75px;
+  margin-bottom: 20px;
 }
 
 .part-button,

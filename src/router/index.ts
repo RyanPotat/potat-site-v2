@@ -2,6 +2,7 @@ import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
 import Home from '../views/home.vue';
 import Leaderboard from '../views/leaderboard.vue';
 import Channel from '../views/channel.vue';
+import Help from '../views/help.vue';
 
 const routes: RouteRecordRaw[] = [
   { 
@@ -17,9 +18,13 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/channel/:username',
     name: 'Channel',
-    component: Channel,
-    meta: { requiresAuth: true },
+    component: Channel
   },
+  {
+    path: '/help',
+    name: 'Help',
+    component: Help
+  }
 ];
 
 const router = createRouter({
