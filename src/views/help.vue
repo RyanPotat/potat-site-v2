@@ -87,7 +87,7 @@ const
   selectedCommand = ref<string>(localStorage.getItem(`last${selectedCategory}`) || 'join');
 
 onMounted(() => {
-  fetch('http://api.potat.app/help')
+  fetch('https://api.potat.app/help')
     .then((res) => res.json())
     .then((data) => (commands.value = data))
     .catch(console.error)
