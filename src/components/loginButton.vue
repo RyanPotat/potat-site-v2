@@ -52,7 +52,7 @@ const assignUser = async (token: string): Promise<void> => {
     .then((data) => {
       if ([401, 418].includes(data?.errors?.statusCode)) {
         console.log('Signing out due to error:', data?.errors?.message);
-        return eventBus.$emit('signOut', { token: null, user: null });;
+        return eventBus.$emit('signOut');
       }
       twitchUser.value = data
     });

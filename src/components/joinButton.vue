@@ -28,9 +28,11 @@ const isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
 });
 
-const signOut = async (): Promise<void> => {
-  await localStorage.clear();
+const signOut = (): void => {
+  localStorage.clear();
   userState.value = null;
+  authorizationToken.value = null;
+  newState.value = false;
   console.log('Signed out');
 }
 
@@ -53,7 +55,7 @@ const join = async () => {
     .then(data => {
       if ([401, 418].includes(data?.errors?.statusCode)) {
         console.log('Signing out due to error:', data?.errors?.message);
-        return eventBus.$emit('signOut', { token: null, user: null });
+        return eventBus.$emit('signOut');
       }
       return data;
     });
@@ -77,7 +79,7 @@ async function part() {
     .then(data => {
       if ([401, 418].includes(data?.errors?.statusCode)) {
         console.log('Signing out due to error:', data?.errors?.message);
-        return eventBus.$emit('signOut', { token: null, user: null });
+        return eventBus.$emit('signOut');
       }
       return data;
     });
