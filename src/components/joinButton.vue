@@ -28,11 +28,20 @@ const isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
 });
 
+const signOut = () => {
+  localStorage.removeItem('authorization');
+  localStorage.removeItem('userState');
+  authToken.value = null;
+  userState.value = null;
+  twitchUser.value = null;
+  eventBus.$emit('newToken', { token: null, user: null });
+}
+
 const isOperationInProgress = ref(false);
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
-async function join() {
+const join = async () => {
   if (isOperationInProgress.value) return;
 
   isOperationInProgress.value = true;
@@ -45,13 +54,8 @@ async function join() {
     },
   }).then(res => res.json())
     .then(data => {
-      if (data.error) {
-        console.error(data.error);
-        localStorage.removeItem('authorization');
-        localStorage.removeItem('userState');
-        return;
-      }
-    })
+      if ([401, 418].includes(data?.errors?.statusCode)) return signOut()
+    });
 
   await delay(3000);
   isOperationInProgress.value = false;
@@ -70,13 +74,8 @@ async function part() {
     },
   }).then(res => res.json())
     .then(data => {
-      if (data.error) {
-        console.error(data.error);
-        localStorage.removeItem('authorization');
-        localStorage.removeItem('userState');
-        return;
-      }
-    })
+      if ([401, 418].includes(data?.errors?.statusCode)) return signOut()
+    });
 
   await delay(3000);
   isOperationInProgress.value = false;

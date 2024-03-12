@@ -27,11 +27,20 @@ const isAuthenticated = computed(() => {
   return authToken.value !== null && userState.value !== null;
 });
 
-async function signIn() {
+const signIn = () => {
   window.open('https://api.potat.app/login', '_blank', 'width=600,height=400');
 }
 
-async function assignUser(token: string) {
+const signOut = () => {
+  localStorage.removeItem('authorization');
+  localStorage.removeItem('userState');
+  authToken.value = null;
+  userState.value = null;
+  twitchUser.value = null;
+  eventBus.$emit('newToken', { token: null, user: null });
+}
+
+const assignUser = (token: string) => {
   if (!isAuthenticated.value) return;
 
   const userData = await fetch('https://api.potat.app/twitch', {
@@ -42,13 +51,7 @@ async function assignUser(token: string) {
   })
     .then((res) => res.json())
     .then((data) => {
-      if (data.error) {
-        console.error(data.error);
-        localStorage.removeItem('authorization');
-        localStorage.removeItem('userState');
-        authToken.value = null;
-        return;
-      }
+      if ([401, 418].includes(data?.errors?.statusCode)) return signOut()
       twitchUser.value = data
     });
 
