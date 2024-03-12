@@ -43,7 +43,15 @@ async function join() {
     headers: {
       authorization: 'Bearer ' + authorizationToken.value,
     },
-  });
+  }).then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        console.error(data.error);
+        localStorage.removeItem('authorization');
+        localStorage.removeItem('userState');
+        return;
+      }
+    })
 
   await delay(3000);
   isOperationInProgress.value = false;
@@ -60,7 +68,15 @@ async function part() {
     headers: {
       authorization: 'Bearer ' + authorizationToken.value,
     },
-  });
+  }).then(res => res.json())
+    .then(data => {
+      if (data.error) {
+        console.error(data.error);
+        localStorage.removeItem('authorization');
+        localStorage.removeItem('userState');
+        return;
+      }
+    })
 
   await delay(3000);
   isOperationInProgress.value = false;

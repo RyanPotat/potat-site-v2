@@ -41,7 +41,16 @@ async function assignUser(token: string) {
     },
   })
     .then((res) => res.json())
-    .then((data) => (twitchUser.value = data));
+    .then((data) => {
+      if (data.error) {
+        console.error(data.error);
+        localStorage.removeItem('authorization');
+        localStorage.removeItem('userState');
+        authToken.value = null;
+        return;
+      }
+      twitchUser.value = data
+    });
 
   if (userData?.chatColor && !userData?.userPaint)
     document.querySelector('.twitch-user span')?.setAttribute('style', `color: ${userData.chatColor}`);
