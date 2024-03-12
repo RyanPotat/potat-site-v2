@@ -34,7 +34,6 @@ const signOut = (): void => {
   userState.value = null;
   authorizationToken.value = null;
   newState.value = false;
-  console.log('Signed out');
 }
 
 const isOperationInProgress = ref(false);

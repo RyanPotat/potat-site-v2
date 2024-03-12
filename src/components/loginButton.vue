@@ -36,7 +36,6 @@ const signOut = async (): Promise<void> => {
   authToken.value = null;
   userState.value = null;
   twitchUser.value = null;
-  console.log('Signed out');
 }
 
 const assignUser = async (): Promise<void> => {
@@ -56,6 +55,7 @@ const assignUser = async (): Promise<void> => {
         return eventBus.$emit('signOut');
       }
       twitchUser.value = data
+      return data;
     });
 
   if (userData?.chatColor && !userData?.userPaint)
