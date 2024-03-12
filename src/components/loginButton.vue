@@ -40,7 +40,7 @@ const signOut = () => {
   eventBus.$emit('newToken', { token: null, user: null });
 }
 
-const assignUser = (token: string) => {
+const assignUser = async (token: string) => {
   if (!isAuthenticated.value) return;
 
   const userData = await fetch('https://api.potat.app/twitch', {
