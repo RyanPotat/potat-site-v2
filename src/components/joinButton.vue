@@ -28,11 +28,9 @@ const isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
 });
 
-const signOut = async () => {
+const signOut = async (): Promise<void> => {
   await localStorage.clear();
-  authToken.value = null;
   userState.value = null;
-  twitchUser.value = null;
   console.log('Signed out');
 }
 
@@ -105,7 +103,7 @@ onMounted(async () => {
     newState.value = JSON.parse(user).is_channel;
   });
 
-  eventBus.$on('signOut', signOut());
+  eventBus.$on('signOut', signOut);
 
   if (isAuthenticated.value) {
     const user = JSON.parse(userState.value as string);

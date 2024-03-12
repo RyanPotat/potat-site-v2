@@ -27,11 +27,11 @@ const isAuthenticated = computed(() => {
   return authToken.value !== null && userState.value !== null;
 });
 
-const signIn = () => {
+const signIn = (): void => {
   window.open('https://api.potat.app/login', '_blank', 'width=600,height=400');
 }
 
-const signOut = async () => {
+const signOut = async (): Promise<void> => {
   await localStorage.clear();
   authToken.value = null;
   userState.value = null;
@@ -39,10 +39,10 @@ const signOut = async () => {
   console.log('Signed out');
 }
 
-const assignUser = async (token: string) => {
+const assignUser = async (token: string): Promise<void> => {
   if (!isAuthenticated.value) return;
 
-  const userData = await fetch('https://api.potat.app/twitch', {
+  const userData: TwitchUser | void = await fetch('https://api.potat.app/twitch', {
     method: 'GET',
     headers: {
       authorization: 'Bearer ' + token,
@@ -63,7 +63,7 @@ const assignUser = async (token: string) => {
   if (userData?.userPaint) applyPaint(userData.userPaint, '.twitch-user span');
 }
 
-onMounted(() => {
+onMounted((): void => {
   assignUser(authToken.value as string);
 
   const handleMessage = (event: MessageEvent) => {
@@ -84,7 +84,7 @@ onMounted(() => {
     });
 
     
-    eventBus.$on('signOut', signOut());
+    eventBus.$on('signOut', signOut);
     
     userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
     assignUser(token);
