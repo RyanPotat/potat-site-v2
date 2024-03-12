@@ -28,13 +28,12 @@ const isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
 });
 
-const signOut = () => {
-  localStorage.removeItem('authorization');
-  localStorage.removeItem('userState');
+const signOut = async () => {
+  await localStorage.clear();
   authToken.value = null;
   userState.value = null;
   twitchUser.value = null;
-  eventBus.$emit('newToken', { token: null, user: null });
+  console.log('Signed out');
 }
 
 const isOperationInProgress = ref(false);
@@ -54,7 +53,11 @@ const join = async () => {
     },
   }).then(res => res.json())
     .then(data => {
-      if ([401, 418].includes(data?.errors?.statusCode)) return signOut()
+      if ([401, 418].includes(data?.errors?.statusCode)) {
+        console.log('Signing out due to error:', data?.errors?.message);
+        return eventBus.$emit('signOut', { token: null, user: null });
+      }
+      return data;
     });
 
   await delay(3000);
@@ -74,7 +77,11 @@ async function part() {
     },
   }).then(res => res.json())
     .then(data => {
-      if ([401, 418].includes(data?.errors?.statusCode)) return signOut()
+      if ([401, 418].includes(data?.errors?.statusCode)) {
+        console.log('Signing out due to error:', data?.errors?.message);
+        return eventBus.$emit('signOut', { token: null, user: null });
+      }
+      return data;
     });
 
   await delay(3000);
@@ -97,6 +104,8 @@ onMounted(async () => {
     userState.value = user;
     newState.value = JSON.parse(user).is_channel;
   });
+
+  eventBus.$on('signOut', signOut());
 
   if (isAuthenticated.value) {
     const user = JSON.parse(userState.value as string);

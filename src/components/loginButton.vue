@@ -31,13 +31,12 @@ const signIn = () => {
   window.open('https://api.potat.app/login', '_blank', 'width=600,height=400');
 }
 
-const signOut = () => {
-  localStorage.removeItem('authorization');
-  localStorage.removeItem('userState');
+const signOut = async () => {
+  await localStorage.clear();
   authToken.value = null;
   userState.value = null;
   twitchUser.value = null;
-  eventBus.$emit('newToken', { token: null, user: null });
+  console.log('Signed out');
 }
 
 const assignUser = async (token: string) => {
@@ -51,7 +50,10 @@ const assignUser = async (token: string) => {
   })
     .then((res) => res.json())
     .then((data) => {
-      if ([401, 418].includes(data?.errors?.statusCode)) return signOut()
+      if ([401, 418].includes(data?.errors?.statusCode)) {
+        console.log('Signing out due to error:', data?.errors?.message);
+        return eventBus.$emit('signOut', { token: null, user: null });;
+      }
       twitchUser.value = data
     });
 
@@ -80,6 +82,10 @@ onMounted(() => {
       token,
       user: JSON.stringify({ id, login, name, stv_id, is_channel }),
     });
+
+    
+    eventBus.$on('signOut', signOut());
+    
     userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
     assignUser(token);
     window.removeEventListener('message', handleMessage);
