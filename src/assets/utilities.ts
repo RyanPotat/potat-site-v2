@@ -48,3 +48,5 @@ const getContrastingTextColor = (color: string) => {
   // Choose contrasting text color based on luminance
   return luminance < 100
 };
+
+export const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));

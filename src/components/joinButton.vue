@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
 import { default as eventBus } from '../assets/eventBus';
+import { delay } from '../assets/utilities';
 
 interface UserState {
   value: string | null;
@@ -38,8 +39,6 @@ const signOut = (): void => {
 
 const isOperationInProgress = ref(false);
 
-const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 const join = async () => {
   if (isOperationInProgress.value) return;
 
@@ -49,12 +48,13 @@ const join = async () => {
   fetch('https://api.potat.app/join', {
     method: 'POST',
     headers: {
-      authorization: 'Bearer ' + authorizationToken.value,
+      authorization: 'Bearer ' + localStorage.getItem('authorization'),
     },
   }).then(res => res.json())
     .then(data => {
       if ([401, 418].includes(data?.errors?.statusCode)) {
         console.log('Signing out due to error:', data?.errors?.message);
+        signOut();
         return eventBus.$emit('signOut');
       }
       return data;
@@ -64,7 +64,7 @@ const join = async () => {
   isOperationInProgress.value = false;
 }
 
-async function part() {
+const part = async () => {
   if (isOperationInProgress.value) return;
 
   isOperationInProgress.value = true;
@@ -73,12 +73,13 @@ async function part() {
   fetch('https://api.potat.app/part', {
     method: 'POST',
     headers: {
-      authorization: 'Bearer ' + authorizationToken.value,
+      authorization: 'Bearer ' + localStorage.getItem('authorization'),
     },
   }).then(res => res.json())
     .then(data => {
       if ([401, 418].includes(data?.errors?.statusCode)) {
         console.log('Signing out due to error:', data?.errors?.message);
+        signOut();
         return eventBus.$emit('signOut');
       }
       return data;
@@ -105,7 +106,9 @@ onMounted(async () => {
     newState.value = JSON.parse(user).is_channel;
   });
 
-  eventBus.$on('signOut', signOut);
+  eventBus.$on('signOut', () => {
+    signOut();
+  });
 
   if (isAuthenticated.value) {
     const user = JSON.parse(userState.value as string);

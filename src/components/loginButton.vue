@@ -39,19 +39,20 @@ const signOut = async (): Promise<void> => {
   console.log('Signed out');
 }
 
-const assignUser = async (token: string): Promise<void> => {
+const assignUser = async (): Promise<void> => {
   if (!isAuthenticated.value) return;
 
   const userData: TwitchUser | void = await fetch('https://api.potat.app/twitch', {
     method: 'GET',
     headers: {
-      authorization: 'Bearer ' + token,
+      authorization: 'Bearer ' + localStorage.getItem('authorization'),
     },
   })
     .then((res) => res.json())
     .then((data) => {
       if ([401, 418].includes(data?.errors?.statusCode)) {
         console.log('Signing out due to error:', data?.errors?.message);
+        signOut();
         return eventBus.$emit('signOut');
       }
       twitchUser.value = data
@@ -64,7 +65,7 @@ const assignUser = async (token: string): Promise<void> => {
 }
 
 onMounted((): void => {
-  assignUser(authToken.value as string);
+  assignUser();
 
   const handleMessage = (event: MessageEvent) => {
     const { id, login, name, stv_id, token, is_channel } = event.data;
@@ -84,10 +85,12 @@ onMounted((): void => {
     });
 
     
-    eventBus.$on('signOut', signOut);
+    eventBus.$on('signOut', () => {
+      signOut();
+    });
     
     userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
-    assignUser(token);
+    assignUser();
     window.removeEventListener('message', handleMessage);
   };
 
