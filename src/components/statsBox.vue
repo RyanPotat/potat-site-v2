@@ -21,7 +21,7 @@ onMounted(async () => {
     </div>
     <div class="line" style="margin-bottom: 10px;">
       <strong>Active channels:</strong>
-      <span>{{ data?.twitch?.activeChannels - 4000 }}</span>
+      <span>{{ data?.twitch?.activeChannels }}</span>
     </div>
     <div class="line" style="margin-bottom: 10px;">
       <strong>Emotes added:</strong>
