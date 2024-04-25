@@ -29,6 +29,9 @@ onMounted(async () => {
           if (update.action !== 'ADD') return
           data.value.misc.emotesAdded += 1;
           break;
+        case 'potato-updates':
+          data.value.potato.total += update.updateCount;
+          break;
       }
     })
 });
