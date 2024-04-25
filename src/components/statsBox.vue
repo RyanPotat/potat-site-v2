@@ -1,11 +1,36 @@
 <script setup lang="ts">
 import { ref, onMounted, Ref } from 'vue';
+import eventBus from '../assets/eventBus';
+
+interface UpdateEvent {
+  data: any;
+  topic: string;
+}
 
 const data: Ref = ref({});
 onMounted(async () => {
     data.value = await fetch('https://api.potat.app')
       .then((res) => res.json())
       .catch(console.error)
+
+    eventBus.$on('update', (stats) => {
+      const { data: update, topic } = stats as UpdateEvent;
+      switch (topic) {
+        case 'commands-executed':
+          data.value.misc.commandsUsed = update.totalCount;
+          break;
+        case 'new-user':
+          data.value.twitch.usersSeen += 1;
+          break;
+        case 'active-channels':
+          data.value.twitch.activeChannels = update.activeCount;
+          break;
+        case 'emote-actions':
+          if (update.action !== 'ADD') return
+          data.value.misc.emotesAdded += 1;
+          break;
+      }
+    })
 });
 </script>
 
@@ -21,7 +46,7 @@ onMounted(async () => {
     </div>
     <div class="line" style="margin-bottom: 10px;">
       <strong>Active channels:</strong>
-      <span>{{ data?.twitch?.activeChannels }}</span>
+      <span>{{ data?.twitch?.activeChannels.toLocaleString() }}</span>
     </div>
     <div class="line" style="margin-bottom: 10px;">
       <strong>Emotes added:</strong>

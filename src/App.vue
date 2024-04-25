@@ -1,5 +1,8 @@
 <script setup lang="ts">
 import LoginButton from './components/loginButton.vue';
+import { StatsSocket } from './assets/socket';
+
+StatsSocket.new('wss://stats.potat.app')
 </script>
 
 <template>
