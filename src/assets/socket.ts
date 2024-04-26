@@ -17,6 +17,7 @@ export class StatsSocket {
   }
 
   connect() {
+    if (this.socket?.readyState === WebSocket.OPEN) return;
     this.socket = new WebSocket(this.url);
 
     this.socket.addEventListener('open', () => console.log('Connected to stats server'));

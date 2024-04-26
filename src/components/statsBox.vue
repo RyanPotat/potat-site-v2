@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, Ref } from 'vue';
 import eventBus from '../assets/eventBus';
+import { delay } from '../assets/utilities';
 
 interface UpdateEvent {
   data: any;
@@ -13,7 +14,7 @@ onMounted(async () => {
       .then((res) => res.json())
       .catch(console.error)
 
-    eventBus.$on('update', (stats) => {
+    eventBus.$on('update', async (stats) => {
       const { data: update, topic } = stats as UpdateEvent;
       switch (topic) {
         case 'commands-executed':
@@ -30,7 +31,10 @@ onMounted(async () => {
           data.value.misc.emotesAdded += 1;
           break;
         case 'potato-update':
-          data.value.potato.total += update.updateCount;
+          for (let i = 0; i < update.updateCount; i++) {
+            data.value.potato.total += 1;
+            await delay(Math.min(15, 5000/update.updateCount));
+          }
           break;
       }
     })
