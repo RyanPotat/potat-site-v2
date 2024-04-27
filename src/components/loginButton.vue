@@ -49,8 +49,8 @@ const assignUser = async (): Promise<void> => {
   })
     .then((res) => res.json())
     .then((data) => {
-      if ([401, 418].includes(data?.errors?.statusCode)) {
-        console.log('Signing out due to error:', data?.errors?.message);
+      if ([401, 418].includes(data?.status)) {
+        console.log('Signing out due to error:', data?.errors?.[0]?.message);
         signOut();
         return eventBus.$emit('signOut');
       }
