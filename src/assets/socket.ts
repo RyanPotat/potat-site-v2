@@ -1,6 +1,4 @@
 import { default as eventBus } from '../assets/eventBus';
-
-console.log('in socket.ts')
 export class StatsSocket {
   private static instance: StatsSocket
   private readonly url: string;
@@ -16,7 +14,7 @@ export class StatsSocket {
     return this.instance ?? (this.instance = new this(uri))
   }
 
-  connect() {
+  private connect() {
     if (this.socket?.readyState === WebSocket.OPEN) return;
     this.socket = new WebSocket(this.url);
 
@@ -37,7 +35,6 @@ export class StatsSocket {
     });
   }
 
-  reconnect() { setTimeout(this.connect.bind(this), 2500); }
-  close() { if (this.socket) this.socket.close(); }
+  private reconnect() { setTimeout(this.connect.bind(this), 2500); }
 }
 

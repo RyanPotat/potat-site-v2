@@ -204,7 +204,7 @@ onMounted(() => {
 .sidebar {
   display: flex;
   flex-direction: column;
-  max-height: 405px;
+  max-height: 90vh;
   position: relative;
   overflow-y: auto;
   margin-left: 20px;
