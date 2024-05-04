@@ -15,6 +15,7 @@ StatsSocket.new('wss://stats.potat.app')
       </strong> -->
       <strong><router-link to="/help" class="nav-link">Commands</router-link></strong>
       <strong><a href="https://haste.potat.app" class="nav-link external-link">Haste</a></strong>
+      <strong><a href="/redirects" class="nav-link external-link">URL Shortener</a></strong>
       <div class="login-button-container">
         <LoginButton/>
       </div>

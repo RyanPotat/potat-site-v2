@@ -1,29 +1,30 @@
 import { createRouter, createWebHistory, RouteRecordRaw } from 'vue-router';
-import Home from '../views/home.vue';
-import Leaderboard from '../views/leaderboard.vue';
-import Channel from '../views/channel.vue';
-import Help from '../views/help.vue';
 
 const routes: RouteRecordRaw[] = [
   { 
     path: '/', 
     name: 'Home',
-    component: Home 
+    component: () => import('../views/home.vue')  
   },
   { 
     path: '/leaderboard', 
     name: 'Leaderboard',
-    component: Leaderboard 
+    component: () => import('../views/leaderboard.vue') 
   },
   {
     path: '/channel/:username',
     name: 'Channel',
-    component: Channel
+    component: () => import('../views/channel.vue')
   },
   {
     path: '/help',
     name: 'Help',
-    component: Help
+    component: () => import('../views/help.vue')
+  },
+  {
+    path: '/redirects',
+    name: 'Redirects',
+    component: () => import('../views/redirects.vue')
   }
 ];
 
