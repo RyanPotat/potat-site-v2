@@ -4,46 +4,85 @@ import { humanizeDuration } from '../assets/utilities';
 
 export interface Command {
   name: string;
-  title: string;
   description: string;
+  title: string;
+  detailedDescription?: string;
   usage: string;
-  category: string;
+  category: CommandCategories;
   aliases: string[];
-  params: Object
+  flags: FlagDetails[];
   cooldown: number;
-  development: boolean;
-  joinchannel: boolean;
-  potatoRequire: boolean;
-  potato: boolean;
-  level: number;
-  ryan: boolean;
-  botPerms: string;
-  permission: number;
-  whisperable: boolean;
-  offline: boolean;
-  botIgnore: boolean;
+  level: InternalLevels;
+  botRequires: BotCommandRequirements;
+  userRequires: UserRequires;
+  conditions: CommandConditions;
 }
 
-interface Object {
+type CommandConditions = {
+  offlineOnly?: boolean;
+  whisperable?: boolean;
+  ignoreBots?: boolean;
+  isBlockable?: boolean;
+  isNotPipable?: boolean;
+};
+
+type FlagDetails = {
+  name: string;
+  type: 'boolean' | 'string';
+  level: InternalLevels;
+  userRequires?: UserRequires;
+  required: boolean;
+  description: string;
+  usage?: string;
+  aliases?: string[];
+};
+
+enum InternalLevels {
+  'Blacklisted',
+  'Standard users',
+  'Bot moderators',
+  'Bot admins',
+  'Bot developers',
+}
+
+type CommandCategories =
+  | 'development'
+  | 'moderation'
+  | 'utilities'
+  | 'unlisted'
+  | 'settings'
+  | 'stream'
+  | 'potato'
+  | 'emotes'
+  | 'spam'
+  | 'misc'
+  | 'fun';
+
+type UserRequires =
+  | 'none'
+  | 'subscriber'
+  | 'vip'
+  | 'mod'
+  | 'ambassador'
+  | 'broadcaster';
+
+type BotCommandRequirements = 'none' | 'vip' | 'mod';
+
+interface KeyString {
   [key: number | string]: string;
 }
 
 const
-  permissions: Object = {
-    1: 'VIP',
-    1.5: 'Moderator',
-    2: 'Broadcaster or Ambassador',
+  permissions: KeyString = {
+    'none': 'No Permissions',
+    'subscriber': 'Subscriber',
+    'vip': 'VIP',
+    'mod': 'Moderator',
+    'ambassador': 'Ambassador',
+    'broadcaster': 'Broadcaster',
   },
 
-  ranks: Object = {
-    0: 'Blacklisted',
-    1: 'Standard users',
-    2: 'Bot moderators',
-    3: 'Bot admins',
-    4: 'Bot developers'
-  },
-
-  botPerms: Object = {
+  botPerms: KeyString = {
     'mod': 'Moderator',
     'vip': 'VIP'
   },
@@ -132,22 +171,40 @@ onMounted(() => {
                 <strong>Cooldown: </strong>{{ humanizeDuration(getCommand.cooldown, 1) }}
               </p>
               <p v-if="getCommand.level">
-                <strong>Available to: </strong> {{ ranks[getCommand.level] }}
+                <strong>Available to: </strong> {{ InternalLevels[getCommand.level] }}
               </p>
-              <p v-if="getCommand.botPerms">
-                <strong>Bot requires: </strong>{{ botPerms[getCommand.botPerms] }}
+              <p v-if="getCommand.botRequires !== 'none'">
+                <strong>Bot requires: </strong>{{ botPerms[getCommand.botRequires] }}
               </p>
-              <p v-if="getCommand.permission">
-                <strong>User requires: </strong>{{ permissions[getCommand.permission] }}
+              <p v-if="getCommand.userRequires !== 'none'">
+                <strong>User requires: </strong>{{ permissions[getCommand.userRequires] }}
               </p>
               <p>
-                <strong>Whisperable: </strong>{{ getCommand.whisperable ?? 'false' }}
+                <strong>Whisperable: </strong>{{ getCommand.conditions.whisperable ?? 'false' }}
               </p>
-              <p v-if="getCommand.offline">
-                <strong>Offline only: </strong>{{ getCommand.offline }}
+              <p v-if="getCommand.conditions.offlineOnly">
+                <strong>Offline only: </strong>{{ getCommand.conditions.offlineOnly }}
               </p>
-              <p v-if="getCommand.botIgnore">
-                <strong>Bot Ignore: </strong>{{ getCommand.botIgnore }}
+              <p v-if="getCommand.conditions.ignoreBots">
+                <strong>Ignores bots: </strong>{{ getCommand.conditions.ignoreBots }}
+              </p>
+              <p v-if="typeof getCommand.conditions.isNotPipable === 'boolean'">
+                <strong>Can be piped: </strong>{{ !getCommand.conditions.isNotPipable }}
+              </p>
+              <p v-if="getCommand.flags.length">
+                <strong>Flags: </strong>
+                <div v-for="(flag, index) in getCommand.flags" :key="index" class="flag-details">
+                  <p><strong>Name: </strong>{{ flag.name }}</p>
+                  <p><strong>Description: </strong>{{ flag.description }}</p>
+                  <p><strong>Type:</strong> {{ flag.type }}</p>
+                  <p><strong>Availiable to:</strong> {{ InternalLevels[flag.level] }}</p>
+                  <p v-if="flag.userRequires">
+                    <strong>User requires: :</strong> {{ permissions[flag.userRequires] }}
+                  </p>
+                  <p v-if="flag.aliases?.length"><strong>Aliases:</strong> {{ flag.aliases.join(', ') }}</p>
+                  <p v-if="flag.required"><strong>Required: </strong> {{ flag.required ? 'Yes' : 'No' }}</p>
+                  <p v-if="flag.usage"><strong>Usage:</strong> {{ flag.usage }}</p>
+                </div>
               </p>
             </div>
           </div>
@@ -156,6 +213,16 @@ onMounted(() => {
   </div>
 </template>
 <style scoped>
+
+.flag-details {
+  font-size: 0.9em;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 15px;
+  background-color: #1e1c1c79;
+  outline: auto -webkit-focus-ring-color;
+  outline-color: #f4f4f4;
+}
 
 #help-container {
   display: flex;
