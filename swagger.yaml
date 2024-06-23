@@ -692,7 +692,7 @@ paths:
                   description: The input text to be processed
                   example: "#massping look mom im using a command!"
               required:
-                - text: "#massping look mom im using a command!"
+                - text: "string"
       responses:
         '200':
           description: Command executed successfully
@@ -806,9 +806,3 @@ paths:
                   statusCode:
                     type: integer
                     example: 500
-    components:
-      securitySchemes:
-        bearerAuth:
-          type: http
-          scheme: bearer
-          bearerFormat: JWT
