@@ -27,6 +27,10 @@ import SwaggerUI from '../components/swaggerUI.vue'
     margin: auto;
   }
 
+  :deep(#swagger-ui .parameters-col_description input) {
+    color: #010101;
+  }
+
   /* ignore the gross base swagger stuff lol */
   :deep(#swagger-ui .topbar),
   :deep(#swagger-ui .information-container),
