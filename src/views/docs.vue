@@ -5,7 +5,6 @@ import SwaggerUI from '../components/swaggerUI.vue'
 
 <template>
   <main >
-
     <div class="swagger-potato"><SwaggerUI /></div>
   </main>
 </template>

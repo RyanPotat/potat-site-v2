@@ -23,6 +23,8 @@ export default defineConfig({
   build: {
     commonjsOptions: {
       include: [
+        /node_modules\/humanize-duration/,
+        /node_modules\/tinycolor2/,
         /assets\/swagger-ui\/swagger-ui-es-bundle.js$/,
         /assets\/swagger-ui\/swagger-ui-standalone-preset.js$/,
       ],
