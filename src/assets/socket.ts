@@ -1,12 +1,9 @@
 import { default as eventBus } from '../assets/eventBus';
 export class StatsSocket {
   private static instance: StatsSocket
-  private readonly url: string;
   private socket: WebSocket | null = null;
   
-  private constructor(private readonly uri: string) {
-    this.url = uri;
-    console.log(uri)
+  private constructor(private readonly url: string) {
     this.connect();
   }
 

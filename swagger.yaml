@@ -1,0 +1,814 @@
+openapi: 3.0.0
+servers:
+  - url: https://api.potat.app
+paths:
+  /twitch/badges:
+    get:
+      summary: Get Twitch badge user distribution
+      tags:
+        - Twitch Info/Stats
+      description: Returns all badges seen by the bot on Twitch, ranked by the amount of users currently seen using them. Provides a count of users, and a percentage of total users that currently have the badge equipped.
+      parameters:
+        - in: query
+          name: badge
+          description: Get statistics about a specific badge, from URI encoded input.
+          schema:
+            type: string
+        - in: query
+          name: first
+          description: Limit of badges to return per request
+          schema:
+            type: integer
+        - in: query
+          name: after
+          description: The cursor used to get the next page of results. Cursor is provided by the pagination object in a successful response.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucessful request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        badge:
+                          type: string
+                          example: "NOBADGE"
+                        user_count:
+                          type: integer
+                          example: 28644640
+                        percentage:
+                          type: number
+                          format: float
+                          example: 77.6764868841285
+                        rank:
+                          type: integer
+                          example: 1
+                  duration:
+                    type: number
+                    format: float
+                    example: 5.0475
+                  statusCode:
+                    type: integer
+                    example: 200
+                  pagination:
+                    type: object
+                    properties:
+                      cursor:
+                        type: string
+                        example: "Mzp0d2l0Y2gtcmVjYXAtMjAyMw=="
+                example:
+                  data: 
+                    - badge: "NOBADGE"
+                      user_count: 28644640
+                      percentage: 77.6764868841285
+                      rank: 1
+                    - badge: "premium"
+                      user_count: 4910026
+                      percentage: 13.314657478318104
+                      rank: 2
+                    - badge: "twitch-recap-2023"
+                      user_count: 1197035
+                      percentage: 3.2460339343536084
+                      rank: 3
+                  duration: 5.0475
+                  statusCode: 200
+                  pagination: 
+                    cursor: "Mzp0d2l0Y2gtcmVjYXAtMjAyMw=="
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                    - message: "Invalid badge format. Expected alphanumeric + [-_], found: ..."
+
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Badge not found"
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Badge not found"
+                    - message: "Invalid cursor"
+                    
+  /twitch/colors:
+    get:
+      summary: Get Twitch color user distribution
+      tags:
+        - Twitch Info/Stats
+      description: Returns all Twitch user colors seen by the bot, ranked by the number of users activly using them. Provides a count of users, and a percentage of total users for each color.
+      parameters:
+        - in: query
+          name: color
+          description: Get statistics about a specific color, from URI encoded input.
+          schema:
+            type: string
+        - in: query
+          name: first
+          description: Limit of colors to return per request
+          schema:
+            type: integer
+        - in: query
+          name: after
+          description: The cursor used to get the next page of results. Cursor is provided by the pagination object in a successful response.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucessful request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        color:
+                          type: string
+                          example: "NOCOLOR"
+                        user_count:
+                          type: integer
+                          example: 21445737
+                        percentage:
+                          type: number
+                          format: float
+                          example: 58.14167798192169
+                        rank:
+                          type: integer
+                          example: 1
+                    example:
+                      - color: "NOCOLOR"
+                        user_count: 21445737
+                        percentage: 58.14167798192169
+                        rank: 1
+                      - color: "#FF0000"
+                        user_count: 2403196
+                        percentage: 6.515320408873907
+                        rank: 2
+                      - color: "#8A2BE2"
+                        user_count: 1847281
+                        percentage: 5.008175612902568
+                        rank: 3
+                  duration:
+                    type: number
+                    format: float
+                    example: 9.3852
+                  statusCode:
+                    type: integer
+                    example: 200
+                  pagination:
+                    type: object
+                    properties:
+                      cursor:
+                        type: string
+                        example: "MzojOEEyQkUy"
+                example:
+                  data:
+                    - color: "NOCOLOR"
+                      user_count: 21445737
+                      percentage: 58.14167798192169
+                      rank: 1
+                    - color: "#FF0000"
+                      user_count: 2403196
+                      percentage: 6.515320408873907
+                      rank: 2
+                    - color: "#8A2BE2"
+                      user_count: 1847281
+                      percentage: 5.008175612902568
+                      rank: 3
+                  duration: 9.3852
+                  statusCode: 200
+                  pagination:
+                    cursor: "MzojOEEyQkUy"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                    - message: "Invalid color format. Expected hexadecimal color or 'none', found: ..."
+
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Badge not found"
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Color not found"
+                    - message: "Invalid cursor"
+                    
+  /twitch/emotes:
+    get:
+      summary: Get Twitch emote information
+      tags:
+        - Twitch Info/Stats
+      description: Find information about a provided Twitch emote ID, or name. To find emote by name, multiple sources will be checked if not available internally, but this will cause the response to have significant delay in some cases. To not check fallback sources provide the fallback=false parameter.
+      parameters:
+        - in: query
+          name: name
+          description: The name of the Twitch emote to lookup.
+          schema:
+            type: string
+        - in: query
+          name: id
+          description: The ID of the Twitch emote to lookup.
+          schema:
+            type: string
+        - in: query
+          name: fallback
+          description: If falsy, the API will only attempt to search the internal DB for emotes, speeding up response time.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Emote details data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        channelID:
+                          type: string
+                          example: "71092938"
+                        channelLogin:
+                          type: string
+                          example: "xqc"
+                        channelName:
+                          type: string
+                          example: "xQc"
+                        emoteID:
+                          type: string
+                          example: "1035663"
+                        emoteCode:
+                          type: string
+                          example: "xqcL"
+                        emotePrefix:
+                          type: string
+                          example: "xqc"
+                        emoteSuffix:
+                          type: string
+                          example: "L"
+                        emoteURL:
+                          type: string
+                          format: uri
+                          example: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                        emoteSetID:
+                          type: string
+                          example: "19503"
+                        emoteAssetType:
+                          type: string
+                          example: "STATIC"
+                        emoteState:
+                          type: string
+                          example: "ACTIVE"
+                        emoteType:
+                          type: string
+                          example: "SUBSCRIPTIONS"
+                        emoteTier:
+                          type: integer
+                          example: 1
+                        source:
+                          type: string
+                          example: "Internal"
+                    example:
+                      - channelID: "71092938"
+                        channelLogin: "xqc"
+                        channelName: "xQc"
+                        emoteID: "1035663"
+                        emoteCode: "xqcL"
+                        emotePrefix: "xqc"
+                        emoteSuffix: "L"
+                        emoteURL: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                        emoteSetID: "19503"
+                        emoteAssetType: "STATIC"
+                        emoteState: "ACTIVE"
+                        emoteType: "SUBSCRIPTIONS"
+                        emoteTier: 1
+                        source: "Internal"
+                  duration:
+                    type: number
+                    format: float
+                    example: 82.3611
+                  statusCode:
+                    type: integer
+                    example: 200
+                example:
+                  data:
+                    - channelID: "71092938"
+                      channelLogin: "xqc"
+                      channelName: "xQc"
+                      emoteID: "1035663"
+                      emoteCode: "xqcL"
+                      emotePrefix: "xqc"
+                      emoteSuffix: "L"
+                      emoteURL: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                      emoteSetID: "19503"
+                      emoteAssetType: "STATIC"
+                      emoteState: "ACTIVE"
+                      emoteType: "SUBSCRIPTIONS"
+                      emoteTier: 1
+                      source: "Internal"
+                  duration: 82.3611
+                  statusCode: 200
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Too many emotes provided (Max 15)"
+                    - message: "No emotes provided"
+                    - message: "Invalid emote ID"
+                    - message: "Invalid emote name"
+                    - message: "Request failed"
+
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Badge not found"
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "No emotes found"
+                    
+  /twitch/emotes/search:
+    get:
+      tags:
+        - Twitch Info/Stats
+      summary: Search for Twitch emotes by name
+      parameters:
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [static, animated]
+          description: Filter emotes by format
+        - in: query
+          name: first
+          schema:
+            type: integer
+            default: 100
+          description: Number of results to return (1-200)
+        - in: query
+          name: starts
+          schema:
+            type: string
+          description: Search for emotes starting with the given string. Mutually exclusive with ends, matches, and includes.
+        - in: query
+          name: ends
+          schema:
+            type: string
+          description: Search for emotes ending with the given string. Mutually exclusive with starts, matches, and includes.
+        - in: query
+          name: matches
+          schema:
+            type: string
+          description: Search for emotes matching the given string. Mutually exclusive with starts, ends, and includes.
+        - in: query
+          name: includes
+          schema:
+            type: string
+          description: Search for emotes including the given string. Mutually exclusive with starts, ends, and matches.
+        - in: query
+          name: case
+          schema:
+            type: boolean
+          description: Case sensitive search
+        - in: query
+          name: after
+          schema:
+            type: string
+          description: Cursor for pagination
+      responses:
+        '200':
+          description: Emote search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "1035663"
+                        name:
+                          type: string
+                          example: "xqcL"
+                        format:
+                          type: string
+                          example: "STATIC"
+                        url:
+                          type: string
+                          format: uri
+                          example: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                    example:
+                      - id: "1035663"
+                        name: "xqcL"
+                        format: "STATIC"
+                        url: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                  duration:
+                    type: number
+                    format: float
+                    example: 82.3611
+                  statusCode:
+                    type: integer
+                    example: 200
+                  pagination:
+                    type: object
+                    properties:
+                      cursor:
+                        type: string
+                        example: "Mzp0d2l0Y2gtcmVjYXAtMjAyMw=="
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Limit parameter out of bounds. Expected 1-200, found 2000"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Invalid cursor"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 500
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Internal server error"
+                          
+  /execute:
+    post:
+      summary: Execute a command
+      description: Execute a command as if you were running it from chat. The channel will always default to your own.
+      tags: 
+        - Bot Data/Actions
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: The input text to be processed
+                  example: "#massping look mom im using a command!"
+              required:
+                - text: "#massping look mom im using a command!"
+      responses:
+        '200':
+          description: Command executed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    example:
+                    - text: "Successful command invocation response"
+                      error: "Error executing command"
+                      reply: "true"
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  statusCode:
+                    type: integer
+                    example: 200
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "No input provided."
+                    example:
+                      - message: "No input provided."
+                  statusCode:
+                    type: integer
+                    example: 400
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Command invocation didn't return any result."
+                    example:
+                      - message: "Command invocation didn't return any result."
+                  statusCode:
+                    type: integer
+                    example: 404
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Server error."
+                    example:
+                      - message: "Server error."
+                  statusCode:
+                    type: integer
+                    example: 500
+    components:
+      securitySchemes:
+        bearerAuth:
+          type: http
+          scheme: bearer
+          bearerFormat: JWT

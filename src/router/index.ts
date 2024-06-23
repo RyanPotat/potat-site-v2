@@ -25,6 +25,11 @@ const routes: RouteRecordRaw[] = [
     path: '/redirects',
     name: 'Redirects',
     component: () => import('../views/redirects.vue')
+  },
+  {
+    path: '/api/docs',
+    name: 'API Docs',
+    component: () => import('../views/docs.vue')
   }
 ];
 

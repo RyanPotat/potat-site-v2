@@ -191,7 +191,7 @@ onMounted(() => {
               <p v-if="typeof getCommand.conditions.isNotPipable === 'boolean'">
                 <strong>Can be piped: </strong>{{ !getCommand.conditions.isNotPipable }}
               </p>
-              <p v-if="getCommand.flags.length">
+              <p v-if="getCommand.flags?.length">
                 <strong>Flags: </strong>
                 <div v-for="(flag, index) in getCommand.flags" :key="index" class="flag-details">
                   <p><strong>Name: </strong>{{ flag.name }}</p>
