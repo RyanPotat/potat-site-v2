@@ -60,7 +60,7 @@ const channel = ref<Channel>({
 const fetchEmoteHistory = async () => {
   try {
     const data: HistoryResponse = await fetch(
-      `https://api.potat.industries/emotes/history/${username.value}${limit ? `?limit=${limit.value}` : ''}`
+      `https://api.potat.app/emotes/history/${username.value}${limit ? `?limit=${limit.value}` : ''}`
     )
       .then(res => res.json())
       .then(res => res.data[0]);
