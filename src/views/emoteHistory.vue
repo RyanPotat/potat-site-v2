@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
+import { brightenColor } from '../assets/utilities';
 
 export interface HistoryResponse {
     channel: Channel;
@@ -46,6 +47,7 @@ interface ComputedExtras extends EmoteHistory {
 }
 
 const route = useRoute();
+const loaded = ref(false);
 const username = ref(route.params.username);
 
 const limit = ref(route.query.limit ?? 50);
@@ -75,7 +77,7 @@ const fetchEmoteHistory = async () => {
       let word: string = '';
 
       if (!update.user_stv_pfp || update.user_stv_pfp === '//cdn.7tv.app/') {
-        userPfp = update.user_pfp;
+        update.user_stv_pfp = update.user_pfp;
       }
 
       if (update.action === 'ALIAS') {
@@ -116,6 +118,8 @@ const fetchEmoteHistory = async () => {
     });
   } catch (error) {
     console.error('Failed to fetch emote history:', error);
+  } finally {
+    loaded.value = true;
   }
 };
 
@@ -125,7 +129,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="container">
+  <div id="container" v-if="loaded">
     <div class="profile-container">
       <div class="title-content">
         <div class="profile-picture">
@@ -146,7 +150,7 @@ onMounted(() => {
         <div class="text-content">
           ({{ update.provider.replace('STV', '7TV') }})
           <a :href="update.user_url" target="_blank">
-            <strong :style="{ color: update.user_color }">{{ update.user_name }}</strong> 
+            <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong> 
           </a> 
           {{ update.method }}
           <span>
@@ -194,9 +198,10 @@ body {
 
 .profile-picture img {
   border-radius: 50%;
-  margin-right: 1rem;
-  width: 50px;
-  height: 50px;
+  margin-right: 5px;
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
 }
 
 .title-content {

@@ -31,7 +31,7 @@ export function humanizeDuration(ms: number, largest?: number): string {
   return humanize(ms, options);
 }
 
-export function brightenColor(color: string, percent: number): string {
+export function brightenColor(color: string, percent = 25): string {
   if (!color) return color;
   if (!getContrastingTextColor(color)) return color;
   return tinycolor(color).brighten(percent).toString();

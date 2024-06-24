@@ -2,6 +2,7 @@
 import { ref, onMounted, reactive, computed } from 'vue';
 import { default as eventBus } from '../assets/eventBus';
 import { applyPaint, Paint } from '../assets/applyPaint';
+import { brightenColor } from '../assets/utilities';
 
 interface AuthToken {
   value: string | null;
@@ -58,8 +59,10 @@ const assignUser = async (): Promise<void> => {
       return data;
     });
 
-  if (userData?.chatColor && !userData?.userPaint)
-    document.querySelector('.twitch-user span')?.setAttribute('style', `color: ${userData.chatColor}`);
+  if (userData?.chatColor && !userData?.userPaint) {
+    const adjustedColor = brightenColor(userData.chatColor);
+    document.querySelector('.twitch-user span')?.setAttribute('style', `color: ${adjustedColor}`);
+  }
 
   if (userData?.userPaint) applyPaint(userData.userPaint, '.twitch-user span');
 }
