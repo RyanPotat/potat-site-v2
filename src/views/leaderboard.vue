@@ -13,34 +13,61 @@ interface Leaderboard {
   user_color: string;
 }
 
-const leaderboarders = ref<Leaderboard[]>([]);
+const 
+  leaderboarders = ref<Leaderboard[]>([]),
+  cursor = ref<string | null>(null),
+  leaderboardList = ref<HTMLElement | null>(null),
+  loserOrLeader = ref<boolean>(false),
+  imRetarded = new Map(),
 
-const fetchLeaderboard = async () => {
-  const response = await fetch('https://api.potat.app/leaderboard').then((res) => res.json());
-  leaderboarders.value = response.leaderboard;
-}
+  fetchLeaderboard = async (last?: string | null, loserBoard = false) => {
+    const order = loserBoard ? '?order=asc' : '?order=desc'
+    const after = last ? `&after=${last}` : '';
+
+    const response = await fetch(`https://api.potat.app/leaderboard${order}${after}`)
+      .then((res) => res.json());
+
+    for (const user of response.leaderboard) {
+      imRetarded.set(user.bestName, user);
+    } 
+    
+    leaderboarders.value = [... imRetarded.values()];
+
+    if (response.leaderboard.length > 0) {
+      const lastRanking = response.leaderboard[response.leaderboard.length - 1];
+      cursor.value = `${lastRanking.prestige}:${lastRanking.potatoCount}`;
+    }
+  },
+
+  handleScroll = () => {
+    if (!leaderboardList.value) return;
+    const { scrollTop, scrollHeight, clientHeight } = leaderboardList.value;
+
+    if (scrollTop + clientHeight >= scrollHeight - 10) {
+      fetchLeaderboard(cursor.value, loserOrLeader.value);
+    }
+  };
 
 onMounted(() => {
-  fetchLeaderboard();
+  fetchLeaderboard(null, loserOrLeader.value);
 });
 </script>
 
 <template>
   <div id="container" v-if="leaderboarders.length">
-    <ul class="leaderboard-list">
+    <ul class="leaderboard-list" ref="leaderboardList" @scroll="handleScroll">
       <li v-for="user in leaderboarders" :key="user.bestName" class="leaderboard-item">
         <div class="profile-picture">
           <a :href="`https://twitch.tv/${user.bestName.toLowerCase()}`" target="_blank">
-            <img :src="user.user_pfp" alt="profile picture" />
+            <img :src="user.user_pfp ?? 'https://gachi.gay/sgJNs'"/>
           </a>
         </div>
         <div class="text-content">
-          <div class="basic-info">
-            #{{ user.rank }} 
+          <div class="rank-name">
+            #{{ leaderboarders.indexOf(user) + 1 }} 
             <a :href="`https://twitch.tv/${user.bestName.toLowerCase()}`" target="_blank">
               <strong :style="{ color: brightenColor(user.user_color) }">{{ user.bestName }}</strong>
             </a>
-            
           </div>
           <div class="details">
             <div>Prestige: {{ user.prestige }}</div>
@@ -52,6 +79,7 @@ onMounted(() => {
     </ul>
   </div>
 </template>
+
 
 <style scoped>
 
@@ -111,6 +139,10 @@ body {
 .text-content {
   display: flex;
   flex-direction: column;
+}
+
+.rank-name {
+  font-size: 20px;
 }
 
 .leaderboard-list::-webkit-scrollbar {
