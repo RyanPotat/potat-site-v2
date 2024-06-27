@@ -48,6 +48,7 @@ interface ComputedExtras extends EmoteHistory {
 
 const route = useRoute();
 const loaded = ref(false);
+const none = ref(false);
 const username = ref(route.params.username);
 
 const limit = ref(route.query.limit ?? 50);
@@ -66,6 +67,11 @@ const fetchEmoteHistory = async () => {
     )
       .then(res => res.json())
       .then(res => res.data[0]);
+
+    if (!data) {
+      none.value = true;
+      return;
+    }
 
     channel.value = data.channel;
 
@@ -129,7 +135,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="container" v-if="loaded">
+  <div id="container" v-if="loaded && !none">
     <div class="profile-container">
       <div class="title-content">
         <div class="profile-picture">

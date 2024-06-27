@@ -112,20 +112,41 @@ const
   },
 
   categories = computed(() => {
-    return [...new Set(commands.value.map(command => command.category))].filter(Boolean);
+    return [...new Set(commands.value.map(command => command.category))].filter(each => {
+      if (!Boolean(each)) return false;
+
+      const filtered = filteredCommands.value.filter(command => command.category === each)
+      if (filtered.length === 0) return false;
+      return true;
+    });
   }),
 
   getCategory = computed(() => {
-      return commands.value.filter(command => command.category === selectedCategory.value);
+      return filteredCommands.value.filter(command => command.category === selectedCategory.value);
   }),
 
   getCommand = computed(() => {
-    return commands.value.find(command => command.name === selectedCommand.value);
+    return filteredCommands.value.find(command => command.name === selectedCommand.value);
   }),
 
   commands = ref<Command[] | []>([]),
+  search = ref<string>(''),
   selectedCategory = ref<string>(localStorage.getItem('lastCategory') || 'utilities'),
-  selectedCommand = ref<string>(localStorage.getItem(`last${selectedCategory}`) || 'join');
+  selectedCommand = ref<string>(localStorage.getItem(`last${selectedCategory}`) || 'join'),
+
+  filteredCommands = computed((): Command[] => {
+    if (!search.value) {
+      return commands.value;
+    }
+    const query = search.value.toLowerCase();
+    return commands.value.filter((command) => {
+      return (
+        (command.name.toLowerCase().includes(query) ||
+        command.description.toLowerCase().includes(query) ||
+        command.title.toLowerCase().includes(query))
+      );
+    });
+  });
 
 onMounted(() => {
   fetch('https://api.potat.app/help')
@@ -141,6 +162,9 @@ onMounted(() => {
     <div class="sidebar-container">
       <div style="flex-direction: column"></div>
       <div class="sidebar">
+        <button>
+          <input v-model="search" type="text" placeholder="Search..." class="search"/>
+        </button>
         <div v-for="category in categories" :key="category">
           <button @click="changeCategory(category)" :class="{ active: category === selectedCategory }">{{ category }}</button>
         </div>
@@ -154,74 +178,75 @@ onMounted(() => {
     </div>
 
     <div style="margin-left: 20px;">
-        <div v-if="getCommand">
-          <h2 class="command-title">{{ getCommand.title }}</h2>
-          <div class="command-details">
-            <div>
-              <p v-if="getCommand.description">
-                <strong>Description: </strong>{{ getCommand.description }}
-              </p>
-              <p v-if="getCommand.usage">
-                <strong>Usage: </strong>{{ getCommand.usage }}
-              </p>
-              <p v-if="checkArray(getCommand.aliases)">
-                <strong>Aliases: </strong>{{ getCommand.aliases.join(', ') }}
-              </p>
-              <p v-if="getCommand.cooldown">
-                <strong>Cooldown: </strong>{{ humanizeDuration(getCommand.cooldown, 1) }}
-              </p>
-              <p v-if="getCommand.level">
-                <strong>Available to: </strong> {{ InternalLevels[getCommand.level] }}
-              </p>
-              <p v-if="getCommand.botRequires !== 'none'">
-                <strong>Bot requires: </strong>{{ botPerms[getCommand.botRequires] }}
-              </p>
-              <p v-if="getCommand.userRequires !== 'none'">
-                <strong>User requires: </strong>{{ permissions[getCommand.userRequires] }}
-              </p>
-              <p>
-                <strong>Whisperable: </strong>{{ getCommand.conditions.whisperable ?? 'false' }}
-              </p>
-              <p v-if="getCommand.conditions.offlineOnly">
-                <strong>Offline only: </strong>{{ getCommand.conditions.offlineOnly }}
-              </p>
-              <p v-if="getCommand.conditions.ignoreBots">
-                <strong>Ignores bots: </strong>{{ getCommand.conditions.ignoreBots }}
-              </p>
-              <p v-if="typeof getCommand.conditions.isNotPipable === 'boolean'">
-                <strong>Can be piped: </strong>{{ !getCommand.conditions.isNotPipable }}
-              </p>
-              <p v-if="getCommand.flags?.length">
-                <strong>Flags: </strong>
-                <div v-for="(flag, index) in getCommand.flags" :key="index" class="flag-details">
-                  <p><strong>Name: </strong>{{ flag.name }}</p>
-                  <p><strong>Description: </strong>{{ flag.description }}</p>
-                  <p><strong>Type:</strong> {{ flag.type }}</p>
-                  <p><strong>Availiable to:</strong> {{ InternalLevels[flag.level] }}</p>
-                  <p v-if="flag.userRequires">
-                    <strong>User requires: :</strong> {{ permissions[flag.userRequires] }}
-                  </p>
-                  <p v-if="flag.aliases?.length"><strong>Aliases:</strong> {{ flag.aliases.join(', ') }}</p>
-                  <p v-if="flag.required"><strong>Required: </strong> {{ flag.required ? 'Yes' : 'No' }}</p>
-                  <p v-if="flag.usage"><strong>Usage:</strong> {{ flag.usage }}</p>
-                </div>
-              </p>
-            </div>
+      <div v-if="getCommand">
+        <h2 class="command-title">{{ getCommand.title }}</h2>
+        <div class="command-details">
+          <div>
+            <p v-if="getCommand.description">
+              <strong>Description: </strong>{{ getCommand.description }}
+            </p>
+            <p v-if="getCommand.usage">
+              <strong>Usage: </strong>{{ getCommand.usage }}
+            </p>
+            <p v-if="checkArray(getCommand.aliases)">
+              <strong>Aliases: </strong>{{ getCommand.aliases.join(', ') }}
+            </p>
+            <p v-if="getCommand.cooldown">
+              <strong>Cooldown: </strong>{{ humanizeDuration(getCommand.cooldown, 1) }}
+            </p>
+            <p v-if="getCommand.level">
+              <strong>Available to: </strong> {{ InternalLevels[getCommand.level] }}
+            </p>
+            <p v-if="getCommand.botRequires !== 'none'">
+              <strong>Bot requires: </strong>{{ botPerms[getCommand.botRequires] }}
+            </p>
+            <p v-if="getCommand.userRequires !== 'none'">
+              <strong>User requires: </strong>{{ permissions[getCommand.userRequires] }}
+            </p>
+            <p>
+              <strong>Whisperable: </strong>{{ getCommand.conditions.whisperable ?? 'false' }}
+            </p>
+            <p v-if="getCommand.conditions.offlineOnly">
+              <strong>Offline only: </strong>{{ getCommand.conditions.offlineOnly }}
+            </p>
+            <p v-if="getCommand.conditions.ignoreBots">
+              <strong>Ignores bots: </strong>{{ getCommand.conditions.ignoreBots }}
+            </p>
+            <p v-if="typeof getCommand.conditions.isNotPipable === 'boolean'">
+              <strong>Can be piped: </strong>{{ !getCommand.conditions.isNotPipable }}
+            </p>
+            <p v-if="getCommand.flags?.length">
+              <strong>Flags: </strong>
+              <div v-for="(flag, index) in getCommand.flags" :key="index" class="flag-details">
+                <p><strong>Name: </strong>{{ flag.name }}</p>
+                <p><strong>Description: </strong>{{ flag.description }}</p>
+                <p><strong>Type:</strong> {{ flag.type }}</p>
+                <p><strong>Availiable to:</strong> {{ InternalLevels[flag.level] }}</p>
+                <p v-if="flag.userRequires">
+                  <strong>User requires: :</strong> {{ permissions[flag.userRequires] }}
+                </p>
+                <p v-if="flag.aliases?.length"><strong>Aliases:</strong> {{ flag.aliases.join(', ') }}</p>
+                <p v-if="flag.required"><strong>Required: </strong> {{ flag.required ? 'Yes' : 'No' }}</p>
+                <p v-if="flag.usage"><strong>Usage:</strong> {{ flag.usage }}</p>
+              </div>
+            </p>
           </div>
         </div>
       </div>
+    </div>
+    
   </div>
 </template>
 <style scoped>
 
-.flag-details {
-  font-size: 0.9em;
-  margin-top: 10px;
+.search {
   padding: 10px;
+  max-width: 80px;
   border-radius: 15px;
-  background-color: #1e1c1c79;
+  background-color: rgba(31, 31, 31, 0.906);
   outline: auto -webkit-focus-ring-color;
   outline-color: #f4f4f4;
+  color: white;
 }
 
 #help-container {
@@ -231,6 +256,16 @@ onMounted(() => {
   left: 0;
   top: 100px;
   width: 100%;
+}
+
+.flag-details {
+  font-size: 0.9em;
+  margin-top: 10px;
+  padding: 10px;
+  border-radius: 15px;
+  background-color: #1e1c1c79;
+  outline: auto -webkit-focus-ring-color;
+  outline-color: #f4f4f4;
 }
 
 .command-details {
