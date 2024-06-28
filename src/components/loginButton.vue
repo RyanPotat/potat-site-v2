@@ -49,7 +49,8 @@ const assignUser = async (): Promise<void> => {
     },
   })
     .then((res) => res.json())
-    .then((data) => {
+    .then((json) => {
+      const data = json.data[0];
       if ([401, 418].includes(data?.status)) {
         console.log('Signing out due to error:', data?.errors?.[0]?.message);
         signOut();

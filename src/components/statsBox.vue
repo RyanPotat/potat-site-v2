@@ -12,6 +12,7 @@ const data: Ref = ref({});
 onMounted(async () => {
     data.value = await fetch('https://api.potat.app')
       .then((res) => res.json())
+      .then(res => res?.data?.[0])
       .catch(console.error)
 
     eventBus.$on('update', async (stats) => {

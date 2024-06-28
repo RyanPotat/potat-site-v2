@@ -27,14 +27,14 @@ const
     const response = await fetch(`https://api.potat.app/leaderboard${order}${after}`)
       .then((res) => res.json());
 
-    for (const user of response.leaderboard) {
+    for (const user of response.data) {
       imRetarded.set(user.bestName, user);
     } 
     
     leaderboarders.value = [... imRetarded.values()];
 
-    if (response.leaderboard.length > 0) {
-      const lastRanking = response.leaderboard[response.leaderboard.length - 1];
+    if (response.data.length > 0) {
+      const lastRanking = response.data[response.data.length - 1];
       cursor.value = `${lastRanking.prestige}:${lastRanking.potatoCount}`;
     }
   },

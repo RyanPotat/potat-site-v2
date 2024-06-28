@@ -47,7 +47,10 @@ const
 
 onMounted(async () => {
   // Fetch partners
-  partners.value = await fetch('https://api.potat.app/partners').then((res) => res.json());
+  partners.value = await fetch('https://api.potat.app/partners')
+    .then((res) => res.json())
+    .then(data => data.data as Partner[]);
+    
   // Preload images
   partners.value.forEach(partner => {
     const img = new Image();

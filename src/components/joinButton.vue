@@ -112,7 +112,8 @@ onMounted(async () => {
   if (isAuthenticated.value) {
     const user = JSON.parse(userState.value as string);
     const userData = await fetch(`https://api.potat.app/users/${user?.login}`)
-      .then(res => res.json());
+      .then(res => res.json())
+      .then(res => res.data);
 
     newState.value = userData[0]?.channel?.isChannel;
   }
