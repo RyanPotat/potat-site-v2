@@ -264,8 +264,10 @@ body {
   margin-bottom: 10px;
   display: flex;
   align-items: center;
-  align-items: flex-start;
-  flex-wrap: wrap;
+  flex-wrap: wrap; 
+  max-width: 800px; 
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .emote-item .text-content {
