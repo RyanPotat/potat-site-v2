@@ -51,8 +51,10 @@ const loaded = ref(false);
 const none = ref(false);
 const username = ref(route.params.username);
 
-const limit = ref(route.query.limit ?? 50);
 const history = ref<ComputedExtras[]>([]);
+const historyList = ref<HTMLElement | null>(null);
+const cursor = ref<string | null>(null);
+const imRetarded = new Map()
 const channel = ref<Channel>({
   pfp: '',
   bestName: '',
@@ -60,22 +62,29 @@ const channel = ref<Channel>({
   name: ''
 });
 
-const fetchEmoteHistory = async () => {
+const fetchEmoteHistory = async (pagination?: string | null) => {
   try {
-    const data: HistoryResponse = await fetch(
-      `https://api.potat.app/emotes/history/${username.value}${limit ? `?limit=${limit.value}` : ''}`
+    const ifCursor = pagination ? `&after=${pagination}` : '';
+    const response = await fetch(
+      `https://api.potat.app/emotes/history/${username.value}?limit=50${ifCursor}`
     )
       .then(res => res.json())
-      .then(res => res.data[0]);
 
+    const data = response?.data[0] as HistoryResponse
     if (!data) {
       none.value = true;
       return;
     }
 
+    console.log(response.pagination)
+
+    if (response.pagination?.hasNextPage) {
+      cursor.value = response?.pagination?.cursor;
+    }
+
     channel.value = data.channel;
 
-    history.value = data.history.map(update => {
+    const computedHistory = data.history.map(update => {
       let userPfp: string = update.user_stv_pfp;
       let user_url: string = '';
       let set_url: string = '';
@@ -90,10 +99,12 @@ const fetchEmoteHistory = async () => {
         method = `renamed ${update.emote_name} to `;
         word = 'in';
       }
+
       if (update.action === 'ADD') {
         method = `added `;
         word = 'to';
       }
+
       if (update.action === 'REMOVE') {
         method = `removed `;
         word = 'from';
@@ -103,10 +114,12 @@ const fetchEmoteHistory = async () => {
         user_url = `https://7tv.app/users/${update.user_stv_id}`;
         set_url = `https://7tv.app/emote-sets/${update.set_id}`;
       }
+
       if (update.provider === 'BTTV') {
         user_url = `https://betterttv.com/users/${update.user_bttv_id}`;
         set_url = `https://betterttv.com/users/${update.set_id}`;
       }
+
       if (update.provider === 'FFZ') {
         user_url = `https://www.frankerfacez.com/channel/${update.user_login}`;
         set_url = `https://www.frankerfacez.com/channel/${channel.value.login}`;
@@ -120,12 +133,27 @@ const fetchEmoteHistory = async () => {
         method,
         word
       }
-
     });
+
+    for (const update of computedHistory) {
+      const key = `${update.emote_id}:${update.ago}:${update.action}:${update.user_login}`
+      imRetarded.set(key, update);
+    }
+
+    history.value = [...imRetarded.values()];
   } catch (error) {
     console.error('Failed to fetch emote history:', error);
   } finally {
     loaded.value = true;
+  }
+};
+
+const handleScroll = () => {
+  if (!historyList.value) return;
+  const { scrollTop, scrollHeight, clientHeight } = historyList.value;
+
+  if (scrollTop + clientHeight >= scrollHeight - 10) {
+    fetchEmoteHistory(cursor.value);
   }
 };
 
@@ -143,10 +171,10 @@ onMounted(() => {
             <img :src="channel.pfp" :alt="`${channel.bestName} profile picture`" width="50" height="50" />
           </a>
         </div>
-        <h2>Last {{ limit }} emote actions by PotatBotat for {{ channel.bestName }}'s channel</h2>
+        <h2>Emote actions by PotatBotat for {{ channel.bestName }}'s channel</h2>
       </div>
     </div>
-    <ul class="emote-list">
+    <ul class="emote-list" ref="historyList" @scroll="handleScroll">
       <li v-for="update in history" :key="update.emote_id" class="emote-item">
         <div class="profile-picture">
           <a :href="`https://twitch.tv/${update.user_login}`" target="_blank">
@@ -236,10 +264,13 @@ body {
   margin-bottom: 10px;
   display: flex;
   align-items: center;
+  align-items: flex-start;
+  flex-wrap: wrap;
 }
 
 .emote-item .text-content {
   flex: 1;
+  word-wrap: break-word;
 }
 
 .emote-item .text-content img {
