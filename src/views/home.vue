@@ -27,9 +27,16 @@ import StatsBox from '../components/statsBox.vue';
     </div>
 </template>
 
+// 
+
+
+
 <style scoped>
+/** vegas https://cdn.7tv.app/misc/img_paints/tc23lasvegas.webp */
+/** rotterdam https://cdn.7tv.app/emote/667c887f387822a16b8f57ed/3x.webp */
+
 .paint span {
-  background-image: url('https://cdn.7tv.app/misc/img_paints/tc23lasvegas.webp');
+  background-image: url('https://cdn.7tv.app/emote/667c887f387822a16b8f57ed/3x.webp');
   filter: drop-shadow(#9d31a5 0px 0px 0.1px);
   -webkit-background-clip: text; 
   background-clip: text;
