@@ -42,7 +42,7 @@ import SwaggerUI from '../components/swaggerUI.vue'
     background: hwb(0 8% 92% / 0.722);
     color: #e5e4e4;
   }
-  
+
   :deep(#swagger-ui .scheme-container) {
     display: flex;
     background: none;
@@ -69,10 +69,6 @@ import SwaggerUI from '../components/swaggerUI.vue'
   /** change header color for readability */
   :deep(#swagger-ui .opblock .opblock-section-header) {
     background: hwb(0 8% 92% / 0.722);
-  }
-
-  :deep(#swagger-ui .opblock .opblock-body) {
-    display: none;
   }
 
   /** change text color so its readable lol */
