@@ -70,7 +70,7 @@ const part = async () => {
   newState.value = false;
 
   fetch('https://api.potat.app/part', {
-    method: 'POST',
+    method: 'DELETE',
     headers: {
       authorization: 'Bearer ' + localStorage.getItem('authorization'),
     },

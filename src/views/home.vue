@@ -27,10 +27,6 @@ import StatsBox from '../components/statsBox.vue';
     </div>
 </template>
 
-// 
-
-
-
 <style scoped>
 /** vegas https://cdn.7tv.app/misc/img_paints/tc23lasvegas.webp */
 /** rotterdam https://cdn.7tv.app/emote/667c887f387822a16b8f57ed/3x.webp */

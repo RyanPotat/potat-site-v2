@@ -34,9 +34,29 @@ import SwaggerUI from '../components/swaggerUI.vue'
   /* ignore the gross base swagger stuff lol */
   :deep(#swagger-ui .topbar),
   :deep(#swagger-ui .information-container),
-  :deep(#swagger-ui .schemes-server-container),
-  :deep(#swagger-ui .scheme-container) {
+  :deep(#swagger-ui .schemes-server-container) {
     display: none;
+  }
+
+  :deep(#swagger-ui .modal-ux) {
+    background: hwb(0 8% 92% / 0.722);
+    color: #e5e4e4;
+  }
+  
+  :deep(#swagger-ui .scheme-container) {
+    display: flex;
+    background: none;
+    margin: 0;
+    padding: 0;
+  }
+
+  /* move authorize button to the right */
+  :deep(#swagger-ui .scheme-container .schemes) {
+    justify-content: flex-end;
+  }
+
+  :deep(#swagger-ui #auth-bearer-value) {
+    color: #010101;
   }
 
   /** force max width when collapsed */
@@ -49,6 +69,10 @@ import SwaggerUI from '../components/swaggerUI.vue'
   /** change header color for readability */
   :deep(#swagger-ui .opblock .opblock-section-header) {
     background: hwb(0 8% 92% / 0.722);
+  }
+
+  :deep(#swagger-ui .opblock .opblock-body) {
+    display: none;
   }
 
   /** change text color so its readable lol */
