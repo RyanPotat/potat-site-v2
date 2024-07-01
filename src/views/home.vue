@@ -14,7 +14,7 @@ import StatsBox from '../components/statsBox.vue';
           <h1 class='paint'>
             <span>PotatBotat</span>
           </h1>
-          <h2>A twitch chatbot with no unique features</h2>
+          <h2>An emote, entertainment, and utility chatbot</h2>
         </a>
       </div>
       <div class="buttons-container">
