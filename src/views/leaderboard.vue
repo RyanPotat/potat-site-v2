@@ -30,11 +30,8 @@ const
       imRetarded.set(user.bestName, user);
     } 
     
-    leaderboarders.value = [... imRetarded.values()];
-
-    if (response.pagination?.hasNextPage) {
-      cursor.value = response?.pagination?.cursor;
-    }
+    leaderboarders.value = [...imRetarded.values()];
+    cursor.value = response?.pagination?.cursor;
   },
 
   handleScroll = () => {
