@@ -257,6 +257,7 @@ body {
   list-style: none;
   padding: 0;
   overflow-y: auto;
+  word-break: break-word;
 }
 
 .actor-icon {
