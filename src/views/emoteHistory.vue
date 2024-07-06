@@ -37,6 +37,7 @@ export interface EmoteHistory {
     user_pfp:        string;
     emoteURL:        string;
     emoteLink:       string;
+    actor:           'potatbotat' | 'external';
 }
 
 interface ComputedExtras extends EmoteHistory {
@@ -171,7 +172,7 @@ onMounted(() => {
             <img :src="channel.pfp" :alt="`${channel.bestName} profile picture`" width="50" height="50" />
           </a>
         </div>
-        <h2>Emote actions by PotatBotat for {{ channel.bestName }}'s channel</h2>
+        <h2>Emote actions in {{ channel.bestName }}'s channel</h2>
       </div>
     </div>
     <ul class="emote-list" ref="historyList" @scroll="handleScroll">
@@ -182,6 +183,8 @@ onMounted(() => {
           </a>
         </div>
         <div class="text-content">
+          <span v-if="update.actor === 'potatbotat'" class="actor-icon" :title="'Added by PotatBotat'">🤖</span>
+          <span v-else class="actor-icon" :title="'Added on website'">🌐</span>
           ({{ update.provider.replace('STV', '7TV') }})
           <a :href="update.user_url" target="_blank">
             <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong> 
@@ -254,6 +257,10 @@ body {
   list-style: none;
   padding: 0;
   overflow-y: auto;
+}
+
+.actor-icon {
+  cursor: pointer;
 }
 
 .emote-item {
