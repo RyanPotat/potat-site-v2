@@ -248,8 +248,9 @@ onMounted(() => {
 
 #container {
   max-height: 93vh;
-  width: 95%;
   margin-top: 7%;
+  margin-left: 10px;
+  margin-right: 10px;
   display: flex;
   flex-direction: column;
   align-items: center;
