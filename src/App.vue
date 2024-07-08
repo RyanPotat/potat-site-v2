@@ -9,14 +9,19 @@ StatsSocket.new('wss://stats.potat.app')
   <div id="app">
     <div class="top-bar">
       <strong><router-link to="/" class="nav-link">Home</router-link></strong>
-      <strong><router-link to="/leaderboard" class="nav-link">Leaderboard</router-link></strong>
       <!-- <strong>
         <router-link to="/channel/:username" class="nav-link">Channel</router-link>
       </strong> -->
       <strong><router-link to="/help" class="nav-link">Commands</router-link></strong>
-      <strong><a href="https://haste.potat.app" class="nav-link external-link">Haste</a></strong>
-      <strong><a href="/redirects" class="nav-link external-link">URL Shortener</a></strong>
-      <string><a href="/api/docs" class="nav-link">API Docs</a></string>
+      <strong><router-link to="/leaderboard" class="nav-link">Leaderboard</router-link></strong>
+      <div class="dropdown">
+        <strong class="nav-link">More</strong>
+        <div class="dropdown-content">
+          <a href="https://haste.potat.app" class="nav-link external-link">Haste</a>
+          <a href="/redirects" class="nav-link external-link">URL Shortener</a>
+          <a href="/api/docs" class="nav-link">API Docs</a>
+        </div>
+      </div>
       <div class="login-button-container">
         <LoginButton/>
       </div>
@@ -30,7 +35,6 @@ StatsSocket.new('wss://stats.potat.app')
 </template>
 
 <style scoped>
-
 .top-bar {
   position: absolute;
   top: 0;
@@ -51,6 +55,7 @@ StatsSocket.new('wss://stats.potat.app')
   outline-color: #f4f4f4;
   border-radius: 15px;
   transition: background-color 0.3s ease;
+  color: inherit;
 }
 
 .nav-link.router-link-active {
@@ -85,5 +90,30 @@ StatsSocket.new('wss://stats.potat.app')
   margin-right: 35px;
   margin-top: -12px;
   margin-bottom: -12px
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: rgba(31, 31, 31, 0.9);
+  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  z-index: 1;
+  margin-top: 12px;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown-content .nav-link {
+  display: block;
+  margin-right: 0;
+  padding: 12px;
+  white-space: nowrap;
 }
 </style>
