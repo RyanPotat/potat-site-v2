@@ -38,6 +38,7 @@ export interface EmoteHistory {
     emoteURL:        string;
     emoteLink:       string;
     actor:           'potatbotat' | 'external';
+    known_bot:       boolean;
 }
 
 interface ComputedExtras extends EmoteHistory {
@@ -183,8 +184,8 @@ onMounted(() => {
           </a>
         </div>
         <div class="text-content">
-          <span v-if="update.actor === 'potatbotat'" class="actor-icon" :title="'Added by PotatBotat'">🤖</span>
-          <span v-else class="actor-icon" :title="'Added on website'">🌐</span>
+          <span v-if="update.known_bot" class="actor-icon" :title="'Performed by emote management bot'">⚙️</span>
+          <span v-else-if="update.actor !== 'potatbotat'" class="actor-icon" :title="'Performed on website'">🌐</span>
           ({{ update.provider.replace('STV', '7TV') }})
           <a :href="update.user_url" target="_blank">
             <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong> 
