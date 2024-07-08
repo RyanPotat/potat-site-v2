@@ -8,6 +8,29 @@ export interface HistoryResponse {
     history: EmoteHistory[];
 }
 
+const providers = {
+  '7TV': {
+    logo: 'https://cdn.7tv.app/emote/63915e53209bcb04cf0aa45d/2x.avif',
+    home: 'https://7tv.app/',
+    name: '7TV'
+  },
+  STV: {
+    logo: 'https://cdn.7tv.app/emote/63915e53209bcb04cf0aa45d/2x.avif',
+    home: 'https://7tv.app/',
+    name: '7TV'
+  },
+  FFZ: {
+    logo: 'https://www.frankerfacez.com/static/images/cover/zreknarf.png',
+    home: 'https://www.frankerfacez.com/',
+    name: 'FrankerFaceZ'
+  },
+  BTTV: {
+    logo: 'https://lh3.googleusercontent.com/18QCNXbFYR0TjGij27lc4oI8VB40Pv9EZ2XPSG0TdAFVs0gUO86pdGS4JQoq8UxH7Dqg9j4dvJE6Pg0jtqjkb3wb=s120',
+    home: 'https://betterttv.com/',
+    name: 'BetterTTV'
+  },
+}
+
 export interface Channel {
     pfp:      string;
     bestName: string;
@@ -17,13 +40,12 @@ export interface Channel {
 
 export interface EmoteHistory {
     set_id:          string;
-    platform:        string;
-    action:          string;
+    action:          "ADD" | "REMOVE" | "ALIAS";
     emote_id:        string;
     emote_name:      string;
     emote_alias:     null;
     emote_new_alias: null;
-    provider:        string;
+    provider:        "STV" | "FFZ" | "BTTV" | "7TV";
     user_login:      string;
     user_name:       string;
     user_ffz_id:     number;
@@ -71,14 +93,18 @@ const fetchEmoteHistory = async (pagination?: string | null) => {
       `https://api.potat.app/emotes/history/${username.value}?limit=50${ifCursor}`
     )
       .then(res => res.json())
+      .catch(e => {
+        console.error(e);
+        if (!history.value.length) {
+          none.value = true;
+        }
+      })
 
     const data = response?.data[0] as HistoryResponse
-    if (!data) {
+    if (!data && !history.value.length) {
       none.value = true;
       return;
     }
-
-    console.log(response.pagination)
 
     if (response.pagination?.hasNextPage) {
       cursor.value = response?.pagination?.cursor;
@@ -168,9 +194,9 @@ onMounted(() => {
   <div id="container" v-if="loaded && !none">
     <div class="profile-container">
       <div class="title-content">
-        <div class="profile-picture">
+        <div class="profile-picture" style="margin-right: 10px;">
           <a :href="`https://twitch.tv/${channel.login}`" target="_blank">
-            <img :src="channel.pfp" :alt="`${channel.bestName} profile picture`" width="50" height="50" />
+            <img :src="channel.pfp" :alt="`${channel.bestName} profile picture`" style=" width: 60px; height: 60px;"/>
           </a>
         </div>
         <h2>Emote actions in {{ channel.bestName }}'s channel</h2>
@@ -178,30 +204,40 @@ onMounted(() => {
     </div>
     <ul class="emote-list" ref="historyList" @scroll="handleScroll">
       <li v-for="update in history" :key="update.emote_id" class="emote-item">
-        <div class="profile-picture">
-          <a :href="`https://twitch.tv/${update.user_login}`" target="_blank">
-            <img :src="update.user_stv_pfp || update.user_pfp" :alt="`${update.user_name} profile picture`" />
+        <div class="logo-container">
+          <a :href="providers[update.provider].home" target="_blank">
+            <img :src="providers[update.provider].logo" :title="providers[update.provider].name" class="logo-images"/>
           </a>
         </div>
-        <div class="text-content">
-          <span v-if="update.known_bot" class="actor-icon" :title="'Performed by emote management bot'">⚙️</span>
-          <span v-else-if="update.actor !== 'potatbotat'" class="actor-icon" :title="'Performed on website'">🌐</span>
-          ({{ update.provider.replace('STV', '7TV') }})
-          <a :href="update.user_url" target="_blank">
-            <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong> 
-          </a> 
-          {{ update.method }}
-          <span>
-            <a :href="update.emoteLink" target="_blank">
-              <img :src="update.emoteURL" />
+        <div class="content-container">
+          <div class="profile-picture">
+            <a :href="`https://twitch.tv/${update.user_login}`" target="_blank">
+              <img :src="update.user_stv_pfp || update.user_pfp" :alt="`${update.user_name} profile picture`"/>
             </a>
-            {{ update.emote_alias || update.emote_name }}
-          </span>
-          {{ update.word }} set 
-          <a :href="update.set_url" target="_blank">
-            <em>"{{ update.set_name }}"</em>
-          </a>
-          {{ update.ago }}
+          </div>
+          <div class="text-content">
+            <span v-if="update.known_bot" class="actor-icon" :title="'Performed by emote management bot'">⚙️</span>
+            <span v-else-if="update.actor !== 'potatbotat'" class="actor-icon" :title="'Performed on website'">🌐</span>
+            <a :href="update.user_url" target="_blank">
+              <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong> 
+            </a> 
+            {{ update.method }}
+            <span>
+              <a :href="update.emoteLink" target="_blank">
+                <img :src="update.emoteURL" />
+              </a>
+              {{ update.emote_alias || update.emote_name }}
+            </span>
+            {{ update.word }} set 
+            <a :href="update.set_url" target="_blank">
+              <em>"{{ update.set_name }}"</em>
+            </a>
+          </div>
+        </div>
+        <div class="ago-container">
+          <div class="text-content">
+            <span>{{ update.ago }}</span>
+          </div>
         </div>
       </li>
     </ul>
@@ -209,17 +245,11 @@ onMounted(() => {
 </template>
 
 <style scoped>
-body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  line-height: 1.5;
-  background-color: #3d3d3d;
-}
 
 #container {
   max-height: 93vh;
   width: 95%;
-  margin-top: 5%;
+  margin-top: 7%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -228,11 +258,62 @@ body {
 }
 
 .profile-container {
-  padding: 1rem;
+  padding: 0.5rem;
   border-radius: 0.5rem;
   background-color: rgba(31, 31, 31, 0.94);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
+
+.logo-container {
+  display: flex;
+  padding: 3px;
+  border-radius: 0.5rem;
+  background-color: rgba(31, 31, 31, 0.94);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  margin-right: 10px;
+  align-items: center;
+}
+
+.content-container {
+  display: flex;
+  padding: 3px;
+  border-radius: 0.5rem;
+  background-color: rgba(31, 31, 31, 0.94);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  align-items: center;
+  max-width: 700px;
+  width: 100%;
+}
+
+.ago-container {
+  display: flex;
+  padding: 3px;
+  border-radius: 0.5rem;
+  background-color: rgba(31, 31, 31, 0.94);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  margin-bottom: 10px;
+  margin-left: 10px;
+  align-items: center;
+  text-align: center;
+  max-width: 135px;
+  width: 100%;
+}
+
+.emote-list {
+  list-style: none;
+  padding: 0;
+  overflow-y: auto;
+  word-break: break-word;
+}
+
+.emote-item {
+  display: flex;
+  box-sizing: border-box;
+  flex-wrap: nowrap;
+}
+
 
 .profile-picture img {
   border-radius: 50%;
@@ -254,30 +335,17 @@ body {
   color: #e5e4e4;
 }
 
-.emote-list {
-  list-style: none;
-  padding: 0;
-  overflow-y: auto;
-  word-break: break-word;
-}
-
 .actor-icon {
   cursor: pointer;
 }
 
-.emote-item {
-  padding: 3px;
-  border-radius: 0.5rem;
-  background-color: rgba(31, 31, 31, 0.94);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  margin-bottom: 10px;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap; 
-  max-width: 800px; 
-  width: 100%;
-  box-sizing: border-box;
+.logo-images {
+  width: 40px;
+  height: 40px;
+  vertical-align: middle;
 }
+
+
 
 .emote-item .text-content {
   flex: 1;
