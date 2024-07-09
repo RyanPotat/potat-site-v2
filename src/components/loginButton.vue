@@ -3,6 +3,8 @@ import { ref, onMounted, reactive, computed } from 'vue';
 import { default as eventBus } from '../assets/eventBus';
 import { applyPaint, Paint } from '../assets/applyPaint';
 import { brightenColor } from '../assets/utilities';
+import { fetchBackend } from '../assets/request';
+import { GenericResponse } from '../types/request';
 
 interface AuthToken {
   value: string | null;
@@ -42,23 +44,16 @@ const signOut = async (): Promise<void> => {
 const assignUser = async (): Promise<void> => {
   if (!isAuthenticated.value) return;
 
-  const userData: TwitchUser | void = await fetch('https://api.potat.app/twitch', {
-    method: 'GET',
-    headers: {
-      authorization: 'Bearer ' + localStorage.getItem('authorization'),
-    },
-  })
-    .then((res) => res.json())
-    .then((json) => {
-      const data = json.data[0];
-      if ([401, 418].includes(data?.status)) {
-        console.log('Signing out due to error:', data?.errors?.[0]?.message);
-        signOut();
-        return eventBus.$emit('signOut');
-      }
-      twitchUser.value = data
-      return data;
-    });
+  const data = await fetchBackend<GenericResponse<TwitchUser>>('twitch', { auth: true })
+
+  if ([401, 418].includes(data?.statusCode)) {
+    console.log('Signing out due to error:', data?.errors?.[0]?.message);
+    signOut();
+    return eventBus.$emit('signOut');
+  }
+
+  const userData = data.data[0];
+  twitchUser.value = userData
 
   if (userData?.chatColor && !userData?.userPaint) {
     const adjustedColor = brightenColor(userData.chatColor);

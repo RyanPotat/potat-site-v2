@@ -1,25 +1,18 @@
 <script setup lang="ts">
   import { ref } from 'vue';
+import { fetchBackend } from '../assets/request';
+import { GenericResponse } from '../types/request';
 
   const inputUrl = ref('');
   const response = ref('');
 
-  interface PotatResponse {
-    data: any[]
-    duration: number;
-    status: number;
-    errors: {
-      message: string;
-    }[]
-  }
-
   const fetchData = async () => {
     try {
-      const res: PotatResponse = await fetch('https://api.potat.app/redirect', {
+      const res = await fetchBackend<GenericResponse<any>>('redirect', {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: inputUrl.value.trim() }),
         method: 'POST'
-      }).then(res => res.json());
+      })
 
       if (res.errors?.length) {
         response.value = res.errors[0].message;

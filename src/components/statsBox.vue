@@ -2,6 +2,8 @@
 import { ref, onMounted, Ref } from 'vue';
 import eventBus from '../assets/eventBus';
 import { delay } from '../assets/utilities';
+import { fetchBackend } from '../assets/request';
+import { GenericResponse } from '../types/request';
 
 interface UpdateEvent {
   data: any;
@@ -10,10 +12,7 @@ interface UpdateEvent {
 
 const data: Ref = ref({});
 onMounted(async () => {
-    data.value = await fetch('https://api.potat.app')
-      .then((res) => res.json())
-      .then(res => res?.data?.[0])
-      .catch(console.error)
+    data.value = await fetchBackend<GenericResponse<any>>('').then(res => res?.data?.[0])
 
     eventBus.$on('update', async (stats) => {
       const { data: update, topic } = stats as UpdateEvent;

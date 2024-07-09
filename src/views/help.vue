@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { humanizeDuration } from '../assets/utilities';
+import { fetchBackend } from '../assets/request';
 
 export interface Command {
   name: string;
@@ -148,13 +149,9 @@ const
     });
   });
 
-onMounted(() => {
-  fetch('https://api.potat.app/help')
-    .then((res) => res.json())
-    .then((data) => (commands.value = data))
-    .catch(console.error)
-});
-
+  onMounted(() => {
+    fetchBackend<Command[]>('help').then((data) => commands.value = Object.values(data))
+  });
 </script>
 
 <template>

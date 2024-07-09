@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue';
 import { brightenColor } from '../assets/utilities';
+import { fetchBackend } from '../assets/request';
 
 interface Leaderboard {
   bestName: string;
@@ -21,10 +22,12 @@ const
   imRetarded = new Map(),
 
   fetchLeaderboard = async (last?: string | null, loserBoard = false) => {
-    const order = loserBoard ? '?order=asc' : '?order=desc'
-    const after = last ? `&after=${last}` : '';
-    const response = await fetch(`https://api.potat.app/leaderboard${order}${after}`)
-      .then((res) => res.json());
+    const response = await fetchBackend(`leaderboard`, {
+      params: {
+        order: loserBoard ? 'asc' : 'desc',
+        after: last
+      }
+    })
 
     for (const user of response.data) {
       imRetarded.set(user.bestName, user);

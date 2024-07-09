@@ -2,11 +2,15 @@
 import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { brightenColor } from '../assets/utilities';
+import { fetchBackend } from '../assets/request';
+import { GenericResponse } from '../types/request';
 
 export interface HistoryResponse {
     channel: Channel;
     history: EmoteHistory[];
 }
+
+type History = GenericResponse<HistoryResponse>;
 
 const providers = {
   '7TV': {
@@ -88,17 +92,9 @@ const channel = ref<Channel>({
 
 const fetchEmoteHistory = async (pagination?: string | null) => {
   try {
-    const ifCursor = pagination ? `&after=${pagination}` : '';
-    const response = await fetch(
-      `https://api.potat.app/emotes/history/${username.value}?limit=50${ifCursor}`
-    )
-      .then(res => res.json())
-      .catch(e => {
-        console.error(e);
-        if (!history.value.length) {
-          none.value = true;
-        }
-      })
+    const response = await fetchBackend<History>(`emotes/history/${username.value}`, {
+      params: { limit: 50, after: pagination }
+    });
 
     const data = response?.data[0] as HistoryResponse
     if (!data && !history.value.length) {
@@ -192,7 +188,7 @@ onMounted(() => {
 
 <template>
   <div id="container" v-if="loaded && !none">
-    <div class="profile-container">
+    <div class="title-bar">
       <div class="title-content">
         <div class="profile-picture" style="margin-right: 10px;">
           <a :href="`https://twitch.tv/${channel.login}`" target="_blank">
@@ -258,7 +254,7 @@ onMounted(() => {
   color: #e5e4e4;
 }
 
-.profile-container {
+.title-bar {
   padding: 0.5rem;
   border-radius: 0.5rem;
   background-color: rgba(31, 31, 31, 0.94);

@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted, computed, Ref } from 'vue';
 import { humanizeDuration, brightenColor } from '../assets/utilities';
+import { GenericResponse } from '../types/request';
+import { fetchBackend } from '../assets/request';
 
 export interface Partner {
   username: string;
@@ -47,9 +49,7 @@ const
 
 onMounted(async () => {
   // Fetch partners
-  partners.value = await fetch('https://api.potat.app/partners')
-    .then((res) => res.json())
-    .then(data => data.data as Partner[]);
+  partners.value = await fetchBackend<GenericResponse<Partner>>('partners').then(res => res.data);
     
   // Preload images
   partners.value.forEach(partner => {

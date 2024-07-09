@@ -2,6 +2,8 @@
 import { ref, reactive, computed, onMounted } from 'vue';
 import { default as eventBus } from '../assets/eventBus';
 import { delay } from '../assets/utilities';
+import { fetchBackend } from '../assets/request';
+import { GenericResponse } from '../types/request';
 
 interface UserState {
   value: string | null;
@@ -44,20 +46,12 @@ const join = async () => {
   isOperationInProgress.value = true;
   newState.value = true;
 
-  fetch('https://api.potat.app/join', {
-    method: 'POST',
-    headers: {
-      authorization: 'Bearer ' + localStorage.getItem('authorization'),
-    },
-  }).then(res => res.json())
-    .then(data => {
-      if ([401, 418].includes(data?.status)) {
-        console.log('Signing out due to error:', data?.errors?.[0]?.message);
-        signOut();
-        return eventBus.$emit('signOut');
-      }
-      return data;
-    });
+  const result = await fetchBackend<GenericResponse<any>>('join', { method: 'POST', auth: true })
+  if ([401, 418].includes(result?.statusCode)) {
+    console.log('Signing out due to error:', result?.errors?.[0]?.message);
+    signOut();
+    return eventBus.$emit('signOut');
+  }
 
   await delay(3000);
   isOperationInProgress.value = false;
@@ -69,20 +63,12 @@ const part = async () => {
   isOperationInProgress.value = true;
   newState.value = false;
 
-  fetch('https://api.potat.app/part', {
-    method: 'DELETE',
-    headers: {
-      authorization: 'Bearer ' + localStorage.getItem('authorization'),
-    },
-  }).then(res => res.json())
-    .then(data => {
-      if ([401, 418].includes(data?.errors?.statusCode)) {
-        console.log('Signing out due to error:', data?.errors?.message);
-        signOut();
-        return eventBus.$emit('signOut');
-      }
-      return data;
-    });
+  const result = await fetchBackend<GenericResponse<any>>('part', { method: 'DELETE', auth: true })
+  if ([401, 418].includes(result?.statusCode)) {
+    console.log('Signing out due to error:', result?.errors?.[0]?.message);
+    signOut();
+    return eventBus.$emit('signOut');
+  }
 
   await delay(3000);
   isOperationInProgress.value = false;
@@ -111,11 +97,8 @@ onMounted(async () => {
 
   if (isAuthenticated.value) {
     const user = JSON.parse(userState.value as string);
-    const userData = await fetch(`https://api.potat.app/users/${user?.login}`)
-      .then(res => res.json())
-      .then(res => res.data);
-
-    newState.value = userData[0]?.channel?.isChannel;
+    const userData = await fetchBackend<GenericResponse<any>>(`users/${user?.login}`)
+    newState.value = userData.data?.[0]?.channel?.isChannel;
   }
 });
 
