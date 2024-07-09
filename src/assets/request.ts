@@ -18,6 +18,8 @@ export async function makeRequest<T = any>(
     };
   }
 
+  console.log(url);
+  
   const response = await fetch(url, options);
   return parseResponse<T>(response);
 }

@@ -71,6 +71,8 @@ interface ComputedExtras extends EmoteHistory {
   word: string;
 }
 
+let observer: IntersectionObserver;
+
 const route = useRoute();
 const loaded = ref(false);
 const none = ref(false);
@@ -178,8 +180,32 @@ const handleScroll = () => {
   }
 };
 
+const observeImages = () => {
+  const options = {
+    root: historyList.value,
+    rootMargin: '0px',
+    threshold: 0.1
+  };
+
+  observer = new IntersectionObserver((entries, observer) => {
+    for (const entry of entries) {
+      if (entry.isIntersecting) {
+        const img = entry.target as HTMLImageElement;
+        img.src = img.dataset.src as string;
+        observer.unobserve(img);
+      }
+    }
+  }, options);
+
+  const images = document.querySelectorAll('img[data-src]');
+  images.forEach(img => {
+    observer.observe(img);
+  });
+}
+
 onMounted(() => {
   fetchEmoteHistory();
+  observeImages();
 });
 </script>
 
@@ -219,7 +245,7 @@ onMounted(() => {
               <a :href="update.emoteLink" target="_blank">
                 <img :src="update.emoteURL" />
               </a>
-              {{ update.emote_alias || update.emote_name }}
+              {{ update.emote_new_alias || update.emote_alias || update.emote_name }}
             </span>
             {{ update.word }} set 
             <a :href="update.set_url" target="_blank">
