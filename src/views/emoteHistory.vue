@@ -3,14 +3,11 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
-import { GenericResponse } from '../types/request';
 
 export interface HistoryResponse {
     channel: Channel;
     history: EmoteHistory[];
 }
-
-type History = GenericResponse<HistoryResponse>;
 
 const providers = {
   '7TV': {
@@ -92,11 +89,11 @@ const channel = ref<Channel>({
 
 const fetchEmoteHistory = async (pagination?: string | null) => {
   try {
-    const response = await fetchBackend<History>(`emotes/history/${username.value}`, {
+    const response = await fetchBackend<HistoryResponse>(`emotes/history/${username.value}`, {
       params: { limit: 50, after: pagination }
     });
 
-    const data = response?.data[0] as HistoryResponse
+    const data = response?.data[0];
     if (!data && !history.value.length) {
       none.value = true;
       return;

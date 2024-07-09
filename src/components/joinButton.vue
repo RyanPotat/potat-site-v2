@@ -3,7 +3,6 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import { default as eventBus } from '../assets/eventBus';
 import { delay } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
-import { GenericResponse } from '../types/request';
 
 interface UserState {
   value: string | null;
@@ -46,7 +45,7 @@ const join = async () => {
   isOperationInProgress.value = true;
   newState.value = true;
 
-  const result = await fetchBackend<GenericResponse<any>>('join', { method: 'POST', auth: true })
+  const result = await fetchBackend('join', { method: 'POST', auth: true })
   if ([401, 418].includes(result?.statusCode)) {
     console.log('Signing out due to error:', result?.errors?.[0]?.message);
     signOut();
@@ -63,7 +62,7 @@ const part = async () => {
   isOperationInProgress.value = true;
   newState.value = false;
 
-  const result = await fetchBackend<GenericResponse<any>>('part', { method: 'DELETE', auth: true })
+  const result = await fetchBackend('part', { method: 'DELETE', auth: true })
   if ([401, 418].includes(result?.statusCode)) {
     console.log('Signing out due to error:', result?.errors?.[0]?.message);
     signOut();
@@ -97,7 +96,7 @@ onMounted(async () => {
 
   if (isAuthenticated.value) {
     const user = JSON.parse(userState.value as string);
-    const userData = await fetchBackend<GenericResponse<any>>(`users/${user?.login}`)
+    const userData = await fetchBackend(`users/${user?.login}`)
     newState.value = userData.data?.[0]?.channel?.isChannel;
   }
 });

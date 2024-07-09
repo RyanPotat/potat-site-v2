@@ -1,14 +1,13 @@
 <script setup lang="ts">
   import { ref } from 'vue';
 import { fetchBackend } from '../assets/request';
-import { GenericResponse } from '../types/request';
 
   const inputUrl = ref('');
   const response = ref('');
 
   const fetchData = async () => {
     try {
-      const res = await fetchBackend<GenericResponse<any>>('redirect', {
+      const res = await fetchBackend('redirect', {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: inputUrl.value.trim() }),
         method: 'POST'

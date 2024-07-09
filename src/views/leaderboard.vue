@@ -16,13 +16,13 @@ interface Leaderboard {
 
 const 
   leaderboarders = ref<Leaderboard[]>([]),
-  cursor = ref<string | null>(null),
+  cursor = ref<string | undefined>(undefined),
   leaderboardList = ref<HTMLElement | null>(null),
   loserOrLeader = ref<boolean>(false),
   imRetarded = new Map(),
 
-  fetchLeaderboard = async (last?: string | null, loserBoard = false) => {
-    const response = await fetchBackend(`leaderboard`, {
+  fetchLeaderboard = async (last?: string | undefined, loserBoard = false) => {
+    const response = await fetchBackend<Leaderboard>(`leaderboard`, {
       params: {
         order: loserBoard ? 'asc' : 'desc',
         after: last
@@ -47,7 +47,7 @@ const
   };
 
 onMounted(() => {
-  fetchLeaderboard(null, loserOrLeader.value);
+  fetchLeaderboard(undefined, loserOrLeader.value);
 });
 </script>
 

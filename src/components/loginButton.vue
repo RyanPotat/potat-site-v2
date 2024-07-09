@@ -4,7 +4,6 @@ import { default as eventBus } from '../assets/eventBus';
 import { applyPaint, Paint } from '../assets/applyPaint';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
-import { GenericResponse } from '../types/request';
 
 interface AuthToken {
   value: string | null;
@@ -44,7 +43,7 @@ const signOut = async (): Promise<void> => {
 const assignUser = async (): Promise<void> => {
   if (!isAuthenticated.value) return;
 
-  const data = await fetchBackend<GenericResponse<TwitchUser>>('twitch', { auth: true })
+  const data = await fetchBackend<TwitchUser>('twitch', { auth: true })
 
   if ([401, 418].includes(data?.statusCode)) {
     console.log('Signing out due to error:', data?.errors?.[0]?.message);

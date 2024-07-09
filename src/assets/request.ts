@@ -1,4 +1,4 @@
-import { ExtendedOptions, ParsedRes } from "../types/request";
+import { ExtendedOptions, GenericResponse, ParsedRes } from "../types/request";
 
 export async function makeRequest<T = any>(
   url: string,
@@ -33,6 +33,6 @@ async function parseResponse<T>(res: Response): Promise<ParsedRes<T>> {
 export async function fetchBackend<T = any>(
   url: string, 
   options?: ExtendedOptions
-): Promise<ParsedRes<T>> {
-  return makeRequest<T>(`https://api.potat.app/${url}`, options);
+): Promise<ParsedRes<GenericResponse<T>>> {
+  return makeRequest<GenericResponse<T>>(`https://api.potat.app/${url}`, options);
 }
