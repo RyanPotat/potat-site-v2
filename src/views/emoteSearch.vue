@@ -4,17 +4,40 @@ import { fetchBackend } from '../assets/request';
 
 
 interface Emote {
-    id: string;
-    name: string;
-    format: string;
-    url: string;
+  id: string;
+  name: string;
+  format: string;
+  url: string;
 }
 
+interface EmoteInfo {
+  channelID: string;
+  channelLogin: string;
+  channelName: string;
+  emoteID: string;
+  emoteCode: string;
+  emotePrefix: string;
+  emoteSuffix: string;
+  emoteURL: string;
+  emoteSetID: string;
+  emoteAssetType: string;
+  emoteState: string;
+  emoteType: string;
+  emoteTier: number;
+  bitCost: number;
+  artist?: {
+    id: string;
+    login: string;
+    displayName: string;
+  }
+}
+
+
 interface SearchOptions {
-    approach: 'matches' | 'starts' | 'includes' | 'ends';
-    format: 'static' | 'animated' | 'any';
-    case: boolean;
-    cursor: string | null;
+  approach: 'matches' | 'starts' | 'includes' | 'ends';
+  format: 'static' | 'animated' | 'any';
+  case: boolean;
+  cursor: string | null;
 }
 
 let observer: IntersectionObserver;
@@ -27,6 +50,7 @@ const cursor = ref<string | null>(null);
 const searchQuery = ref<string>('');
 const emotes = ref<Emote[]>([]);
 const isRequesting = ref(false);
+const selectedEmote = ref<EmoteInfo | null>(null);
 
 const searchEmotes = async (query: string, options: SearchOptions): Promise<Emote[]> => {
   if (isRequesting.value) return [];
@@ -45,14 +69,10 @@ const searchEmotes = async (query: string, options: SearchOptions): Promise<Emot
     isRequesting.value = false;
   });
 
-  console.log(response)
-
   if (response.errors?.length) {
     console.error(response.errors);
     return [];
   }
-
-  console.log(response.pagination);
 
   if (response.pagination?.hasNextPage) {
     cursor.value = response.pagination.cursor;
@@ -91,7 +111,24 @@ const handleScroll = () => {
   }
 };
 
+const bestName = (name: string, display: string): string => {
+  return name === display.toLowerCase() ? display : name;
+}
 
+const loadEmoteData = async (name: string) => {
+  const emote = await fetchBackend<EmoteInfo>(`twitch/emotes`, {
+    params: { name }
+  }).then(res => res.data?.[0])
+
+  console.log(emote);
+  if (!emote) return;
+
+  selectedEmote.value = emote;
+}
+
+const closePopup = () => {
+  selectedEmote.value = null;
+}
 
 const observeImages = () => {
   const options = {
@@ -114,6 +151,12 @@ const observeImages = () => {
   images.forEach(img => {
     observer.observe(img);
   });
+}
+
+const openChannel = () => {
+  if (selectedEmote.value) {
+    window.open(`https://twitch.tv/${selectedEmote.value.channelLogin}`, '_blank');
+  }
 }
 
 watch(emotes, async () => {
@@ -151,10 +194,31 @@ watch(emotes, async () => {
       <button @click="onNewQuery" >Search</button>
     </div>
     <div class="emote-list" ref="emoteList" @scroll="handleScroll">
-      <div v-for="emote in emotes" :key="emote.id" class="emote">
-        <img :src="emote.url" :alt="emote.name" />
-        <span>{{ emote.name }}</span>
+      <div 
+        v-for="emote in emotes" 
+        :key="emote.id" 
+        class="emote" 
+        @click="loadEmoteData(emote.name)"
+      >
+        <img :src="emote.url"/>
+        <span class="emote-text">{{ emote.name }}</span>
       </div>
+    </div>
+    <div v-if="selectedEmote" class="popup" @click="openChannel">
+      <div class="popup-content">
+        <img :src="selectedEmote.emoteURL" :alt="selectedEmote.emoteCode"/>
+        <h3>{{ selectedEmote.emoteCode }}</h3>
+        <p>Owned By: {{ bestName(selectedEmote.channelName, selectedEmote.channelLogin) }}</p>
+        <p>Owner ID: {{ selectedEmote.channelID }}</p>
+        <p>ID: {{ selectedEmote.emoteID }}</p>
+        <p>Format: {{ selectedEmote.emoteAssetType }}</p>
+        <p>State: {{ selectedEmote.emoteState }}</p>
+        <p>Type: {{ selectedEmote.emoteType }}</p>
+        <p v-if="selectedEmote.emoteTier">Tier: {{ selectedEmote.emoteTier }}</p>
+        <p v-if="selectedEmote.bitCost">Bit Cost: {{ selectedEmote.bitCost }}</p>
+        <p v-if="selectedEmote.artist">Artist: {{ bestName(selectedEmote.artist.displayName, selectedEmote.artist.login) }}</p>
+      </div>
+      <button @click="closePopup" class="close-button">Close</button>
     </div>
   </div>
 </template>
@@ -226,8 +290,47 @@ watch(emotes, async () => {
   font-size: 12px;
 }
 
+.emote-text {
+  width: 100%;
+}
+
 .emote img {
   max-width: 80px;
   max-height: 80px;
+  cursor: pointer;
 }
+
+.popup {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: rgba(0, 0, 0, 0.903);
+  color: white;
+  padding: 20px;
+  border-radius: 10px;
+  z-index: 999;
+  cursor: pointer;
+}
+
+.popup-content {
+  text-align: center;
+}
+
+.close-button {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  padding: 5px 10px;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.close-button:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
 </style>

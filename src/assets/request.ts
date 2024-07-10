@@ -18,8 +18,6 @@ export async function makeRequest<T = any>(
     };
   }
 
-  console.log(url);
-  
   const response = await fetch(url, options);
   return parseResponse<T>(response);
 }
@@ -36,5 +34,11 @@ export async function fetchBackend<T = any>(
   url: string, 
   options?: ExtendedOptions
 ): Promise<ParsedRes<GenericResponse<T>>> {
-  return makeRequest<GenericResponse<T>>(`https://api.potat.app/${url}`, options);
+  const result = await makeRequest<GenericResponse<T>>(`https://api.potat.app/${url}`, options);
+
+  if (result.errors?.length) {
+    console.error(result.errors);
+  }
+
+  return result;
 }
