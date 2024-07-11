@@ -1,6 +1,6 @@
 /* eslint-disable no-unused-vars */
 
-type Callback<T = any> = (...args: T[]) => void;
+import { Callback } from "../types/misc";
 
 class CustomEventBus {
   private events: Record<string, Callback[]> = {};

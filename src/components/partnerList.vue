@@ -2,49 +2,39 @@
 import { ref, onMounted, computed, Ref } from 'vue';
 import { humanizeDuration, brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
-
-export interface Partner {
-  username: string;
-  display: string;
-  stv_pfp: string;
-  twitch_pfp: string;
-  page_url: string;
-  followers: number;
-  joined_at: string;
-  command_count: number;
-  user_color: string;
-}
-
-const partners: Ref<Partner[] | []> = ref([])
+import { Partner } from '../types/misc';
 
 let interval = ref<NodeJS.Timeout | null>(null);
+
 const
-  index = ref(0),
-  isTransitioning = ref(false),
-  current = computed(() => partners.value[Math.abs(index.value) % partners.value.length]),
 
-  cyclePartners = (isClick?: boolean) => {
-    if (isTransitioning.value) return;
+index = ref(0),
+partners: Ref<Partner[] | []> = ref([]),
+isTransitioning = ref(false),
+current = computed(() => partners.value[Math.abs(index.value) % partners.value.length]),
 
-    clearInterval(interval.value!);
-    if (isClick) index.value++;
+cyclePartners = (isClick?: boolean) => {
+  if (isTransitioning.value) return;
 
-    isTransitioning.value = true;
+  clearInterval(interval.value!);
+  if (isClick) index.value++;
 
-    interval.value! = setInterval(() => {
-      index.value++;
-    }, 5000);
+  isTransitioning.value = true;
 
-    setTimeout(() => {
-      isTransitioning.value = false;
-    }, 1000);
-  },
+  interval.value! = setInterval(() => {
+    index.value++;
+  }, 5000);
 
-  getDate = (date: string) => {
-    const joined = new Date(date);
-    const now = new Date();
-    return humanizeDuration(now.getTime() - joined.getTime(), 2);
-  }
+  setTimeout(() => {
+    isTransitioning.value = false;
+  }, 1000);
+},
+
+getDate = (date: string) => {
+  const joined = new Date(date);
+  const now = new Date();
+  return humanizeDuration(now.getTime() - joined.getTime(), 2);
+};
 
 onMounted(async () => {
   // Fetch partners
@@ -54,9 +44,9 @@ onMounted(async () => {
   partners.value.forEach(partner => {
     const img = new Image();
     img.src = partner?.stv_pfp ?? partner?.twitch_pfp ?? '';
-  })
+})
 
-  cyclePartners();
+cyclePartners();
 });
 </script>
 

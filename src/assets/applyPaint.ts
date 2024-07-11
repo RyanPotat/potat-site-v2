@@ -1,16 +1,6 @@
 /* eslint-disable no-bitwise */
 
-interface ColorStop {
-  color: number;
-  at: number;
-}
-
-interface Shadow {
-  color: number;
-  x_offset: number;
-  y_offset: number;
-  radius: number;
-}
+import { ColorStop, Shadow } from "../types/misc";
 
 export interface Paint {
   function: 'LINEAR_GRADIENT' | 'RADIAL_GRADIENT' | 'URL';

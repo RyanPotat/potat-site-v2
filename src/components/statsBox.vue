@@ -3,16 +3,11 @@ import { ref, onMounted, Ref } from 'vue';
 import eventBus from '../assets/eventBus';
 import { delay } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
-import { GenericResponse } from '../types/request';
-
-interface UpdateEvent {
-  data: any;
-  topic: string;
-}
+import { UpdateEvent } from '../types/misc';
 
 const data: Ref = ref({});
 onMounted(async () => {
-    data.value = await fetchBackend<GenericResponse<any>>('').then(res => res?.data?.[0])
+    data.value = await fetchBackend('').then(res => res?.data?.[0])
 
     eventBus.$on('update', async (stats) => {
       const { data: update, topic } = stats as UpdateEvent;

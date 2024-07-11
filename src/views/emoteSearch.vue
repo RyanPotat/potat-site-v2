@@ -1,58 +1,23 @@
 <script setup lang="ts">
 import { nextTick, ref, watch } from 'vue';
 import { fetchBackend } from '../assets/request';
-
-
-interface Emote {
-  id: string;
-  name: string;
-  format: string;
-  url: string;
-}
-
-interface EmoteInfo {
-  channelID: string;
-  channelLogin: string;
-  channelName: string;
-  emoteID: string;
-  emoteCode: string;
-  emotePrefix: string;
-  emoteSuffix: string;
-  emoteURL: string;
-  emoteSetID: string;
-  emoteAssetType: string;
-  emoteState: string;
-  emoteType: string;
-  emoteTier: number;
-  bitCost: number;
-  artist?: {
-    id: string;
-    login: string;
-    displayName: string;
-  }
-}
-
-
-interface SearchOptions {
-  approach: 'matches' | 'starts' | 'includes' | 'ends';
-  format: 'static' | 'animated' | 'any';
-  case: boolean;
-  cursor: string | null;
-}
+import { SearchOptions, EmoteInfo, Emote } from '../types/emotes';
 
 let observer: IntersectionObserver;
 
-const approach = ref<SearchOptions['approach']>('starts');
-const caseSensitive = ref<SearchOptions['case']>(false);
-const format = ref<SearchOptions['format']>('any');
-const emoteList = ref<HTMLElement | null>(null);
-const cursor = ref<string | null>(null);
-const searchQuery = ref<string>('');
-const emotes = ref<Emote[]>([]);
-const isRequesting = ref(false);
-const selectedEmote = ref<EmoteInfo | null>(null);
+const 
 
-const searchEmotes = async (query: string, options: SearchOptions): Promise<Emote[]> => {
+approach = ref<SearchOptions['approach']>('starts'),
+caseSensitive = ref<SearchOptions['case']>(false),
+format = ref<SearchOptions['format']>('any'),
+emoteList = ref<HTMLElement | null>(null),
+cursor = ref<string | null>(null),
+searchQuery = ref<string>(''),
+emotes = ref<Emote[]>([]),
+isRequesting = ref(false),
+selectedEmote = ref<EmoteInfo | null>(null),
+
+searchEmotes = async (query: string, options: SearchOptions): Promise<Emote[]> => {
   if (isRequesting.value) return [];
 
   isRequesting.value = true;
@@ -79,9 +44,9 @@ const searchEmotes = async (query: string, options: SearchOptions): Promise<Emot
   }
 
   return response?.data ?? [];
-}
+},
 
-const onQuery = async () => {
+onQuery = async () => {
   const options: SearchOptions = {
     approach: approach.value,
     format: format.value,
@@ -94,28 +59,28 @@ const onQuery = async () => {
   })
 
   emotes.value.push(...thisBatch);
-}
+},
 
-const onNewQuery = async () => {
+onNewQuery = async () => {
   emotes.value = [];
   cursor.value = null;
   onQuery();
-}
+},
 
-const handleScroll = () => {
+handleScroll = () => {
   if (!emoteList.value) return;
   const { scrollTop, scrollHeight, clientHeight } = emoteList.value;
 
   if (scrollTop + clientHeight >= scrollHeight - 10) {
     onQuery();
   }
-};
+},
 
-const bestName = (name: string, display: string): string => {
+bestName = (name: string, display: string): string => {
   return name === display.toLowerCase() ? display : name;
-}
+},
 
-const loadEmoteData = async (name: string) => {
+loadEmoteData = async (name: string) => {
   const emote = await fetchBackend<EmoteInfo>(`twitch/emotes`, {
     params: { name }
   }).then(res => res.data?.[0])
@@ -124,13 +89,13 @@ const loadEmoteData = async (name: string) => {
   if (!emote) return;
 
   selectedEmote.value = emote;
-}
+},
 
-const closePopup = () => {
+closePopup = () => {
   selectedEmote.value = null;
-}
+},
 
-const observeImages = () => {
+observeImages = () => {
   const options = {
     root: emoteList.value,
     rootMargin: '0px',
@@ -151,13 +116,13 @@ const observeImages = () => {
   images.forEach(img => {
     observer.observe(img);
   });
-}
+},
 
-const openChannel = () => {
+openChannel = () => {
   if (selectedEmote.value) {
     window.open(`https://twitch.tv/${selectedEmote.value.channelLogin}`, '_blank');
   }
-}
+};
 
 watch(emotes, async () => {
   await nextTick();

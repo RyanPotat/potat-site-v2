@@ -3,13 +3,13 @@ import { ref, onMounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
+import { Channel, ComputedExtras, HistoryResponse } from '../types/emotes';
 
-export interface HistoryResponse {
-    channel: Channel;
-    history: EmoteHistory[];
-}
+let observer: IntersectionObserver;
 
-const providers = {
+const 
+
+providers = {
   '7TV': {
     logo: 'https://cdn.7tv.app/emote/63915e53209bcb04cf0aa45d/2x.avif',
     home: 'https://7tv.app/',
@@ -30,66 +30,24 @@ const providers = {
     home: 'https://betterttv.com/',
     name: 'BetterTTV'
   },
-}
+},
 
-export interface Channel {
-    pfp:      string;
-    bestName: string;
-    login:    string;
-    name:     string;
-}
-
-export interface EmoteHistory {
-    set_id:          string;
-    action:          "ADD" | "REMOVE" | "ALIAS";
-    emote_id:        string;
-    emote_name:      string;
-    emote_alias:     null;
-    emote_new_alias: null;
-    provider:        "STV" | "FFZ" | "BTTV" | "7TV";
-    user_login:      string;
-    user_name:       string;
-    user_ffz_id:     number;
-    user_bttv_id:    string;
-    user_stv_id:     string;
-    bestUserName:    string;
-    set_name:        string;
-    user_color:      string;
-    ago:             string;
-    user_stv_pfp:    string;
-    user_pfp:        string;
-    emoteURL:        string;
-    emoteLink:       string;
-    actor:           'potatbotat' | 'external';
-    known_bot:       boolean;
-}
-
-interface ComputedExtras extends EmoteHistory {
-  user_url: string;
-  set_url: string;
-  method: string;
-  word: string;
-}
-
-let observer: IntersectionObserver;
-
-const route = useRoute();
-const loaded = ref(false);
-const none = ref(false);
-const username = ref(route.params.username);
-
-const history = ref<ComputedExtras[]>([]);
-const historyList = ref<HTMLElement | null>(null);
-const cursor = ref<string | null>(null);
-const imRetarded = new Map()
-const channel = ref<Channel>({
+route = useRoute(),
+loaded = ref(false),
+none = ref(false),
+username = ref(route.params.username),
+history = ref<ComputedExtras[]>([]),
+historyList = ref<HTMLElement | null>(null),
+cursor = ref<string | null>(null),
+imRetarded = new Map(),
+channel = ref<Channel>({
   pfp: '',
   bestName: '',
   login: '',
   name: ''
-});
+}),
 
-const fetchEmoteHistory = async (pagination?: string | null) => {
+fetchEmoteHistory = async (pagination?: string | null) => {
   try {
     const response = await fetchBackend<HistoryResponse>(`emotes/history/${username.value}`, {
       params: { limit: 50, after: pagination }
@@ -169,18 +127,18 @@ const fetchEmoteHistory = async (pagination?: string | null) => {
   } finally {
     loaded.value = true;
   }
-};
+},
 
-const handleScroll = () => {
+handleScroll = () => {
   if (!historyList.value) return;
   const { scrollTop, scrollHeight, clientHeight } = historyList.value;
 
   if (scrollTop + clientHeight >= scrollHeight - 10) {
     fetchEmoteHistory(cursor.value);
   }
-};
+},
 
-const observeImages = () => {
+observeImages = () => {
   const options = {
     root: historyList.value,
     rootMargin: '0px',

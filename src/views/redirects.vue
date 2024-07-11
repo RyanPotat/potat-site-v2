@@ -1,38 +1,40 @@
 <script setup lang="ts">
-  import { ref } from 'vue';
+import { ref } from 'vue';
 import { fetchBackend } from '../assets/request';
 
-  const inputUrl = ref('');
-  const response = ref('');
+const 
 
-  const fetchData = async () => {
-    try {
-      const res = await fetchBackend('redirect', {
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ url: inputUrl.value.trim() }),
-        method: 'POST'
-      })
+inputUrl = ref(''),
+response = ref(''),
 
-      if (res.errors?.length) {
-        response.value = res.errors[0].message;
-        return;
-      }
+fetchData = async () => {
+  try {
+    const res = await fetchBackend('redirect', {
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ url: inputUrl.value.trim() }),
+      method: 'POST'
+    })
 
-      response.value = res.data[0]?.url;
-    } catch (error) {
-      console.error('Error fetching data:', error);
-      response.value = 'Error fetching data';
+    if (res.errors?.length) {
+      response.value = res.errors[0].message;
+      return;
     }
-  };
 
-  const copyToClipboard = () => {
-    const textarea = document.createElement('textarea');
-    textarea.value = response.value;
-    document.body.appendChild(textarea);
-    textarea.select();
-    document.execCommand('copy');
-    document.body.removeChild(textarea);
-  };
+    response.value = res.data[0]?.url;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    response.value = 'Error fetching data';
+  }
+},
+
+copyToClipboard = () => {
+  const textarea = document.createElement('textarea');
+  textarea.value = response.value;
+  document.body.appendChild(textarea);
+  textarea.select();
+  document.execCommand('copy');
+  document.body.removeChild(textarea);
+};
 </script>
 
 <template>

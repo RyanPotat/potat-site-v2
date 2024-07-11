@@ -1,41 +1,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue';
 import { humanizeDuration } from '../assets/utilities';
-
-export interface Command {
-  name: string;
-  description: string;
-  title: string;
-  detailedDescription?: string;
-  usage: string;
-  category: CommandCategories;
-  aliases: string[];
-  flags: FlagDetails[];
-  cooldown: number;
-  level: InternalLevels;
-  botRequires: BotCommandRequirements;
-  userRequires: UserRequires;
-  conditions: CommandConditions;
-}
-
-type CommandConditions = {
-  offlineOnly?: boolean;
-  whisperable?: boolean;
-  ignoreBots?: boolean;
-  isBlockable?: boolean;
-  isNotPipable?: boolean;
-};
-
-type FlagDetails = {
-  name: string;
-  type: 'boolean' | 'string';
-  level: InternalLevels;
-  userRequires?: UserRequires;
-  required: boolean;
-  description: string;
-  usage?: string;
-  aliases?: string[];
-};
+import { Command, KeyString } from '../types/help';
 
 enum InternalLevels {
   'Blacklisted',
@@ -45,108 +11,78 @@ enum InternalLevels {
   'Bot developers',
 }
 
-type CommandCategories =
-  | 'development'
-  | 'moderation'
-  | 'utilities'
-  | 'unlisted'
-  | 'settings'
-  | 'stream'
-  | 'potato'
-  | 'emotes'
-  | 'spam'
-  | 'misc'
-  | 'fun';
-
-type UserRequires =
-  | 'none'
-  | 'subscriber'
-  | 'vip'
-  | 'mod'
-  | 'ambassador'
-  | 'broadcaster';
-
-type BotCommandRequirements = 'none' | 'vip' | 'mod';
-
-interface KeyString {
-  [key: number | string]: string;
-}
-
 const
-  permissions: KeyString = {
-    'none': 'No Permissions',
-    'subscriber': 'Subscriber',
-    'vip': 'VIP',
-    'mod': 'Moderator',
-    'ambassador': 'Ambassador',
-    'broadcaster': 'Broadcaster',
-  },
 
-  botPerms: KeyString = {
-    'mod': 'Moderator',
-    'vip': 'VIP'
-  },
+permissions: KeyString = {
+  'none': 'No Permissions',
+  'subscriber': 'Subscriber',
+  'vip': 'VIP',
+  'mod': 'Moderator',
+  'ambassador': 'Ambassador',
+  'broadcaster': 'Broadcaster',
+},
 
-  changeCategory = (category: string) => {
-    selectedCategory.value = category;
-    const categoryCommands = getCategory.value;
-   
-    const lastCommand = localStorage.getItem(`last${category}`);
-    selectedCommand.value = lastCommand ?? (categoryCommands[0]?.name ?? '');
-    
-    localStorage.setItem('lastCategory', category);
-  },
+botPerms: KeyString = {
+  'mod': 'Moderator',
+  'vip': 'VIP'
+},
 
-  changeCommand = (command: Command) => {
-    selectedCommand.value = command.name;
-    
-    localStorage.setItem(`last${getCategory.value[0].category}`, command.name);
-  },
+changeCategory = (category: string) => {
+  selectedCategory.value = category;
+  const categoryCommands = getCategory.value;
+  
+  const lastCommand = localStorage.getItem(`last${category}`);
+  selectedCommand.value = lastCommand ?? (categoryCommands[0]?.name ?? '');
+  
+  localStorage.setItem('lastCategory', category);
+},
 
-  upperCase = (str: string) => {
-    return str.charAt(0).toUpperCase() + str.slice(1);
-  },
+changeCommand = (command: Command) => {
+  selectedCommand.value = command.name;
+  
+  localStorage.setItem(`last${getCategory.value[0].category}`, command.name);
+},
 
-  checkArray = (arr: string[] | undefined) => {
-    return arr && arr.length && arr.some(a => a.trim() !== '')
-  },
+checkArray = (arr: string[] | undefined) => {
+  return arr && arr.length && arr.some(a => a.trim() !== '')
+},
 
-  categories = computed(() => {
-    return [...new Set(commands.value.map(command => command.category))].filter(each => {
-      if (!Boolean(each)) return false;
+categories = computed(() => {
+  return [...new Set(commands.value.map(command => command.category))].filter(each => {
+    if (!Boolean(each)) return false;
 
-      const filtered = filteredCommands.value.filter(command => command.category === each)
-      if (filtered.length === 0) return false;
-      return true;
-    });
-  }),
-
-  getCategory = computed(() => {
-      return filteredCommands.value.filter(command => command.category === selectedCategory.value);
-  }),
-
-  getCommand = computed(() => {
-    return filteredCommands.value.find(command => command.name === selectedCommand.value);
-  }),
-
-  commands = ref<Command[] | []>([]),
-  search = ref<string>(''),
-  selectedCategory = ref<string>(localStorage.getItem('lastCategory') || 'utilities'),
-  selectedCommand = ref<string>(localStorage.getItem(`last${selectedCategory}`) || 'join'),
-
-  filteredCommands = computed((): Command[] => {
-    if (!search.value) {
-      return commands.value;
-    }
-    const query = search.value.toLowerCase();
-    return commands.value.filter((command) => {
-      return (
-        (command.name.toLowerCase().includes(query) ||
-        command.description.toLowerCase().includes(query) ||
-        command.title.toLowerCase().includes(query))
-      );
-    });
+    const filtered = filteredCommands.value.filter(command => command.category === each)
+    if (filtered.length === 0) return false;
+    return true;
   });
+}),
+
+getCategory = computed(() => {
+    return filteredCommands.value.filter(command => command.category === selectedCategory.value);
+}),
+
+getCommand = computed(() => {
+  return filteredCommands.value.find(command => command.name === selectedCommand.value);
+}),
+
+commands = ref<Command[] | []>([]),
+search = ref<string>(''),
+selectedCategory = ref<string>(localStorage.getItem('lastCategory') || 'utilities'),
+selectedCommand = ref<string>(localStorage.getItem(`last${selectedCategory}`) || 'join'),
+
+filteredCommands = computed((): Command[] => {
+  if (!search.value) {
+    return commands.value;
+  }
+  const query = search.value.toLowerCase();
+  return commands.value.filter((command) => {
+    return (
+      (command.name.toLowerCase().includes(query) ||
+      command.description.toLowerCase().includes(query) ||
+      command.title.toLowerCase().includes(query))
+    );
+  });
+});
 
   onMounted(() => {
     fetch('https://api.potat.app/help')

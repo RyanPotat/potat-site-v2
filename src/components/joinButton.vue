@@ -3,43 +3,33 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import { default as eventBus } from '../assets/eventBus';
 import { delay } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
+import { AuthorizationToken, TokenUserData, UserState } from '../types/misc';
 
-interface UserState {
-  value: string | null;
-}
+const 
 
-interface AuthorizationToken {
-  value: string | null;
-}
+authorizationToken: AuthorizationToken = reactive({ value: localStorage.getItem('authorization') }),
+userState: UserState = reactive({ value: localStorage.getItem('userState') }),
 
-interface TokenUserData {
-  token: string;
-  user: string;
-}
-
-const authorizationToken: AuthorizationToken = reactive({ value: localStorage.getItem('authorization') });
-const userState: UserState = reactive({ value: localStorage.getItem('userState') });
-
-const isAuthenticated = computed<boolean>(() => {
+isAuthenticated = computed<boolean>(() => {
   return authorizationToken.value !== null || userState.value !== null;
-});
+}),
 
-const newState = reactive<{ value: boolean }>({ value: JSON.parse(userState.value as string)?.is_channel });
+newState = reactive<{ value: boolean }>({ value: JSON.parse(userState.value as string)?.is_channel }),
 
-const isChannel = computed<boolean>(() => {
+isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
-});
+}),
 
-const signOut = (): void => {
+signOut = (): void => {
   localStorage.clear();
   userState.value = null;
   authorizationToken.value = null;
   newState.value = false;
-}
+},
 
-const isOperationInProgress = ref(false);
+isOperationInProgress = ref(false),
 
-const join = async () => {
+join = async () => {
   if (isOperationInProgress.value) return;
 
   isOperationInProgress.value = true;
@@ -54,9 +44,9 @@ const join = async () => {
 
   await delay(3000);
   isOperationInProgress.value = false;
-}
+},
 
-const part = async () => {
+part = async () => {
   if (isOperationInProgress.value) return;
 
   isOperationInProgress.value = true;
@@ -71,11 +61,11 @@ const part = async () => {
 
   await delay(3000);
   isOperationInProgress.value = false;
-}
+},
 
-const isShaking = ref(false);
+isShaking = ref(false),
 
-const shakeButton = () => {
+shakeButton = () => {
   isShaking.value = true;
 
   setTimeout(() => {

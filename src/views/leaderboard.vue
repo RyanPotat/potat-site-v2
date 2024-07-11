@@ -15,36 +15,37 @@ interface Leaderboard {
 }
 
 const 
-  leaderboarders = ref<Leaderboard[]>([]),
-  cursor = ref<string | undefined>(undefined),
-  leaderboardList = ref<HTMLElement | null>(null),
-  loserOrLeader = ref<boolean>(false),
-  imRetarded = new Map(),
 
-  fetchLeaderboard = async (last?: string | undefined, loserBoard = false) => {
-    const response = await fetchBackend<Leaderboard>(`leaderboard`, {
-      params: {
-        order: loserBoard ? 'asc' : 'desc',
-        after: last
-      }
-    })
+leaderboarders = ref<Leaderboard[]>([]),
+cursor = ref<string | undefined>(undefined),
+leaderboardList = ref<HTMLElement | null>(null),
+loserOrLeader = ref<boolean>(false),
+imRetarded = new Map(),
 
-    for (const user of response.data) {
-      imRetarded.set(user.bestName, user);
-    } 
-    
-    leaderboarders.value = [...imRetarded.values()];
-    cursor.value = response?.pagination?.cursor;
-  },
-
-  handleScroll = () => {
-    if (!leaderboardList.value) return;
-    const { scrollTop, scrollHeight, clientHeight } = leaderboardList.value;
-
-    if (scrollTop + clientHeight >= scrollHeight - 10) {
-      fetchLeaderboard(cursor.value, loserOrLeader.value);
+fetchLeaderboard = async (last?: string | undefined, loserBoard = false) => {
+  const response = await fetchBackend<Leaderboard>(`leaderboard`, {
+    params: {
+      order: loserBoard ? 'asc' : 'desc',
+      after: last
     }
-  };
+  })
+
+  for (const user of response.data) {
+    imRetarded.set(user.bestName, user);
+  } 
+  
+  leaderboarders.value = [...imRetarded.values()];
+  cursor.value = response?.pagination?.cursor;
+},
+
+handleScroll = () => {
+  if (!leaderboardList.value) return;
+  const { scrollTop, scrollHeight, clientHeight } = leaderboardList.value;
+
+  if (scrollTop + clientHeight >= scrollHeight - 10) {
+    fetchLeaderboard(cursor.value, loserOrLeader.value);
+  }
+};
 
 onMounted(() => {
   fetchLeaderboard(undefined, loserOrLeader.value);

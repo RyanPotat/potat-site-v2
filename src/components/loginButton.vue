@@ -4,24 +4,9 @@ import { default as eventBus } from '../assets/eventBus';
 import { applyPaint, Paint } from '../assets/applyPaint';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
+import { AuthorizationToken, TwitchUser, UserState } from '../types/misc';
 
-interface AuthToken {
-  value: string | null;
-}
-
-interface UserState {
-  value: string | null;
-}
-
-interface TwitchUser {
-  chatColor: string | null;
-  userPaint: Paint | null;
-  stv_pfp: string | null;
-  twitch_pfp: string | null;
-  name: string | null;
-}
-
-const authToken: AuthToken = reactive({ value: localStorage.getItem('authorization') });
+const authToken: AuthorizationToken = reactive({ value: localStorage.getItem('authorization') });
 const userState: UserState = reactive({ value: localStorage.getItem('userState') });
 const twitchUser = ref<TwitchUser | null>(null);
 
