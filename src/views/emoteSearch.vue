@@ -132,7 +132,7 @@ watch(emotes, async () => {
 </script>
 
 <template>
-  <div id="container">
+  <div class="container">
     <div class="search-bar">
       <input 
         type="text" 
@@ -195,9 +195,9 @@ watch(emotes, async () => {
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 10px;
   margin-left: 5px;
   margin-right: 5px;
-  width: 100%;
 }
 
 .search-bar {
@@ -228,11 +228,9 @@ watch(emotes, async () => {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
   gap: 10px;
-  overflow-y: auto;
-  max-height: 80vh;
-  width: 99vw;
   margin-left: 10px;
   margin-right: 10px;
+  overflow-x: hidden;
 }
 
 .search-box {

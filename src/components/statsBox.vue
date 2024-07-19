@@ -72,8 +72,7 @@ onMounted(async () => {
   background-color: rgba(31, 31, 31, 0.8);
   border-radius: 15px;
   padding: 20px;
-  margin-left: 100px;
-  margin-top: 50px;
+  margin: 20px;
 }
 
 .line {

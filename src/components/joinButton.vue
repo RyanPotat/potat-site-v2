@@ -111,13 +111,8 @@ onMounted(async () => {
 .button-box {
   background-color: rgba(31, 31, 31, 0.8);
   border-radius: 10px;
-  padding: 20px;
-  display: flex;
-  justify-content: center;
-  user-select: none;
-  top: 50px;
-  transform: scale(1.5); 
-  margin-bottom: 20px;
+  padding: 15px;
+  margin: 20px;
 }
 
 .part-button,

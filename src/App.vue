@@ -1,34 +1,59 @@
 <script setup lang="ts">
 import LoginButton from './components/loginButton.vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { StatsSocket } from './assets/socket';
 
-StatsSocket.new('wss://stats.potat.app')
+StatsSocket.new('wss://stats.potat.app');
+
+const isDropdownVisible = ref(false);
+const windowWidth = ref(window.innerWidth);
+
+const toggleDropdown = () => {
+  isDropdownVisible.value = !isDropdownVisible.value;
+};
+
+const updateWindowWidth = () => {
+  windowWidth.value = window.innerWidth;
+};
+
+onMounted(() => {
+  window.addEventListener('resize', updateWindowWidth);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', updateWindowWidth);
+});
 </script>
 
 <template>
   <div id="app">
     <div class="top-bar">
       <strong><router-link to="/" class="nav-link">Home</router-link></strong>
-      <!-- <strong>
-        <router-link to="/channel/:username" class="nav-link">Channel</router-link>
-      </strong> -->
       <strong><router-link to="/help" class="nav-link">Commands</router-link></strong>
-      <strong><router-link to="/leaderboard" class="nav-link">Leaderboard</router-link></strong>
-      <div class="dropdown">
-        <strong class="nav-link">Tools</strong>
-        <div class="dropdown-content">
+
+      <div v-if="windowWidth < 600">
+        <strong class="nav-link" @click="toggleDropdown">More</strong>
+        <div class="dropdown-content" v-show="isDropdownVisible">
+          <strong><router-link to="/leaderboard" class="nav-link">Leaderboards</router-link></strong>
           <a href="/emotes/search" class="nav-link">Emote Search</a>
           <a href="https://haste.potat.app" class="nav-link external-link">Haste</a>
           <a href="/redirects" class="nav-link external-link">URL Shortener</a>
           <a href="/api/docs" class="nav-link">API Docs</a>
         </div>
       </div>
-      <div class="login-button-container">
-        <LoginButton/>
+      <div v-else>      
+        <strong><router-link to="/leaderboard" class="nav-link">Leaderboards</router-link></strong>
+        <strong class="nav-link" @click="toggleDropdown">Tools</strong>
+        <div class="dropdown-content" v-show="isDropdownVisible">
+          <a href="/emotes/search" class="nav-link">Emote Search</a>
+          <a href="https://haste.potat.app" class="nav-link external-link">Haste</a>
+          <a href="/redirects" class="nav-link external-link">URL Shortener</a>
+          <a href="/api/docs" class="nav-link">API Docs</a>
+        </div>
       </div>
+      <div class="login-button-container"><LoginButton/></div>
     </div>
 
-    <div class="main-background"></div>
     <div class="main-container">
       <router-view></router-view>
     </div>
@@ -36,21 +61,30 @@ StatsSocket.new('wss://stats.potat.app')
 </template>
 
 <style scoped>
+#app {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  background-image: url('/Home.png');
+  background-size: cover;
+  background-position: center;
+}
+
 .top-bar {
-  position: absolute;
+  position: fixed;
   top: 0;
   width: 100%;
-  color: #fff;
   background-color: rgba(31, 31, 31, 0.8);
-  padding: 20px;
+  padding: 10px;
   display: flex;
+  align-items: center;
   z-index: 1;
   user-select: none;
-  margin-left: 40px;
 }
 
 .nav-link {
-  margin-right: 20px;
+  margin-left: 10px;
   padding: 12px;
   outline: auto -webkit-focus-ring-color;
   outline-color: #f4f4f4;
@@ -69,33 +103,21 @@ StatsSocket.new('wss://stats.potat.app')
 }
 
 .main-container {
-  max-width: 1280px;
-  margin: 0 auto;
-  position: relative;
-  z-index: 0;
-  width: 100%
-}
-
-.main-background {
-  position: fixed;
-  width: 100%;
-  height: 100%;
-  background-image: url('/Home.png');
-  background-size: cover;
-  background-position: center;
-  z-index: -1;
+  -webkit-overflow-scrolling: touch;
+  box-sizing: border-box;
+  margin-top: 60px;
+  overflow: auto;
+  overflow-x: hidden;
 }
 
 .login-button-container {
   margin-left: auto;
-  margin-right: 35px;
-  margin-top: -12px;
-  margin-bottom: -12px
+  margin-right: 10px;
 }
 
-.dropdown {
-  position: relative;
-  display: inline-block;
+.more-dropdown {
+  display: none;
+  margin-left: 15px;
 }
 
 .dropdown-content {
@@ -116,5 +138,20 @@ StatsSocket.new('wss://stats.potat.app')
   margin-right: 0;
   padding: 12px;
   white-space: nowrap;
+}
+
+@media (max-width: 650px) {
+  .more-dropdown {
+    display: flex;
+    align-items: center;
+  }
+
+  .more-dropdown .nav-link {
+    margin-left: 5px;
+  }
+
+  .dropdown-content {
+    position: relative;
+  }
 }
 </style>

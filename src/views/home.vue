@@ -5,26 +5,32 @@ import StatsBox from '../components/statsBox.vue';
 </script>
 
 <template>
-    <div class="title-help-container">
-      <div class="title-box">    
-        <a href="https://twitch.tv/potatbotat">
-        <img src="/tatoExplode.gif" class="logo"/>
-        </a>
-        <a> 
+
+<div class="title-help-container">
+
+  <div class="title-box">    
+      <div> 
           <h1 class='paint'>
-            <span>PotatBotat</span>
+              <a href="https://twitch.tv/potatbotat">
+                  <img src="/tatoExplode.gif" class="logo"/>
+              </a>
+              <span>PotatBotat</span>
           </h1>
           <h2>An emote, entertainment, and utility chatbot</h2>
-        </a>
       </div>
-      <div class="buttons-container">
-        <JoinButton/>
-      </div>
-    </div>
-    <div class="stats-container">
-      <PartnerList/>
-      <StatsBox/>
-    </div>
+  </div>
+
+  <div class="buttons-container">
+      <JoinButton/>
+  </div>
+
+</div>
+
+<div class="stats-container">
+    <PartnerList/>
+    <StatsBox/>
+</div>
+
 </template>
 
 <style scoped>
@@ -38,47 +44,64 @@ import StatsBox from '../components/statsBox.vue';
   background-clip: text;
   color: transparent;
   background-size: 100% auto;
-  margin-right: 150px;
 }
 
 .title-help-container {
   display: flex;
+  flex-wrap: wrap;
   user-select: none;
-  flex-direction: row;
   align-items: center;
   justify-content: center;
 }
 
 .title-box {
+  display: flex;
+  flex-wrap: wrap;
   background-color: rgba(31, 31, 31, 0.8);
   border-radius: 15px;
-  padding: 20px;
-  display: flex;
-  position: relative;
-  margin-right: 150px;
-  margin-bottom: 20px;
+  padding: 15px;
+  margin: 30px;
 }
 
 .buttons-container {
-  margin-left: 20px; 
+  transform: scale(1.5);
+  align-self: center;
+  justify-content: center;
 }
 
 .stats-container {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: center;
+  width: 100%;
 }
 
 h1 {
+  margin-top: 0px;
+  margin-bottom: 10px;
+}
+
+h2 {
+  margin-top: 0px;
   margin-bottom: 0px;
 }
 
 .logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
+  height: 80px;
+  width: 80px;
+  margin-right: 20px;
 }
 
+@media (max-width: 600px) {
+  .title-box {
+    transform: scale(0.9);
+    margin-top: 120px;
+  }
+
+  .stats-container {
+    transform: scale(0.8);
+  }
+
+}
 </style>
