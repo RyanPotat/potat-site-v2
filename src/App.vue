@@ -10,6 +10,8 @@ const windowWidth = ref(window.innerWidth);
 
 const toggleDropdown = () => {
   isDropdownVisible.value = !isDropdownVisible.value;
+  const display = isDropdownVisible.value ? 'block' : 'none';
+  document.querySelector('.dropdown-content')?.setAttribute('style', `display: ${display}`);
 };
 
 const updateWindowWidth = () => {
@@ -33,7 +35,7 @@ onUnmounted(() => {
 
       <div v-if="windowWidth < 600">
         <strong class="nav-link" @click="toggleDropdown">More</strong>
-        <div class="dropdown-content" v-show="isDropdownVisible">
+        <div class="dropdown-content">
           <strong><router-link to="/leaderboard" class="nav-link">Leaderboards</router-link></strong>
           <a href="/emotes/search" class="nav-link">Emote Search</a>
           <a href="https://haste.potat.app" class="nav-link external-link">Haste</a>
@@ -41,13 +43,13 @@ onUnmounted(() => {
           <a href="/api/docs" class="nav-link">API Docs</a>
         </div>
       </div>
-      <div v-else>      
+      <div v-else>
         <strong><router-link to="/leaderboard" class="nav-link">Leaderboards</router-link></strong>
         <strong class="nav-link" @click="toggleDropdown">Tools</strong>
-        <div class="dropdown-content" v-show="isDropdownVisible">
-          <a href="/emotes/search" class="nav-link">Emote Search</a>
-          <a href="https://haste.potat.app" class="nav-link external-link">Haste</a>
-          <a href="/redirects" class="nav-link external-link">URL Shortener</a>
+        <div class="dropdown-content">
+          <a href="/emotes/search" class="nav-link" style="margin-bottom: 10px;">Emote Search</a>
+          <a href="https://haste.potat.app" class="nav-link external-link" style="margin-bottom: 10px;">Haste</a>
+          <a href="/redirects" class="nav-link external-link" style="margin-bottom: 10px;">URL Shortener</a>
           <a href="/api/docs" class="nav-link">API Docs</a>
         </div>
       </div>
@@ -79,7 +81,7 @@ onUnmounted(() => {
   padding: 10px;
   display: flex;
   align-items: center;
-  z-index: 1;
+  z-index: 10;
   user-select: none;
 }
 
@@ -91,6 +93,8 @@ onUnmounted(() => {
   border-radius: 15px;
   transition: background-color 0.3s ease;
   color: inherit;
+  cursor: pointer;
+  position: relative; 
 }
 
 .nav-link.router-link-active {
@@ -115,22 +119,16 @@ onUnmounted(() => {
   margin-right: 10px;
 }
 
-.more-dropdown {
-  display: none;
-  margin-left: 15px;
-}
-
 .dropdown-content {
   display: none;
   position: absolute;
+  left: 35%;
   background-color: rgba(31, 31, 31, 0.9);
-  box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;
-  margin-top: 12px;
-}
-
-.dropdown:hover .dropdown-content {
-  display: block;
+  margin-top: 20px;
+  padding: 12px;
+  border-radius: 15px;
 }
 
 .dropdown-content .nav-link {

@@ -120,7 +120,7 @@ onMounted((): void => {
   font: inherit;
   font-size: 1.5em;
   font-weight: bolder;
-  margin-top: 5px;
+  padding: 12px;
 }
 
 .profile-picture {

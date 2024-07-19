@@ -176,7 +176,6 @@ body {
   width: 100%;
   max-height: 85vh;
   padding-top: 10px;
-  flex-wrap: wrap;
 }
 
 .leaderboard-item {
@@ -187,7 +186,6 @@ body {
   margin-bottom: 10px;
   display: flex;
   align-items: center;
-  flex-wrap: wrap;
 }
 
 .leaderboard-item .text-content img {
