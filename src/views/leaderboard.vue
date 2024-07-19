@@ -99,8 +99,8 @@ onMounted(() => {
           <option value="potatoes">Potatoes</option>
           <option value="trivia">Trivia</option>
           <option value="scramble">Unscramble</option>
-          <option value="paints">Paints</option>
-          <option value="badges">Badges</option>
+          <option value="paints">7TV Paints</option>
+          <option value="badges">7TV Badges</option>
         </select>
     </div>
     <ul class="leaderboard-list" ref="leaderboardList" @scroll="handleScroll">
@@ -130,10 +130,10 @@ onMounted(() => {
               <div>Unscramble Wins: {{ user.scramble_wins?.toLocaleString()  }}</div>
             </div>
             <div v-else-if="type === 'paints'">
-              <div>Paint Change Count: {{ user.paint_count?.toLocaleString() }}</div>
+              <div>7TV Paint Change Count: {{ user.paint_count?.toLocaleString() }}</div>
             </div>
             <div v-else-if="type === 'badges'">
-              <div>Badge Change Count: {{ user.badge_count?.toLocaleString()  }}</div>
+              <div>7TV Badge Change Count: {{ user.badge_count?.toLocaleString()  }}</div>
             </div>
           </div>
         </div>
