@@ -5,28 +5,42 @@ import { fetchBackend } from '../assets/request';
 
 interface Leaderboard {
   bestName: string;
-  rank: number;
-  farmSize: number;
-  farmName: string;
-  prestige: number;
-  potatoCount: number;
+  rank?: number;
+  farmSize?: number;
+  farmName?: string;
+  prestige?: number;
+  potatoCount?: number;
+  paint_count?: number;
+  badge_count?: number;
+  trivia_wins?: number;
+  scramble_wins?: number;
   user_pfp: string;
   user_color: string;
 }
+
+type LeaderboardTypes =
+  | 'potatoes' 
+  | 'trivia'
+  | 'scramble'
+  | 'paints'
+  | 'badges'
+
 
 const 
 
 leaderboarders = ref<Leaderboard[]>([]),
 cursor = ref<string | undefined>(undefined),
+type = ref<LeaderboardTypes>('potatoes'),
 leaderboardList = ref<HTMLElement | null>(null),
 loserOrLeader = ref<boolean>(false),
 imRetarded = new Map(),
 
-fetchLeaderboard = async (last?: string | undefined, loserBoard = false) => {
+fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => {
   const response = await fetchBackend<Leaderboard>(`leaderboard`, {
     params: {
-      order: loserBoard ? 'asc' : 'desc',
-      after: last
+      order: loserOrLeader.value ? 'asc' : 'desc',
+      after: last,
+      type
     }
   })
 
@@ -43,17 +57,38 @@ handleScroll = () => {
   const { scrollTop, scrollHeight, clientHeight } = leaderboardList.value;
 
   if (scrollTop + clientHeight >= scrollHeight - 10) {
-    fetchLeaderboard(cursor.value, loserOrLeader.value);
+    if (!cursor.value) return;
+    fetchLeaderboard(type.value, cursor.value);
   }
-};
+},
+
+fetchNewType = () => {
+  leaderboarders.value = [];
+  imRetarded.clear();
+  cursor.value = undefined;
+  fetchLeaderboard(type.value, undefined);
+}
 
 onMounted(() => {
-  fetchLeaderboard(undefined, loserOrLeader.value);
+  fetchLeaderboard(type.value, undefined);
 });
 </script>
 
 <template>
-  <div id="container" v-if="leaderboarders.length">
+  <div class="leaderboard" v-if="leaderboarders.length">
+    <div class="leaderboard-options">
+        <select v-model="loserOrLeader" class="type-box" @change="fetchNewType">
+          <option :value=false>Leaderboard</option>
+          <option :value=true>Loserboard</option>
+        </select>
+        <select v-model="type" class="type-box" @change="fetchNewType">
+          <option value="potatoes">Potatoes</option>
+          <option value="trivia">Trivia</option>
+          <option value="scramble">Unscramble</option>
+          <option value="paints">Paints</option>
+          <option value="badges">Badges</option>
+        </select>
+    </div>
     <ul class="leaderboard-list" ref="leaderboardList" @scroll="handleScroll">
       <li v-for="user in leaderboarders" :key="user.bestName" class="leaderboard-item">
         <div class="profile-picture">
@@ -69,9 +104,23 @@ onMounted(() => {
             </a>
           </div>
           <div class="details">
-            <div>Prestige: {{ user.prestige }}</div>
-            <div>Potatoes: {{ user.potatoCount.toLocaleString() }}</div>
-            <div>Farm: {{ user.farmName }}</div>
+            <div v-if="type === 'potatoes'">
+              <div>Prestige: {{ user.prestige }}</div>
+              <div>Potatoes: {{ user.potatoCount?.toLocaleString() }}</div>
+              <div>Farm: {{ user.farmName }}</div>
+            </div>
+            <div v-else-if="type === 'trivia'">
+              <div>Trivia Wins: {{ user.trivia_wins?.toLocaleString()  }}</div>
+            </div>
+            <div v-else-if="type === 'scramble'">
+              <div>Unscramble Wins: {{ user.scramble_wins?.toLocaleString()  }}</div>
+            </div>
+            <div v-else-if="type === 'paints'">
+              <div>Paint Change Count: {{ user.paint_count?.toLocaleString() }}</div>
+            </div>
+            <div v-else-if="type === 'badges'">
+              <div>Badge Change Count: {{ user.badge_count?.toLocaleString()  }}</div>
+            </div>
           </div>
         </div>
       </li>
@@ -82,15 +131,33 @@ onMounted(() => {
 
 <style scoped>
 
-#container {
-  max-height: 93vh;
-  width: 95%;
-  margin-top: 5%;
+.leaderboard {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-align: left;
-  color: #e5e4e4;
+  overflow: hidden;
+  position: relative;
+}
+
+.leaderboard-options {
+  display: flex;
+  gap: 10px;
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background-color: rgba(31, 31, 31, 0.94);
+  padding: 10px;
+  border-radius: 0.5rem;
+}
+
+.type-box {
+  outline: auto -webkit-focus-ring-color;
+  outline-color: #f4f4f4;
+  color: white;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  background-color: rgba(31, 31, 31, 0.94);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
 body {
@@ -104,6 +171,12 @@ body {
   list-style: none;
   padding: 0;
   overflow-y: auto;
+  text-align: left;
+  color: #e5e4e4;
+  width: 100%;
+  max-height: 85vh;
+  padding-top: 10px;
+  flex-wrap: wrap;
 }
 
 .leaderboard-item {
@@ -114,6 +187,7 @@ body {
   margin-bottom: 10px;
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .leaderboard-item .text-content img {
