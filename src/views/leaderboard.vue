@@ -14,15 +14,18 @@ interface Leaderboard {
   paint_count?: number;
   badge_count?: number;
   trivia_wins?: number;
+  emote_count?: number;
   scramble_wins?: number;
   user_pfp: string;
   user_color: string;
 }
 
 const LeaderboardKinds = [
+  'emoteschannel',
+  'emotesuser',
+  'scramble',
   'potatoes',
   'trivia',
-  'scramble',
   'paints',
   'badges'
 ] as const;
@@ -101,6 +104,8 @@ onMounted(() => {
           <option value="scramble">Unscramble</option>
           <option value="paints">7TV Paints</option>
           <option value="badges">7TV Badges</option>
+          <option value="emoteschannel">Channel Emotes Actions</option>
+          <option value="emotesuser">User Emote Actions</option>
         </select>
     </div>
     <ul class="leaderboard-list" ref="leaderboardList" @scroll="handleScroll">
@@ -134,6 +139,12 @@ onMounted(() => {
             </div>
             <div v-else-if="type === 'badges'">
               <div>7TV Badge Change Count: {{ user.badge_count?.toLocaleString()  }}</div>
+            </div>
+            <div v-else-if="type === 'emoteschannel'">
+              <div>Total Channel Emote Actions: {{ user.emote_count?.toLocaleString() }}</div>
+            </div>
+            <div v-else-if="type === 'emotesuser'">
+              <div>Total User Emote Actions: {{ user.emote_count?.toLocaleString() }}</div>
             </div>
           </div>
         </div>
