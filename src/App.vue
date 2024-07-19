@@ -122,7 +122,6 @@ onUnmounted(() => {
 .dropdown-content {
   display: none;
   position: absolute;
-  left: 35%;
   background-color: rgba(31, 31, 31, 0.9);
   box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
   z-index: 1;

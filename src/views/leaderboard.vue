@@ -2,6 +2,7 @@
 import { onMounted, ref } from 'vue';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
+import { useRoute } from 'vue-router';
 
 interface Leaderboard {
   bestName: string;
@@ -18,22 +19,35 @@ interface Leaderboard {
   user_color: string;
 }
 
-type LeaderboardTypes =
-  | 'potatoes' 
-  | 'trivia'
-  | 'scramble'
-  | 'paints'
-  | 'badges'
+const LeaderboardKinds = [
+  'potatoes',
+  'trivia',
+  'scramble',
+  'paints',
+  'badges'
+] as const;
 
+type LeaderboardTypes = (typeof LeaderboardKinds)[number];
+
+const route = useRoute();
+
+let inputType = (route.query.type as string)?.toLowerCase() as LeaderboardTypes;
+
+if (!route.query.type) inputType = 'potatoes';
+else if (!LeaderboardKinds.includes(inputType)) inputType = 'potatoes';
+
+let order = (route.query.order as string)?.toLowerCase()
+if (!route.query.order) order = 'desc';
+else if (!['asc', 'desc'].includes(order)) order = 'desc';
 
 const 
 
-leaderboarders = ref<Leaderboard[]>([]),
-cursor = ref<string | undefined>(undefined),
-type = ref<LeaderboardTypes>('potatoes'),
+loserOrLeader = ref<boolean>(order === 'asc' ? true : false),
+type = ref<LeaderboardTypes>(inputType ?? 'potatoes'),
 leaderboardList = ref<HTMLElement | null>(null),
-loserOrLeader = ref<boolean>(false),
-imRetarded = new Map(),
+cursor = ref<string | undefined>(undefined),
+leaderboarders = ref<Leaderboard[]>([]),
+map = new Map(),
 
 fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => {
   const response = await fetchBackend<Leaderboard>(`leaderboard`, {
@@ -45,10 +59,10 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
   })
 
   for (const user of response.data) {
-    imRetarded.set(user.bestName, user);
+    map.set(user.bestName, user);
   } 
   
-  leaderboarders.value = [...imRetarded.values()];
+  leaderboarders.value = [...map.values()];
   cursor.value = response?.pagination?.cursor;
 },
 
@@ -64,7 +78,7 @@ handleScroll = () => {
 
 fetchNewType = () => {
   leaderboarders.value = [];
-  imRetarded.clear();
+  map.clear();
   cursor.value = undefined;
   fetchLeaderboard(type.value, undefined);
 }
