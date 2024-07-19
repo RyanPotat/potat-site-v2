@@ -14,14 +14,17 @@ interface Leaderboard {
   paint_count?: number;
   badge_count?: number;
   trivia_wins?: number;
-  emote_count?: number;
+  emote_count?: string;
   scramble_wins?: number;
+  command_count?: string;
   user_pfp: string;
   user_color: string;
 }
 
 const LeaderboardKinds = [
+  'commandschannel',
   'emoteschannel',
+  'commandsuser',
   'emotesuser',
   'scramble',
   'potatoes',
@@ -84,6 +87,10 @@ fetchNewType = () => {
   map.clear();
   cursor.value = undefined;
   fetchLeaderboard(type.value, undefined);
+},
+
+getLocale = (value: string | undefined) => {
+  return parseInt(value as string).toLocaleString();
 }
 
 onMounted(() => {
@@ -106,6 +113,8 @@ onMounted(() => {
           <option value="badges">7TV Badges</option>
           <option value="emoteschannel">Channel Emotes Actions</option>
           <option value="emotesuser">User Emote Actions</option>
+          <option value="commandschannel">Channel Commands Used</option>
+          <option value="commandsuser">User Commands Used</option>
         </select>
     </div>
     <ul class="leaderboard-list" ref="leaderboardList" @scroll="handleScroll">
@@ -141,10 +150,16 @@ onMounted(() => {
               <div>7TV Badge Change Count: {{ user.badge_count?.toLocaleString()  }}</div>
             </div>
             <div v-else-if="type === 'emoteschannel'">
-              <div>Total Channel Emote Actions: {{ user.emote_count?.toLocaleString() }}</div>
+              <div>Total Channel Emote Actions: {{ getLocale(user.emote_count) }}</div>
             </div>
             <div v-else-if="type === 'emotesuser'">
-              <div>Total User Emote Actions: {{ user.emote_count?.toLocaleString() }}</div>
+              <div>Total User Emote Actions: {{ getLocale(user.emote_count) }}</div>
+            </div>
+            <div v-else-if="type === 'commandschannel'">
+              <div>Total Channel Commands Used: {{ getLocale(user.command_count) }}</div>
+            </div>
+            <div v-else-if="type === 'commandsuser'">
+              <div>Total User Commands Used: {{ getLocale(user.command_count) }}</div>
             </div>
           </div>
         </div>
