@@ -36,7 +36,8 @@ export function applyPaint(paint: Paint, cssClass: string): void {
     editText.style.backgroundImage = gradient;
   } else if (paint.function === 'RADIAL_GRADIENT' && paint.stops && paint.stops.length > 0) {
     const gradientStops = paint.stops.map(convertColorStop);
-    const gradient = `radial-gradient(circle, ${gradientStops.join(', ')})`;
+    const gradientRepeat = paint.repeat ? 'repeating-' : '';
+    const gradient = `${gradientRepeat}radial-gradient(circle, ${gradientStops.join(', ')})`;
     editText.style.backgroundImage = gradient;
     editText.style.backgroundSize = '100% auto';
   } else if (paint.function === 'URL' && paint.image_url) {
