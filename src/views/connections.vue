@@ -1,18 +1,48 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { computed, reactive, ref } from 'vue';
 import { fetchBackend } from '../assets/request';
+import eventBus from '../assets/eventBus';
 
-const connect = async (platform: string) => {
+const
+
+buttonToShake = ref<string | null>(null),
+
+authorizationToken = reactive({ value: localStorage.getItem('authorization') }),
+
+userState = reactive({ value: localStorage.getItem('userState') }),
+
+isAuthenticated = computed<boolean>(() => {
+  return authorizationToken.value !== null || userState.value !== null;
+}),
+
+connect = async (platform: string) => {
+  if (!isAuthenticated.value) return shakeButton(platform);
+
   const url = await fetchBackend(`auth/${platform.toLowerCase()}/authorize`, {
     auth: true
-  }).then(res => res.data[0])
+  }).then(res => res.data?.[0])
+
+  if (!url) {
+    shakeButton(platform);
+    return signOut();
+  }
 
   window.open(url, '_blank', 'width=600,height=800');
-};
+},
 
-onMounted(() => {
-  console.log('Connections page mounted');
-});
+signOut = (): void => {
+  localStorage.clear();
+  userState.value = null;
+  authorizationToken.value = null;
+},
+
+shakeButton = (platform: string) => {
+  eventBus.$emit('flash-sign-in');
+  
+  buttonToShake.value = platform;
+
+  setTimeout(() => buttonToShake.value = null, 500);
+};
 </script>
 
 <template>
@@ -20,13 +50,34 @@ onMounted(() => {
     <div class="connections-box">
       <h2>Connect a Platform</h2>
       <div class="buttons-container">
-        <button style="background-color:#02A9FF" @click="connect('ANILIST')">Anilist</button>
-        <button style="background-color:#5865F2" @click="connect('DISCORD')">Discord</button>
-        <button style="background-color:#1DB954" @click="connect('SPOTIFY')">Spotify</button>
+        <button 
+          style="background-color:#02A9FF" 
+          :class="{ shake: buttonToShake === 'ANILIST' }" 
+          @click="connect('ANILIST')"
+        >
+          <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/AniList_logo.svg" class="icon"/> Anilist
+        </button>
+
+        <button 
+          style="background-color:#5865F2" 
+          :class="{ shake: buttonToShake === 'DISCORD' }" 
+          @click="connect('DISCORD')"
+        >
+          <img src="https://cdn.prod.website-files.com/6257adef93867e50d84d30e2/636e0a6918e57475a843f59f_icon_clyde_black_RGB.svg" class="icon"/> Discord
+        </button>
+
+        <button 
+          style="background-color:#1DB954" 
+          :class="{ shake: buttonToShake === 'SPOTIFY' }" 
+          @click="connect('SPOTIFY')"
+        >
+          <img src="https://storage.googleapis.com/pr-newsroom-wp/1/2023/05/Spotify_Primary_Logo_RGB_Black.png" class="icon"/> Spotify
+        </button>
       </div>
     </div>
   </div>
 </template>
+
 
 <style scoped>
 .container {
@@ -55,6 +106,10 @@ h2 {
 }
 
 button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
   padding: 12px 16px;
   font-size: 16px;
   color: white;
@@ -65,7 +120,28 @@ button {
   text-align: center;
 }
 
+button .icon {
+  width: 24px;
+  height: 24px;
+}
+
 button:hover {
   filter: brightness(0.9);
+}
+
+.shake {
+  animation: shake 0.5s;
+}
+
+@keyframes shake {
+  0%, 100% {
+    transform: translateX(0);
+  }
+  10%, 30%, 50%, 70%, 90% {
+    transform: translateX(-10px);
+  }
+  20%, 40%, 60%, 80% {
+    transform: translateX(10px);
+  }
 }
 </style>

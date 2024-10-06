@@ -9,21 +9,28 @@ import { AuthorizationToken, TwitchUser, UserState } from '../types/misc';
 const authToken: AuthorizationToken = reactive({ value: localStorage.getItem('authorization') });
 const userState: UserState = reactive({ value: localStorage.getItem('userState') });
 const twitchUser = ref<TwitchUser | null>(null);
+const shouldFlash = ref(false);
 
 const isAuthenticated = computed(() => {
   return authToken.value !== null && userState.value !== null;
 });
 
 const signIn = (): void => {
-  window.open('https://api.potat.app/login', '_blank', 'width=600,height=400');
-}
+  window.open('https://api.potat.industries/login', '_blank', 'width=600,height=400');
+};
 
 const signOut = async (): Promise<void> => {
-  await localStorage.clear();
+  localStorage.clear();
   authToken.value = null;
   userState.value = null;
   twitchUser.value = null;
-}
+};
+
+const flashButton = () => {
+  shouldFlash.value = true;
+
+  setTimeout(() => shouldFlash.value = false, 500);
+};
 
 const assignUser = async (): Promise<void> => {
   if (!isAuthenticated.value) return;
@@ -49,6 +56,10 @@ const assignUser = async (): Promise<void> => {
 
 onMounted((): void => {
   assignUser();
+
+  eventBus.$on('flash-sign-in', () => {
+    flashButton();
+  });
 
   const handleMessage = (event: MessageEvent) => {
     const { id, login, name, stv_id, token, is_channel } = event.data;
@@ -92,7 +103,7 @@ onMounted((): void => {
     </div>
   </template>
   <template v-else>
-    <button class="twitch-button" @click="signIn">
+    <button class="twitch-button" :class="{ flash: shouldFlash }" @click="signIn">
       <img src="/Twitch-icon-white.png" style="width: 1.5em; height: 1.5em;" />
       <span class="button-text">Sign in</span>
     </button>
@@ -150,5 +161,27 @@ button:hover {
 .button-text {
   margin-left: 0.5em;
   font-weight: bold;
+}
+
+.flash {
+  animation: flash 3s ease-in-out infinite;
+}
+
+
+.twitch-button .flash {
+  animation-duration: 3s;
+  animation-iteration-count: 2;
+  animation-direction: forwards;
+}
+
+@keyframes flash {
+  0% {
+    background-color: #6441a4;
+    box-shadow: 0 0 5px #6441a4;
+  }
+  10% {
+    background-color: #ff4d4d;
+    box-shadow: 0 0 15px #ff4d4d;
+  }
 }
 </style>

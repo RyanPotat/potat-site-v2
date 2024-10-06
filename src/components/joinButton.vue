@@ -66,6 +66,8 @@ part = async () => {
 isShaking = ref(false),
 
 shakeButton = () => {
+  eventBus.$emit('flash-sign-in');
+  
   isShaking.value = true;
 
   setTimeout(() => {
