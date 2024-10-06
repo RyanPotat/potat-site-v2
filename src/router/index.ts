@@ -37,6 +37,11 @@ const routes: RouteRecordRaw[] = [
     component: () => import('../views/emoteHistory.vue')
   },
   {
+    path: '/connections',
+    name: 'Connections',
+    component: () => import('../views/connections.vue')
+  },
+  {
     path: '/emotes/search',
     name: 'Search',
     component: () => import('../views/emoteSearch.vue')
