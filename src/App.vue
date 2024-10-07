@@ -47,6 +47,7 @@ onUnmounted(() => {
         <strong><router-link to="/leaderboard" class="nav-link">Leaderboards</router-link></strong>
         <strong class="nav-link" @click="toggleDropdown">Tools</strong>
         <div class="dropdown-content">
+          <a href="/connections" class="nav-link">Connections</a>
           <a href="/emotes/search" class="nav-link" style="margin-bottom: 10px;">Emote Search</a>
           <a href="https://haste.potat.app" class="nav-link external-link" style="margin-bottom: 10px;">Haste</a>
           <a href="/redirects" class="nav-link external-link" style="margin-bottom: 10px;">URL Shortener</a>
