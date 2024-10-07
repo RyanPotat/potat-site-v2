@@ -16,7 +16,7 @@ const isAuthenticated = computed(() => {
 });
 
 const signIn = (): void => {
-  window.open('https://api.potat.industries/login', '_blank', 'width=600,height=400');
+  window.open('https://api.potat.app/login', '_blank', 'width=600,height=400');
 };
 
 const signOut = async (): Promise<void> => {
