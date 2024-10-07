@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue';
+import { computed, onMounted, reactive, ref } from 'vue';
 import { fetchBackend } from '../assets/request';
 import eventBus from '../assets/eventBus';
 
@@ -43,6 +43,14 @@ shakeButton = (platform: string) => {
 
   setTimeout(() => buttonToShake.value = null, 500);
 };
+
+onMounted(() => {
+  eventBus.$on('newToken', (payload: { token: any; user: any }) => {
+    const userState = JSON.parse(payload.user) ?? {};
+    authorizationToken.value = payload.token;
+    userState.value = userState;
+  })
+})
 </script>
 
 <template>
