@@ -14,17 +14,17 @@ enum InternalLevels {
 const
 
 permissions: KeyString = {
-  'none': 'No Permissions',
-  'subscriber': 'Subscriber',
-  'vip': 'VIP',
-  'mod': 'Moderator',
-  'ambassador': 'Ambassador',
-  'broadcaster': 'Broadcaster',
+  'NONE': 'No Permissions',
+  'SUBSCRIBER': 'Subscriber',
+  'VIP': 'VIP',
+  'MOD': 'Moderator',
+  'AMBASSADOR': 'Ambassador',
+  'BROADCASTER': 'Broadcaster',
 },
 
 botPerms: KeyString = {
-  'mod': 'Moderator',
-  'vip': 'VIP'
+  'MOD': 'Moderator',
+  'VIP': 'VIP'
 },
 
 changeCategory = (category: string) => {
