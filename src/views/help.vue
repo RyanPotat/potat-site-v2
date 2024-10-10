@@ -78,6 +78,7 @@ filteredCommands = computed((): Command[] => {
   return commands.value.filter((command) => {
     return (
       (command.name.toLowerCase().includes(query) ||
+      command.aliases.some(alias => alias.toLowerCase().includes(query)) ||
       command.description.toLowerCase().includes(query) ||
       command.title.toLowerCase().includes(query))
     );
