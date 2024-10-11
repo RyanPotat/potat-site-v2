@@ -2,6 +2,7 @@
 import JoinButton from '../components/joinButton.vue';
 import PartnerList from '../components/partnerList.vue';
 import StatsBox from '../components/statsBox.vue';
+import TwitchChat from '../components/twitchChat.vue';
 </script>
 
 <template>
@@ -26,9 +27,13 @@ import StatsBox from '../components/statsBox.vue';
 
 </div>
 
-<div class="stats-container">
-    <PartnerList/>
-    <StatsBox/>
+<div class="bottom-stuff">
+    <TwitchChat/>
+
+    <div class="stats-container">
+        <PartnerList/>
+        <StatsBox/>
+    </div>
 </div>
 
 </template>
@@ -69,12 +74,17 @@ import StatsBox from '../components/statsBox.vue';
   justify-content: center;
 }
 
-.stats-container {
+.bottom-stuff {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
+}
+
+.stats-container {
+  display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  width: 100%;
 }
 
 h1 {
