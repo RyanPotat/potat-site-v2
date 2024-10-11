@@ -5,16 +5,27 @@ import { delay } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
 import { AuthorizationToken, TokenUserData, UserState } from '../types/misc';
 
-const 
+const
 
-authorizationToken: AuthorizationToken = reactive({ value: localStorage.getItem('authorization') }),
-userState: UserState = reactive({ value: localStorage.getItem('userState') }),
+isShaking = ref(false),
+
+isOperationInProgress = ref(false),
+
+authorizationToken: AuthorizationToken = reactive({
+  value: localStorage.getItem('authorization')
+}),
+
+userState: UserState = reactive({
+  value: localStorage.getItem('userState')
+}),
+
+newState = reactive<{ value: boolean }>({ 
+  value: JSON.parse(userState.value as string)?.is_channel
+}),
 
 isAuthenticated = computed<boolean>(() => {
   return authorizationToken.value !== null || userState.value !== null;
 }),
-
-newState = reactive<{ value: boolean }>({ value: JSON.parse(userState.value as string)?.is_channel }),
 
 isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
@@ -27,8 +38,6 @@ signOut = (): void => {
   newState.value = false;
 },
 
-isOperationInProgress = ref(false),
-
 join = async () => {
   if (isOperationInProgress.value) return;
 
@@ -38,8 +47,17 @@ join = async () => {
   const result = await fetchBackend('join', { method: 'POST', auth: true })
   if ([401, 418].includes(result?.statusCode)) {
     console.log('Signing out due to error:', result?.errors?.[0]?.message);
+
+    eventBus.$emit(
+      'failed-join',
+      `Failed to join channel: ${result?.errors?.[0]?.message}`
+    );
+    
+    eventBus.$emit('signOut');
     signOut();
-    return eventBus.$emit('signOut');
+    
+    isOperationInProgress.value = false;
+    return shakeButton();
   }
 
   await delay(3000);
@@ -55,24 +73,29 @@ part = async () => {
   const result = await fetchBackend('part', { method: 'DELETE', auth: true })
   if ([401, 418].includes(result?.statusCode)) {
     console.log('Signing out due to error:', result?.errors?.[0]?.message);
+
+    eventBus.$emit(
+      'failed-part',
+      `Failed to part channel: ${result?.errors?.[0]?.message}`
+    );
+
+    eventBus.$emit('signOut');
     signOut();
-    return eventBus.$emit('signOut');
+    
+    isOperationInProgress.value = false;
+    return shakeButton();
   }
 
   await delay(3000);
   isOperationInProgress.value = false;
 },
 
-isShaking = ref(false),
-
 shakeButton = () => {
   eventBus.$emit('flash-sign-in');
   
   isShaking.value = true;
 
-  setTimeout(() => {
-    isShaking.value = false;
-  }, 500);
+  setTimeout(() => isShaking.value = false, 500);
 };
 
 onMounted(async () => {
@@ -82,29 +105,41 @@ onMounted(async () => {
     newState.value = JSON.parse(user).is_channel;
   });
 
-  eventBus.$on('signOut', () => {
-    signOut();
-  });
+  eventBus.$on('signOut', signOut);
 
   if (isAuthenticated.value) {
     const user = JSON.parse(userState.value as string);
     const userData = await fetchBackend(`users/${user?.login}`)
-    newState.value = userData.data?.[0]?.channel?.isChannel;
+    newState.value = userData.data?.[0]?.channel?.state === 'JOINED';
   }
 });
-
 </script>
 
 <template>
   <div class="button-box">
     <template v-if="isAuthenticated && isChannel">
-      <button class="part-button" type="button" @click="part">Part</button>
+      <button 
+        class="part-button" 
+        type="button" 
+        @click="part"
+        :disabled="isOperationInProgress"
+        :class="{ 'cooldown': isOperationInProgress }"
+      >Part</button>
     </template>
     <template v-else-if="isAuthenticated">
-      <button class="join-button" type="button" @click="join">Join</button>
+      <button 
+        class="join-button" 
+        type="button" 
+        @click="join" 
+        :disabled="isOperationInProgress"
+        :class="{ 'cooldown': isOperationInProgress }"
+      >Join</button>
     </template>
     <template v-else>
-      <button @click="shakeButton" :class="{ 'shake': isShaking }">Join</button>
+      <button 
+        @click="shakeButton" 
+        :class="{ 'shake': isShaking }"
+      >Join</button>
     </template>
   </div>
 </template>
@@ -141,6 +176,22 @@ onMounted(async () => {
 .part-button:hover,
 .join-button:hover {
   border-color: #fdfdfd;
+}
+
+.cooldown {
+  background-color: #555 !important;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.part-button.cooldown,
+.join-button.cooldown {
+  border-color: #333;
+}
+
+.part-button:disabled,
+.join-button:disabled {
+  pointer-events: none;
 }
 
 .part-button:focus,
