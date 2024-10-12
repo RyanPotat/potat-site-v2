@@ -7,7 +7,7 @@ import { Channel, ComputedExtras, HistoryResponse } from '../types/emotes';
 
 let observer: IntersectionObserver;
 
-const 
+const
 
 providers = {
   '7TV': {
@@ -196,8 +196,8 @@ onMounted(() => {
             <span v-if="update.known_bot" class="actor-icon" :title="'Performed by emote management bot'">⚙️</span>
             <span v-else-if="update.actor !== 'potatbotat'" class="actor-icon" :title="'Performed on website'">🌐</span>
             <a :href="update.user_url" target="_blank">
-              <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong> 
-            </a> 
+              <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong>
+            </a>
             {{ update.method }}
             <span>
               <a :href="update.emoteLink" target="_blank">
@@ -205,7 +205,7 @@ onMounted(() => {
               </a>
               {{ update.emote_new_alias || update.emote_alias || update.emote_name }}
             </span>
-            {{ update.word }} set 
+            {{ update.word }} set
             <a :href="update.set_url" target="_blank">
               <em>"{{ update.set_name }}"</em>
             </a>
@@ -224,8 +224,7 @@ onMounted(() => {
 <style scoped>
 
 #container {
-  max-height: 93vh;
-  margin-top: 7%;
+  margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
   display: flex;
