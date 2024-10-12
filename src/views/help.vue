@@ -4,6 +4,7 @@ import { humanizeDuration } from '../assets/utilities';
 import { Command, KeyString } from '../types/help';
 import router from '../router';
 import { useRoute } from 'vue-router';
+import { k } from 'vite/dist/node/types.d-aGj9QkWt';
 const route = useRoute();
 
 enum InternalLevels {
@@ -13,6 +14,10 @@ enum InternalLevels {
   'Bot admins',
   'Bot developers',
 };
+
+const collapsed = ref<{
+	[category: string]: boolean;
+}>({});
 
 const isAllCommands = computed(() => !route.params.command);
 
@@ -101,7 +106,9 @@ filteredCommands = computed((): Command[] => {
   });
 });
 
-
+const toggleCollapse = (category: string) => {
+	collapsed.value[category] = !collapsed.value[category];
+};
 onMounted(() => {
 	fetch('https://api.potat.app/help')
 		.then(res => res.json())
@@ -128,8 +135,8 @@ onMounted(() => {
 					<input v-model="search" type="text" placeholder="Search..." class="search"/>
 				</div>
         <section v-for="category in categories" :key="category">
-          <h3>{{ category }}</h3>
-					<ul class="commands-list">
+          <h3 @click="toggleCollapse(category)" :class="{ 'command-category': true, 'collapsed': collapsed[category] }">{{ category }}</h3>
+					<ul class="commands-list" v-show="!collapsed[category]">
 						<li @click="changeCommand(command)" v-for="command in getCategory.get(category)" :key="command.name" class="command-item">
 							<a :class="{ active: command.name === selectedCommand }"><span class="command-prefix">#</span>{{ command.name }}</a>
 						</li>
@@ -219,6 +226,7 @@ onMounted(() => {
 	width: 100%;
 	position: sticky;
 	top: 0;
+	z-index: 2;
 }
 #help-container {
 	display: grid;
@@ -243,7 +251,6 @@ onMounted(() => {
   outline: auto -webkit-focus-ring-color;
   outline-color: #f4f4f4;
 }
-
 .command-prefix {
 	color: #ccc;
 	padding-right: 1px;
@@ -256,7 +263,6 @@ onMounted(() => {
   text-align: left;
   overflow-y: auto;
 }
-
 .command-title {
   display: inline-flex;
   justify-content: center;
@@ -273,12 +279,32 @@ onMounted(() => {
   flex-direction: column;
 	background-color: rgba(31, 31, 31, 0.906);
 	section {
-		border-bottom: 1px solid white;
+		border-bottom: 1px solid rgb(135, 135, 135);
 		padding: 15px;
 	}
-	h3 {
-		font-size: 16px;
-	}
+}
+.command-category {
+	font-size: 16px;
+	background: rgba(31, 31, 31, 1);
+	padding: 5px;
+	position: sticky;
+	top: 60px;
+	z-index: 1;
+	cursor: pointer;
+	border-radius: 5px;
+	user-select: none;
+}
+.command-category.collapsed::after {
+	content: '▶';
+}
+.command-category::after {
+	position: absolute;
+	right: 10px;
+	content: '▼';
+	margin-left: 5px;
+	transition: transform 0.3s ease;
+	transform: rotate(0deg);
+	display: inline-block;
 }
 .commands-list {
 	margin: 0;
@@ -289,7 +315,7 @@ onMounted(() => {
 	margin: 10px 0;
 	cursor: pointer;
 	font-size: 18px;
-	margin: 14px 0;
+	margin: 6px 0;
 	padding: 8px;
 }
 .command-item a.active {
@@ -337,11 +363,8 @@ button.active {
 	}
 	.command-nav {
 		background-color: rgba(31, 31, 31, 0.906);
-		position: sticky;
 		padding: 15px;
 		margin-bottom: 5px;
-		position: sticky;
-		top: 80px;
 	}
 	.all-commands {
 		font-size: 20px;
@@ -352,9 +375,6 @@ button.active {
 	.command-title {
 		outline: none;
 		font-size: 22px;
-	}
-	.search-container {
-		top: 80px;
 	}
 	#help-content {
 		padding-top: 20px;
