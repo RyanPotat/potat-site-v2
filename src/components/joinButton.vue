@@ -19,7 +19,7 @@ userState: UserState = reactive({
   value: localStorage.getItem('userState')
 }),
 
-newState = reactive<{ value: boolean }>({ 
+newState = reactive<{ value: boolean }>({
   value: JSON.parse(userState.value as string)?.is_channel
 }),
 
@@ -52,10 +52,10 @@ join = async () => {
       'failed-join',
       `Failed to join channel: ${result?.errors?.[0]?.message}`
     );
-    
+
     eventBus.$emit('signOut');
     signOut();
-    
+
     isOperationInProgress.value = false;
     return shakeButton();
   }
@@ -81,7 +81,7 @@ part = async () => {
 
     eventBus.$emit('signOut');
     signOut();
-    
+
     isOperationInProgress.value = false;
     return shakeButton();
   }
@@ -92,7 +92,7 @@ part = async () => {
 
 shakeButton = () => {
   eventBus.$emit('flash-sign-in');
-  
+
   isShaking.value = true;
 
   setTimeout(() => isShaking.value = false, 500);
@@ -118,26 +118,26 @@ onMounted(async () => {
 <template>
   <div class="button-box">
     <template v-if="isAuthenticated && isChannel">
-      <button 
-        class="part-button" 
-        type="button" 
+      <button
+        class="part-button"
+        type="button"
         @click="part"
         :disabled="isOperationInProgress"
         :class="{ 'cooldown': isOperationInProgress }"
       >Part</button>
     </template>
     <template v-else-if="isAuthenticated">
-      <button 
-        class="join-button" 
-        type="button" 
-        @click="join" 
+      <button
+        class="join-button"
+        type="button"
+        @click="join"
         :disabled="isOperationInProgress"
         :class="{ 'cooldown': isOperationInProgress }"
       >Join</button>
     </template>
     <template v-else>
-      <button 
-        @click="shakeButton" 
+      <button
+        @click="shakeButton"
         :class="{ 'shake': isShaking }"
       >Join</button>
     </template>
@@ -145,6 +145,10 @@ onMounted(async () => {
 </template>
 
 <style scoped>
+button {
+	min-width: 80%;
+	font-size: 18px;
+}
 .button-box {
   background-color: rgba(31, 31, 31, 0.8);
   border-radius: 10px;

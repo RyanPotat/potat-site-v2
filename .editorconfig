@@ -1,0 +1,11 @@
+root = true
+
+[*.{ts,vue,css,json}]
+    indent_size = 2
+    indent_style = tab
+    insert_final_newline = true
+    trim_trailing_whitespace = true
+    end_of_line = lf
+
+[*.{json,ts}]
+    indent_style = space

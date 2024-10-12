@@ -24,6 +24,7 @@
     "eslint-plugin-import": "^2.29.0",
     "humanize-duration": "^3.31.0",
     "lint-staged": "^15.1.0",
+    "normalize.css": "^8.0.1",
     "prettier": "^3.1.0",
     "swagger-ui-dist": "^5.17.14",
     "tinycolor2": "^1.6.0",
@@ -34,8 +35,10 @@
     "winston": "^3.11.0"
   },
   "devDependencies": {
+    "@types/humanize-duration": "^3.27.4",
     "@types/react": "^18.2.47",
     "@types/react-dom": "^18.2.18",
+    "@types/tinycolor2": "^1.4.6",
     "@typescript-eslint/eslint-plugin": "^6.18.0",
     "@typescript-eslint/parser": "^6.18.0",
     "@vue/compiler-sfc": "^3.4.5",

@@ -11,20 +11,14 @@ import SwaggerUI from '../components/swaggerUI.vue'
 
 <style scoped>
   .swagger-potato {
-    display: flex;
-    text-align: left;
-    width: 95%; 
+    width: 95%;
     align-items: top;
-    flex-wrap: wrap; 
-    text-wrap: wrap;
     background-color: #1a1a1a;
     border-radius: 15px;
     padding: 20px;
     background-color: rgba(31, 31, 31, 0.906);
     overflow-y: auto;
-    margin-top: 10%;
-    max-height: 85vh;
-    margin: auto;
+    margin: 0 auto;
   }
 
   :deep(#swagger-ui .parameters-col_description input) {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
@@ -7,7 +7,7 @@ import { Channel, ComputedExtras, HistoryResponse } from '../types/emotes';
 
 let observer: IntersectionObserver;
 
-const 
+const
 
 providers = {
   '7TV': {
@@ -34,10 +34,10 @@ providers = {
 
 route = useRoute(),
 loaded = ref(false),
+isLoading = ref(false),
 none = ref(false),
 username = ref(route.params.username),
 history = ref<ComputedExtras[]>([]),
-historyList = ref<HTMLElement | null>(null),
 cursor = ref<string | null>(null),
 imRetarded = new Map(),
 channel = ref<Channel>({
@@ -48,6 +48,12 @@ channel = ref<Channel>({
 }),
 
 fetchEmoteHistory = async (pagination?: string | null) => {
+	if (isLoading.value) {
+		return;
+	}
+
+	isLoading.value = true;
+
   try {
     const response = await fetchBackend<HistoryResponse>(`emotes/history/${username.value}`, {
       params: { limit: 50, after: pagination }
@@ -126,21 +132,19 @@ fetchEmoteHistory = async (pagination?: string | null) => {
     console.error('Failed to fetch emote history:', error);
   } finally {
     loaded.value = true;
+		isLoading.value = false;
   }
 },
 
 handleScroll = () => {
-  if (!historyList.value) return;
-  const { scrollTop, scrollHeight, clientHeight } = historyList.value;
-
-  if (scrollTop + clientHeight >= scrollHeight - 10) {
+	if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 10) {
+		if (!cursor.value) return;
     fetchEmoteHistory(cursor.value);
-  }
+	}
 },
 
 observeImages = () => {
   const options = {
-    root: historyList.value,
     rootMargin: '0px',
     threshold: 0.1
   };
@@ -164,6 +168,11 @@ observeImages = () => {
 onMounted(() => {
   fetchEmoteHistory();
   observeImages();
+	addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+	removeEventListener('scroll', handleScroll);
 });
 </script>
 
@@ -179,7 +188,7 @@ onMounted(() => {
         <h2>Emote actions in {{ channel.bestName }}'s channel</h2>
       </div>
     </div>
-    <ul class="emote-list" ref="historyList" @scroll="handleScroll">
+    <ul class="emote-list">
       <li v-for="update in history" :key="update.emote_id" class="emote-item">
         <div class="logo-container">
           <a :href="providers[update.provider].home" target="_blank">
@@ -196,8 +205,8 @@ onMounted(() => {
             <span v-if="update.known_bot" class="actor-icon" :title="'Performed by emote management bot'">⚙️</span>
             <span v-else-if="update.actor !== 'potatbotat'" class="actor-icon" :title="'Performed on website'">🌐</span>
             <a :href="update.user_url" target="_blank">
-              <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong> 
-            </a> 
+              <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong>
+            </a>
             {{ update.method }}
             <span>
               <a :href="update.emoteLink" target="_blank">
@@ -205,7 +214,7 @@ onMounted(() => {
               </a>
               {{ update.emote_new_alias || update.emote_alias || update.emote_name }}
             </span>
-            {{ update.word }} set 
+            {{ update.word }} set
             <a :href="update.set_url" target="_blank">
               <em>"{{ update.set_name }}"</em>
             </a>
@@ -224,8 +233,7 @@ onMounted(() => {
 <style scoped>
 
 #container {
-  max-height: 93vh;
-  margin-top: 7%;
+  margin-top: 10px;
   margin-left: 10px;
   margin-right: 10px;
   display: flex;
