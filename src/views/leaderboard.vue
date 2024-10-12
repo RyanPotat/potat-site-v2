@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
 import { useRoute } from 'vue-router';
@@ -53,36 +53,44 @@ const
 
 loserOrLeader = ref<boolean>(order === 'asc' ? true : false),
 type = ref<LeaderboardTypes>(inputType ?? 'potatoes'),
-leaderboardList = ref<HTMLElement | null>(null),
 cursor = ref<string | undefined>(undefined),
 leaderboarders = ref<Leaderboard[]>([]),
 map = new Map(),
+loading = ref(false),
 
 fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => {
-  const response = await fetchBackend<Leaderboard>(`leaderboard`, {
-    params: {
-      order: loserOrLeader.value ? 'asc' : 'desc',
-      after: last,
-      type
-    }
-  })
+	if (loading.value) {
+		return;
+	}
 
-  for (const user of response.data) {
-    map.set(user.bestName, user);
-  }
+	loading.value = true;
 
-  leaderboarders.value = [...map.values()];
-  cursor.value = response?.pagination?.cursor;
+	try {
+		const response = await fetchBackend<Leaderboard>(`leaderboard`, {
+			params: {
+				order: loserOrLeader.value ? 'asc' : 'desc',
+				after: last,
+				type
+			}
+		});
+
+		for (const user of response.data) {
+			map.set(user.bestName, user);
+		}
+
+		leaderboarders.value = [...map.values()];
+		cursor.value = response?.pagination?.cursor;
+	} finally {
+		loading.value = false;
+	}
 },
 
 handleScroll = () => {
-  if (!leaderboardList.value) return;
-  const { scrollTop, scrollHeight, clientHeight } = leaderboardList.value;
-
-  if (scrollTop + clientHeight >= scrollHeight - 10) {
-    if (!cursor.value) return;
-    fetchLeaderboard(type.value, cursor.value);
-  }
+	// if scroll to the end of the window
+	if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 10) {
+		if (!cursor.value) return;
+		fetchLeaderboard(type.value, cursor.value);
+	}
 },
 
 fetchNewType = () => {
@@ -102,6 +110,12 @@ getLocale = (value: string | undefined) => {
 
 onMounted(() => {
   fetchLeaderboard(type.value, undefined);
+
+	addEventListener('scroll', handleScroll);
+});
+
+onUnmounted(() => {
+	removeEventListener('scroll', handleScroll);
 });
 </script>
 
@@ -124,7 +138,7 @@ onMounted(() => {
           <option value="commandsuser">User Commands Used</option>
         </select>
     </div>
-    <ul class="leaderboard-list" ref="leaderboardList" @scroll="handleScroll" v-if="leaderboarders.length">
+    <ul class="leaderboard-list" v-if="leaderboarders.length">
       <li v-for="user in leaderboarders" :key="user.bestName" class="leaderboard-item">
         <div class="profile-picture">
           <a :href="`https://twitch.tv/${user.bestName.toLowerCase()}`" target="_blank">
