@@ -22,7 +22,9 @@ const host = ref(window.location.hostname);
     border-radius: 15px;
     padding: 15px;
   }
-
+	.twitch-iframe h2 {
+		text-align: center;
+	}
   iframe#twitch-chat-embed {
     display: flex;
     border: none;
