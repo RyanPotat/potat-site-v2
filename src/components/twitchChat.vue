@@ -26,5 +26,6 @@ const host = ref(window.location.hostname);
   iframe#twitch-chat-embed {
     display: flex;
     border: none;
+		border-radius: 15px;
   }
 </style>
