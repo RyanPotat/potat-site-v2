@@ -33,13 +33,13 @@ cyclePartners = (isClick?: boolean) => {
 getDate = (date: string) => {
   const joined = new Date(date);
   const now = new Date();
-  return humanizeDuration(now.getTime() - joined.getTime(), 2);
+  return humanizeDuration(now.getTime() - joined.getTime());
 };
 
 onMounted(async () => {
   // Fetch partners
   partners.value = await fetchBackend<Partner>('partners').then(res => res.data);
-    
+
   // Preload images
   partners.value.forEach(partner => {
     const img = new Image();
@@ -53,7 +53,7 @@ cyclePartners();
 <template>
   <div v-if="partners.length" class="slider-container" @click="cyclePartners(true)">
     <div class="partner-title">
-      <h2><strong>Featured partners using the bot:</strong></h2>
+      <h2><strong>Featured partners using the bot</strong></h2>
     </div>
     <div class="partner-container">
       <Transition name="slide-fade" mode="out-in" tag="div">
@@ -83,22 +83,16 @@ cyclePartners();
 
 <style scoped>
 .slider-container {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
   text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
   user-select: none;
   background-color: rgba(31, 31, 31, 0.8);
   border-radius: 15px;
-  padding: 20px;
-  margin: 20px;
+  padding: 15px;
 }
-
 .slider-item {
-  width: 350px;
-  height: 110px;
-  display: flex;
+  display: grid;
+	grid-template-columns: auto 1fr;
+	gap: 10px;
   align-items: center;
   overflow: hidden;
 }
@@ -120,32 +114,18 @@ cyclePartners();
   transform: translateX(20px);
   opacity: 0;
 }
-
-
 .partner-title {
-  display: flex;
-  justify-content: center;
-  margin-top: -20px;
+	text-align: center;
 }
-
-.partner-container {
-  display: flex;
-  flex: 1;
-  justify-content: center;
-  overflow: hidden;
-}
-
 .pfp-container img {
   border-radius: 50%;
   width: 100px;
   height: 100px;
   object-fit: cover;
-  flex: 1
+  flex: 1;
 }
 .text-container {
-  height: 100px;
-  width: 210px;
-  flex: 1;
+	padding: 5px;
   background-color: rgba(31, 31, 31, 0.503);
   border-radius: 15px;
 }
