@@ -3,6 +3,7 @@ import { onMounted, ref } from 'vue';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
 import { useRoute } from 'vue-router';
+import router from '../router';
 
 interface Leaderboard {
   bestName: string;
@@ -21,7 +22,7 @@ interface Leaderboard {
   user_color: string;
 }
 
-const LeaderboardKinds = [
+const LeaderboardTypes = [
   'commandschannel',
   'emoteschannel',
   'commandsuser',
@@ -33,20 +34,22 @@ const LeaderboardKinds = [
   'badges'
 ] as const;
 
-type LeaderboardTypes = (typeof LeaderboardKinds)[number];
+type LeaderboardTypes = (typeof LeaderboardTypes)[number];
 
 const route = useRoute();
 
-let inputType = (route.query.type as string)?.toLowerCase() as LeaderboardTypes;
+let inputType = (route.query.type || route.params.type)?.toString().toLowerCase() as LeaderboardTypes;
+inputType =  inputType && LeaderboardTypes.includes(inputType) ? inputType : 'potatoes';
 
-if (!route.query.type) inputType = 'potatoes';
-else if (!LeaderboardKinds.includes(inputType)) inputType = 'potatoes';
+const alias = route.path.includes('loserboard') ? 'loserboard' : 'leaderboard';
+let order = (route.query.order as string)?.toLowerCase();
 
-let order = (route.query.order as string)?.toLowerCase()
-if (!route.query.order) order = 'desc';
-else if (!['asc', 'desc'].includes(order)) order = 'desc';
+if (!order || !['asc', 'desc'].includes(order)) {
+	order = alias === 'leaderboard' ? 'desc' : 'asc';
+}
 
-const 
+
+const
 
 loserOrLeader = ref<boolean>(order === 'asc' ? true : false),
 type = ref<LeaderboardTypes>(inputType ?? 'potatoes'),
@@ -66,8 +69,8 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
 
   for (const user of response.data) {
     map.set(user.bestName, user);
-  } 
-  
+  }
+
   leaderboarders.value = [...map.values()];
   cursor.value = response?.pagination?.cursor;
 },
@@ -83,6 +86,10 @@ handleScroll = () => {
 },
 
 fetchNewType = () => {
+	router.push({
+		path: `/${loserOrLeader.value ? 'loserboard' : 'leaderboard'}/${type.value}`,
+		force: true // vite thinks loserboard is the same as leaderboard because it's an alias
+	});
   leaderboarders.value = [];
   map.clear();
   cursor.value = undefined;
@@ -99,7 +106,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="leaderboard" v-if="leaderboarders.length">
+  <div class="leaderboard">
     <div class="leaderboard-options">
         <select v-model="loserOrLeader" class="type-box" @change="fetchNewType">
           <option :value=false>Leaderboard</option>
@@ -117,7 +124,7 @@ onMounted(() => {
           <option value="commandsuser">User Commands Used</option>
         </select>
     </div>
-    <ul class="leaderboard-list" ref="leaderboardList" @scroll="handleScroll">
+    <ul class="leaderboard-list" ref="leaderboardList" @scroll="handleScroll" v-if="leaderboarders.length">
       <li v-for="user in leaderboarders" :key="user.bestName" class="leaderboard-item">
         <div class="profile-picture">
           <a :href="`https://twitch.tv/${user.bestName.toLowerCase()}`" target="_blank">
@@ -126,7 +133,7 @@ onMounted(() => {
         </div>
         <div class="text-content">
           <div class="rank-name">
-            #{{ leaderboarders.indexOf(user) + 1 }} 
+            #{{ leaderboarders.indexOf(user) + 1 }}
             <a :href="`https://twitch.tv/${user.bestName.toLowerCase()}`" target="_blank">
               <strong :style="{ color: brightenColor(user.user_color) }">{{ user.bestName }}</strong>
             </a>
@@ -170,22 +177,17 @@ onMounted(() => {
 
 
 <style scoped>
-
 .leaderboard {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  overflow: hidden;
-  position: relative;
+	padding: 5px;
 }
-
 .leaderboard-options {
   display: flex;
   gap: 10px;
   position: sticky;
-  top: 0;
+  top: 75px;
+	height: 75px;
   z-index: 1;
-  background-color: rgba(31, 31, 31, 0.94);
+  background-color: rgba(30, 25, 37, 0.94);
   padding: 10px;
   border-radius: 0.5rem;
 }
@@ -200,22 +202,13 @@ onMounted(() => {
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
-body {
-  font-family: 'Arial', sans-serif;
-  margin: 0;
-  line-height: 1.5;
-  background-color: #3d3d3d;
-}
-
 .leaderboard-list {
   list-style: none;
   padding: 0;
-  overflow-y: auto;
   text-align: left;
   color: #e5e4e4;
-  width: 100%;
-  max-height: 85vh;
-  padding-top: 10px;
+	margin: 0;
+	padding: 10px;
 }
 
 .leaderboard-item {
