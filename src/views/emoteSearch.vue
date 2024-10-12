@@ -5,7 +5,7 @@ import { SearchOptions, EmoteInfo, Emote } from '../types/emotes';
 
 let observer: IntersectionObserver;
 
-const 
+const
 
 approach = ref<SearchOptions['approach']>('starts'),
 caseSensitive = ref<SearchOptions['case']>(false),
@@ -134,9 +134,9 @@ watch(emotes, async () => {
 <template>
   <div class="container">
     <div class="search-bar">
-      <input 
-        type="text" 
-        v-model="searchQuery" 
+      <input
+        type="text"
+        v-model="searchQuery"
         placeholder="Search emotes..."
         @keydown.enter="onNewQuery"
         class="search-box"
@@ -159,10 +159,10 @@ watch(emotes, async () => {
       <button @click="onNewQuery" >Search</button>
     </div>
     <div class="emote-list" ref="emoteList" @scroll="handleScroll">
-      <div 
-        v-for="emote in emotes" 
-        :key="emote.id" 
-        class="emote" 
+      <div
+        v-for="emote in emotes"
+        :key="emote.id"
+        class="emote"
         @click="loadEmoteData(emote.name)"
       >
         <img :src="emote.url"/>
@@ -204,6 +204,7 @@ watch(emotes, async () => {
   display: flex;
   flex-direction: row;
   align-items: center;
+	flex-wrap: wrap;
   justify-content: center;
   max-width: fit-content;
   gap: 10px;
