@@ -123,10 +123,10 @@ onMounted(() => {
 <template>
   <div v-if="commands.length > 0" id="help-container">
     <div :class="{ 'sidebar-container': true, 'hidden-mobile': !isAllCommands }">
-			<div class="search-container">
-				<input v-model="search" type="text" placeholder="Search..." class="search"/>
-			</div>
       <nav class="sidebar">
+				<div class="search-container">
+					<input v-model="search" type="text" placeholder="Search..." class="search"/>
+				</div>
         <section v-for="category in categories" :key="category">
           <h3>{{ category }}</h3>
 					<ul class="commands-list">
@@ -219,7 +219,6 @@ onMounted(() => {
 	width: 100%;
 	position: sticky;
 	top: 0;
-	z-index: 10;
 }
 #help-container {
 	display: grid;
