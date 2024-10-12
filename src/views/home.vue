@@ -8,19 +8,21 @@ import TwitchChat from '../components/twitchChat.vue';
 <template>
 
 <div class="home-container">
-	<div class="potat-home">
-		<div class="title-box">
-			<h1 class='paint'>
-				<a href="https://twitch.tv/potatbotat">
-					<img src="/tatoExplode.gif" class="logo"/>
-				</a>
-				<span>PotatBotat</span>
-			</h1>
-			<h2>An emote, entertainment, and utility chatbot</h2>
+	<div class="fk-old-layout">
+		<div class="potat-home">
+			<div class="title-box">
+				<h1 class='paint'>
+					<a href="https://twitch.tv/potatbotat">
+						<img src="/tatoExplode.gif" class="logo"/>
+					</a>
+					<span>PotatBotat</span>
+				</h1>
+				<h2>An emote, entertainment, and utility chatbot</h2>
+			</div>
 		</div>
-	</div>
-	<div class="join-container">
-  	<JoinButton/>
+		<div class="join-container">
+			<JoinButton/>
+		</div>
 	</div>
 
 	<TwitchChat/>
@@ -39,13 +41,18 @@ import TwitchChat from '../components/twitchChat.vue';
 
 .home-container {
 	display: grid;
-	grid-template-columns: auto 150px 250px;
+	grid-template-columns: 1fr auto;
 	grid-template-rows: auto 1fr;
 	gap: 8px 20px;
 	padding: 10px;
 }
-.potat-home {
+.fk-old-layout {
 	grid-area: 1 / 1 / 2 / 3;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+.potat-home {
 	margin: 20px;
 }
 .title-box {
@@ -69,16 +76,15 @@ import TwitchChat from '../components/twitchChat.vue';
   background-size: 100% auto;
 }
 .join-container {
-	grid-area: 1 / 3 / 2 / 4;
 	padding: 40px 0;
 	text-align: center;
 }
 .twitch-iframe {
-	grid-area: 2 / 2 / 2 / 4;
-	min-width: 320px;
+	grid-area: 2 / 2 / 2 / 3;
+	min-width: 420px;
 }
 .widgets-container {
-	grid-area: 2 / 1 / 3 / 2;
+	grid-area: 2 / 1 / 2 / 2;
 	display: flex;
 	justify-content: space-around;
 	align-items: start;
@@ -102,20 +108,9 @@ h2 {
 }
 
 @media (max-width: 960px) {
-	.home-container {
-		grid-template-columns: 1fr 2fr;
-	}
-	.potat-home {
-		grid-area: 1 / 1 / 2 / 3;
-	}
-	.join-container {
-		grid-area: 2 / 1 / 3 / 3
-	}
+
 	.twitch-iframe {
-		grid-area: 3 / 2 / 4 / 3;
-	}
-	.widgets-container {
-		grid-area: 3 / 1 / 4 / 2;
+		min-width: auto;
 	}
 	.join-container {
 		padding: 0;
@@ -125,6 +120,10 @@ h2 {
 	}
 }
 @media (max-width: 640px) {
+	.fk-old-layout {
+		flex-direction: column;
+		align-items: initial;
+	}
   .home-container {
 		display: flex;
 		flex-direction: column;
