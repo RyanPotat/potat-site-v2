@@ -3,7 +3,7 @@ import LoginButton from './components/loginButton.vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { StatsSocket } from './assets/socket';
 import { useRoute } from 'vue-router';
-
+import "normalize.css";
 const route = useRoute();
 
 StatsSocket.new('wss://stats.potat.app');
