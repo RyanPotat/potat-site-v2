@@ -39,13 +39,13 @@ import TwitchChat from '../components/twitchChat.vue';
 
 .home-container {
 	display: grid;
-	grid-template-columns: auto auto 340px;
+	grid-template-columns: auto 150px 250px;
 	grid-template-rows: auto 1fr;
 	gap: 8px 20px;
 	padding: 10px;
 }
 .potat-home {
-	grid-area: 1 / 1 / 2 / 1;
+	grid-area: 1 / 1 / 2 / 3;
 	margin: 20px;
 }
 .title-box {
@@ -69,16 +69,16 @@ import TwitchChat from '../components/twitchChat.vue';
   background-size: 100% auto;
 }
 .join-container {
-	grid-area: 1 / 2 / 2 / 3;
+	grid-area: 1 / 3 / 2 / 4;
 	padding: 40px 0;
 	text-align: center;
 }
 .twitch-iframe {
-	grid-area: 1 / 3 / 3 / 4;
+	grid-area: 2 / 2 / 2 / 4;
 	min-width: 320px;
 }
 .widgets-container {
-	grid-area: 2 / 1 / 3 / 3;
+	grid-area: 2 / 1 / 3 / 2;
 	display: flex;
 	justify-content: space-around;
 	align-items: start;

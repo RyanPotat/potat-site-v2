@@ -124,7 +124,7 @@ onMounted(async () => {
         @click="part"
         :disabled="isOperationInProgress"
         :class="{ 'cooldown': isOperationInProgress }"
-      >Part My Channel</button>
+      >Part</button>
     </template>
     <template v-else-if="isAuthenticated">
       <button
@@ -133,13 +133,13 @@ onMounted(async () => {
         @click="join"
         :disabled="isOperationInProgress"
         :class="{ 'cooldown': isOperationInProgress }"
-      >Join My Channel</button>
+      >Join</button>
     </template>
     <template v-else>
       <button
         @click="shakeButton"
         :class="{ 'shake': isShaking }"
-      >Join My Channel</button>
+      >Join</button>
     </template>
   </div>
 </template>
