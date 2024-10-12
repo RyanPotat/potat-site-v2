@@ -78,11 +78,11 @@ onMounted((): void => {
       user: JSON.stringify({ id, login, name, stv_id, is_channel }),
     });
 
-    
+
     eventBus.$on('signOut', () => {
       signOut();
     });
-    
+
     userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
     assignUser();
     window.removeEventListener('message', handleMessage);
@@ -112,6 +112,7 @@ onMounted((): void => {
 
 <style scoped>
 .twitch-button {
+	width: 100%;
   font-size: 0.88em;
   padding: 12px;
   border-radius: 15px;
