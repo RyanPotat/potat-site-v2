@@ -4,7 +4,6 @@ import { humanizeDuration } from '../assets/utilities';
 import { Command, KeyString } from '../types/help';
 import router from '../router';
 import { useRoute } from 'vue-router';
-import { k } from 'vite/dist/node/types.d-aGj9QkWt';
 const route = useRoute();
 
 enum InternalLevels {
