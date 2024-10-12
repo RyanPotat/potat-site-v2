@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, ref, watch } from 'vue';
+import { nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { fetchBackend } from '../assets/request';
 import { SearchOptions, EmoteInfo, Emote } from '../types/emotes';
 
@@ -10,13 +10,12 @@ const
 approach = ref<SearchOptions['approach']>('starts'),
 caseSensitive = ref<SearchOptions['case']>(false),
 format = ref<SearchOptions['format']>('any'),
-emoteList = ref<HTMLElement | null>(null),
 cursor = ref<string | null>(null),
 searchQuery = ref<string>(''),
 emotes = ref<Emote[]>([]),
 isRequesting = ref(false),
 selectedEmote = ref<EmoteInfo | null>(null),
-
+isLoading = ref(false),
 searchEmotes = async (query: string, options: SearchOptions): Promise<Emote[]> => {
   if (isRequesting.value) return [];
 
@@ -47,18 +46,28 @@ searchEmotes = async (query: string, options: SearchOptions): Promise<Emote[]> =
 },
 
 onQuery = async () => {
-  const options: SearchOptions = {
-    approach: approach.value,
-    format: format.value,
-    case: caseSensitive.value,
-    cursor: cursor.value
-  }
+	if (isLoading.value) {
+		return;
+	}
 
-  const thisBatch = await searchEmotes(searchQuery.value, options).then(res => {
-    return res.filter(each => !emotes.value.some(e => e.id === each.id));
-  })
+	isLoading.value = true;
 
-  emotes.value.push(...thisBatch);
+	try {
+		const options: SearchOptions = {
+			approach: approach.value,
+			format: format.value,
+			case: caseSensitive.value,
+			cursor: cursor.value
+		}
+
+		const thisBatch = await searchEmotes(searchQuery.value, options).then(res => {
+			return res.filter(each => !emotes.value.some(e => e.id === each.id));
+		})
+
+		emotes.value.push(...thisBatch);
+	} finally {
+		isLoading.value = false;
+	}
 },
 
 onNewQuery = async () => {
@@ -67,13 +76,12 @@ onNewQuery = async () => {
   onQuery();
 },
 
-handleScroll = () => {
-  if (!emoteList.value) return;
-  const { scrollTop, scrollHeight, clientHeight } = emoteList.value;
 
-  if (scrollTop + clientHeight >= scrollHeight - 10) {
-    onQuery();
-  }
+handleScroll = () => {
+	if (window.innerHeight + window.scrollY >= document.body.offsetHeight - 10) {
+		if (!cursor.value) return;
+		onQuery();
+	}
 },
 
 bestName = (name: string, display: string): string => {
@@ -97,7 +105,6 @@ closePopup = () => {
 
 observeImages = () => {
   const options = {
-    root: emoteList.value,
     rootMargin: '0px',
     threshold: 0.1
   };
@@ -129,6 +136,15 @@ watch(emotes, async () => {
   observeImages();
 });
 
+onMounted(() => {
+	addEventListener('scroll', handleScroll);
+});
+
+
+onUnmounted(() => {
+	removeEventListener('scroll', handleScroll);
+});
+
 </script>
 
 <template>
@@ -158,7 +174,7 @@ watch(emotes, async () => {
       </label>
       <button @click="onNewQuery" >Search</button>
     </div>
-    <div class="emote-list" ref="emoteList" @scroll="handleScroll">
+    <div class="emote-list">
       <div
         v-for="emote in emotes"
         :key="emote.id"
