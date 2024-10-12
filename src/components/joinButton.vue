@@ -137,6 +137,7 @@ onMounted(async () => {
     </template>
     <template v-else>
       <button
+        class="join-button"
         @click="shakeButton"
         :class="{ 'shake': isShaking }"
       >Join</button>
@@ -145,10 +146,6 @@ onMounted(async () => {
 </template>
 
 <style scoped>
-button {
-	min-width: 80%;
-	font-size: 18px;
-}
 .button-box {
   background-color: rgba(31, 31, 31, 0.8);
   border-radius: 10px;
@@ -167,6 +164,8 @@ button {
   cursor: pointer;
   transition: border-color 0.25s;
   text-shadow: -1px -1px 0 #333, 1px -1px 0 #333, -1px 1px 0 #333, 1px 1px 0 #333;
+	font-size: 22px;
+	min-width: 80%;
 }
 
 .join-button {
