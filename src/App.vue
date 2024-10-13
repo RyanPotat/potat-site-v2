@@ -34,8 +34,30 @@ const onDocumentClick =  (event: MouseEvent) => {
 	}
 };
 
+function lazySetBackgroundImage() {
+	const app = document.getElementById('app');
+
+	if (!app) {
+		console.error('Cannot set background image, app element not found!!');
+
+		return;
+	}
+
+	app.style.backgroundImage = `url('/Home.png')`;
+}
+
 onMounted(() => {
   document.addEventListener('click', onDocumentClick);
+
+	if (document.readyState === 'complete') {
+		lazySetBackgroundImage();
+	} else {
+		document.addEventListener('readystatechange', () => {
+			if (document.readyState === 'complete') {
+				lazySetBackgroundImage();
+			}
+		});
+	}
 });
 
 onUnmounted(() => {

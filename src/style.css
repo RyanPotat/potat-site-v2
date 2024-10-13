@@ -18,12 +18,12 @@
 }
 
 #app {
-  position: relative;
+	position: relative;
 
-	background-image: url('/Home.png');
-  background-size: cover;
-  background-position: center;
+	background-size: cover;
+	background-position: center;
 	background-attachment: fixed;
+	background-repeat: no-repeat;
 
 	min-height: 100vh;
 }
