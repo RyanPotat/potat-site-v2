@@ -108,6 +108,26 @@ filteredCommands = computed((): Command[] => {
 const toggleCollapse = (category: string) => {
 	collapsed.value[category] = !collapsed.value[category];
 };
+
+const commandsListContainer = ref<HTMLDivElement>();
+
+const scrollToSelectedCommand = () => {
+	if (!commandsListContainer.value) {
+		return;
+	}
+
+	const selectedCommand = commandsListContainer.value.querySelector('.command-item .active') as HTMLElement;
+
+	if (!selectedCommand || !selectedCommand.offsetTop) {
+		return;
+	}
+
+	commandsListContainer.value.scrollTo({
+		top: selectedCommand.offsetTop - (0.4 * commandsListContainer.value.offsetHeight),
+		behavior: 'smooth',
+	});
+}
+
 onMounted(() => {
 	fetch('https://api.potat.app/help')
 		.then(res => res.json())
@@ -119,6 +139,8 @@ onMounted(() => {
 
 				if (cmd) {
 					selectedCommand.value = cmd.name;
+
+					setTimeout(scrollToSelectedCommand, 200);
 				}
 			}
 		})
@@ -129,7 +151,7 @@ onMounted(() => {
 <template>
   <div v-if="commands.length > 0" id="help-container">
     <div :class="{ 'sidebar-container': true, 'hidden-mobile': !isAllCommands }">
-      <nav class="sidebar">
+      <nav class="sidebar" ref="commandsListContainer">
 				<div class="search-container">
 					<input v-model="search" type="text" placeholder="Search..." class="search"/>
 				</div>
