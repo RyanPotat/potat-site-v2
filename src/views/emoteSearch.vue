@@ -203,10 +203,7 @@ onUnmounted(() => {
     </div>
   </div>
 </template>
-
-
 <style scoped>
-
 #container {
   display: flex;
   flex-direction: column;
@@ -227,7 +224,7 @@ onUnmounted(() => {
   margin-bottom: 20px;
   padding: 0.5rem;
   border-radius: 0.5rem;
-  background-color: rgba(31, 31, 31, 0.94);
+  background-color: rgba(31, 31, 31, 0.9);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -252,8 +249,8 @@ onUnmounted(() => {
 
 .search-box {
   padding: 10px;
-  border-radius: 15px;
-  background-color: rgba(31, 31, 31, 0.906);
+  border-radius: 10px;
+  background-color: rgba(31, 31, 31, 0.9);
   outline: auto -webkit-focus-ring-color;
   outline-color: #f4f4f4;
   color: white;
@@ -263,7 +260,7 @@ onUnmounted(() => {
   display: flex;
   flex-direction: column;
   align-items: center;
-  background-color: rgba(31, 31, 31, 0.94);
+  background-color: rgba(31, 31, 31, 0.9);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   padding: 3px;
   border-radius: 0.5rem;
@@ -275,8 +272,8 @@ onUnmounted(() => {
 }
 
 .emote img {
-  max-width: 80px;
-  max-height: 80px;
+  width: 80px;
+  height: 80px;
   cursor: pointer;
 }
 
@@ -285,7 +282,9 @@ onUnmounted(() => {
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  background-color: rgba(0, 0, 0, 0.903);
+  background-color: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
   color: white;
   padding: 20px;
   border-radius: 10px;
@@ -312,5 +311,4 @@ onUnmounted(() => {
 .close-button:hover {
   background-color: rgba(255, 255, 255, 0.5);
 }
-
 </style>
