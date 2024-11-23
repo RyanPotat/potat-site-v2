@@ -39,19 +39,19 @@ onMounted(async () => {
 <template>
   <div v-if="data.misc" class="text-container">
 		<strong>Commands used:</strong>
-		<span>{{ data?.misc?.commandsUsed.toLocaleString() }}</span>
+		<span>{{ data?.misc?.commandsUsed?.toLocaleString() }}</span>
 
 		<strong>Potatoes farmed:</strong>
-		<span>{{ data?.potato?.total.toLocaleString() }}</span>
+		<span>{{ data?.potato?.total?.toLocaleString() }}</span>
 
 		<strong>Active channels:</strong>
-		<span>{{ data?.twitch?.activeChannels.toLocaleString() }}</span>
+		<span>{{ data?.twitch?.activeChannels?.toLocaleString() }}</span>
 
 		<strong>Emotes added:</strong>
-		<span>{{ data?.misc?.emotesAdded.toLocaleString() }}</span>
+		<span>{{ data?.misc?.emoteActions?.added?.toLocaleString() }}</span>
 
 		<strong>Users seen:</strong>
-		<span>{{ parseInt(data?.twitch?.usersSeen).toLocaleString() }}</span>
+		<span>{{ parseInt(data?.twitch?.usersSeen)?.toLocaleString() }}</span>
   </div>
 </template>
 
