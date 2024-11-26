@@ -16,7 +16,12 @@ isAuthenticated = computed<boolean>(() => {
 }),
 
 openWindow = (url: string) => {
-	window.open(url, '_blank', 'width=600,height=800');
+	const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+	if (isSafari) {
+		setTimeout(() => window.open(url, '_top'), 0);
+	} else {
+		window.open(url, '_blank', 'width=600,height=800');
+	}
 },
 
 connect = async (platform: string) => {
