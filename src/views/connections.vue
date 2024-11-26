@@ -15,6 +15,10 @@ isAuthenticated = computed<boolean>(() => {
   return authorizationToken.value !== null || userState.value !== null;
 }),
 
+openWindow = (url: string) => {
+	window.open(url, '_blank', 'width=600,height=800');
+},
+
 connect = async (platform: string) => {
   if (!isAuthenticated.value) return shakeButton(platform);
 
@@ -27,7 +31,7 @@ connect = async (platform: string) => {
     return signOut();
   }
 
-  window.open(url, '_blank', 'width=600,height=800');
+  openWindow(url);
 },
 
 signOut = (): void => {
