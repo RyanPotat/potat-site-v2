@@ -1,8 +1,11 @@
+/* eslint-disable import/prefer-default-export */
 import { default as eventBus } from '../assets/eventBus';
+
 export class StatsSocket {
   private static instance: StatsSocket
+
   private socket: WebSocket | null = null;
-  
+
   private constructor(private readonly url: string) {
     this.connect();
   }
@@ -11,7 +14,7 @@ export class StatsSocket {
     return this.instance ?? (this.instance = new this(uri))
   }
 
-  private connect() {
+  private connect(): void {
     if (this.socket?.readyState === WebSocket.OPEN) return;
     this.socket = new WebSocket(this.url);
 
@@ -19,10 +22,10 @@ export class StatsSocket {
 
     this.socket.addEventListener('message', (data: MessageEvent) => {
       try {
-        const msg = JSON.parse(data.data)
-        eventBus.$emit('update', { data: msg.data, topic: msg.topic.split('/')[1] });
+        const msg = JSON.parse(data.data);
+        eventBus.$emit('update', { data: msg.data, topic: msg.topic.replace('stats/', '') });
       } catch {
-        return;
+        console.log('Invalid JSON received');
       }
     });
 

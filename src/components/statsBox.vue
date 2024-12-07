@@ -5,6 +5,16 @@ import { delay } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
 import { UpdateEvent } from '../types/misc';
 
+enum EventType {
+  CommandsExecuted = 'commands-executed',
+  NewUser = 'new-user',
+  ActiveChannels = 'active-channels',
+  EmoteActions = 'emote-actions',
+  EmoteUse = 'emote-use',
+  PotatoUpdate = 'potato-update',
+}
+
+
 const data: Ref = ref({});
 onMounted(async () => {
 	data.value = await fetchBackend('').then(res => res?.data?.[0])
@@ -12,23 +22,26 @@ onMounted(async () => {
 	eventBus.$on('update', async (stats) => {
 		const { data: update, topic } = stats as UpdateEvent;
 		switch (topic) {
-			case 'commands-executed':
+			case EventType.CommandsExecuted:
 				data.value.misc.commandsUsed = update.totalCount;
 				break;
-			case 'new-user':
+			case EventType.NewUser:
 				data.value.twitch.usersSeen += 1;
 				break;
-			case 'active-channels':
+			case EventType.ActiveChannels:
 				data.value.twitch.activeChannels = update.activeCount;
 				break;
-			case 'emote-actions':
-				if (update.action !== 'ADD') return
-				data.value.misc.emotesAdded += 1;
+			case EventType.EmoteActions:
+				if (update.action !== 'ADD') return;
+				data.value.misc.emoteActions.added += 1;
 				break;
-			case 'potato-update':
+			case EventType.EmoteUse:
+				data.value.misc.emotesUsed += update?.emote?.count ?? 0;
+				break;
+			case EventType.PotatoUpdate:
 				for (let i = 0; i < update.updateCount; i++) {
 					data.value.potato.total += 1;
-					await delay(Math.min(15, 5000/update.updateCount));
+					await delay(Math.min(5, 5000/update.updateCount));
 				}
 				break;
 		}
@@ -49,6 +62,9 @@ onMounted(async () => {
 
 		<strong>Emotes added:</strong>
 		<span>{{ data?.misc?.emoteActions?.added?.toLocaleString() }}</span>
+
+		<strong>Emotes used:</strong>
+		<span>{{ data?.misc?.emotesUsed?.toLocaleString() }}</span>
 
 		<strong>Users seen:</strong>
 		<span>{{ parseInt(data?.twitch?.usersSeen)?.toLocaleString() }}</span>
