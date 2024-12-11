@@ -73,9 +73,11 @@ const redirectToCommand = (name: string) => {
 	window.location.href = `/help/${name}`
 }
 
-const openTwitch = (name: string) => {
-	window.open(`https://twitch.tv/${name.toLowerCase()}`, '_blank');
-}
+const redirectToChannelWrapped = (channelName: string) => {
+  if (channelName) {
+    window.location.href = `/wrapped/${channelName}`;
+  }
+};
 
 onMounted(() => {
   const user = window.location.pathname.split('/wrapped/')[1];
@@ -228,6 +230,8 @@ onMounted(() => {
 						v-for="(channel, index) in wrappedData.user.mostChattedChannels || []"
 						:key="channel.name"
 						class="wrapped-details"
+						@click="redirectToChannelWrapped(channel.name)"
+						style="cursor: pointer;"
 					>
 						<div class="channel-pfp">
 							<img
@@ -293,6 +297,8 @@ onMounted(() => {
 						v-for="(channel, index) in wrappedData.channel?.topChatters || []"
 						:key="channel.name"
 						class="wrapped-details"
+						@click="redirectToChannelWrapped(channel.name)"
+						style="cursor: pointer;"
 					>
 					<div class="channel-pfp">
 						<img
@@ -366,6 +372,8 @@ onMounted(() => {
 							<img
 								:style="{ border: `2px solid ${brightenColor(channel.color as string, 35)}` }"
 								:src="channel.pfp || 'https://gachi.gay/sgJNs'"
+								@click="redirectToChannelWrapped(channel.name)"
+								style="cursor: pointer;"
 							/>
 							<strong :style="{ color: brightenColor(channel.color as string, 35) }">
 								{{ channel.display ?? channel.name }}
