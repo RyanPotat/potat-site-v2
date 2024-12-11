@@ -55,6 +55,7 @@ interface Wrapped {
 const selectedSection = ref<'User' | 'Channel' | 'Global'>('User');
 const wrappedData = ref<Wrapped | null>(null);
 const isLoading = ref(true);
+const computedArray = ref(['User', 'Channel', 'Global']);
 
 const redirectToHome = () => {
   window.location.href = '/';
@@ -90,6 +91,10 @@ onMounted(() => {
     }
     wrappedData.value = data;
 
+		if (!data.channel?.totalChatsSent || !data.channel?.prefix) {
+			computedArray.value = ['User', 'Global'];
+		}
+
 		document.documentElement.style.setProperty(
 			'--user-purple',
 			brightenColor(data.user.self.color, 40) || '#ae81ff'
@@ -110,7 +115,7 @@ onMounted(() => {
       <nav class="sidebar">
 				<ul class="wrapped-list" role="menu">
 					<li
-						v-for="wrapped in ['User', 'Channel', 'Global']"
+						v-for="wrapped in computedArray"
 						:key="wrapped"
 						class="wrapped-item"
 						@click="changeWrapped(wrapped as 'User' | 'Channel' | 'Global')"
