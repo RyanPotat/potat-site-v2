@@ -235,7 +235,7 @@ onMounted(() => {
 								:src="channel.pfp || 'https://gachi.gay/sgJNs'"
 							/>
 							<strong :style="{ color: brightenColor(channel.color as string, 35) }">
-								{{ channel.display }}
+								{{ channel.display ?? channel.name }}
 							</strong>
 							<span v-if="index === 0" class="highlight-star"> ★</span>
 						</div>
