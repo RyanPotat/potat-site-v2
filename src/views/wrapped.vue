@@ -203,7 +203,9 @@ onMounted(() => {
 						</h2>
 					</div>
 
-					<h2>Your Most Used Commands:</h2>
+					<h2 v-if="wrappedData.user.mostUsedCommands.length">
+						Your Most Used Commands:
+					</h2>
 						<div
 							v-for="(command, index) in wrappedData.user.mostUsedCommands || []"
 							:key="command.name"
@@ -219,7 +221,9 @@ onMounted(() => {
 						<p>Times used: <strong>{{ command.count.toLocaleString() }}</strong></p>
 					</div>
 
-					<h2>The Channels You Chatted The Most:</h2>
+					<h2 v-if="wrappedData.user.mostChattedChannels.length">
+						The Channels You Chatted The Most:
+					</h2>
 					<div
 						v-for="(channel, index) in wrappedData.user.mostChattedChannels || []"
 						:key="channel.name"
@@ -266,7 +270,9 @@ onMounted(() => {
           </div>
         </div>
 
-				<h2>Your Chat's Favorite Commands</h2>
+				<h2 v-if="wrappedData.channel?.topCommands?.length">
+					Your Chat's Favorite Commands
+				</h2>
 					<div
 						v-for="(command, index) in wrappedData.channel?.topCommands || []"
 						:key="command.name"
@@ -280,7 +286,9 @@ onMounted(() => {
 					<p>Times used: <strong>{{ command.count.toLocaleString() }}</strong></p>
 				</div>
 
-				<h2>Your most loyal chatters</h2>
+				<h2 v-if="wrappedData.channel?.topChatters?.length">
+					Your most loyal chatters
+				</h2>
 					<div
 						v-for="(channel, index) in wrappedData.channel?.topChatters || []"
 						:key="channel.name"
@@ -355,8 +363,13 @@ onMounted(() => {
 						class="wrapped-details"
 					>
 						<div class="channel-pfp">
-							<img :src="channel.pfp || 'https://gachi.gay/sgJNs'" />
-							<strong>{{ channel.display ?? channel.name }}</strong>
+							<img
+								:style="{ border: `2px solid ${brightenColor(channel.color as string, 35)}` }"
+								:src="channel.pfp || 'https://gachi.gay/sgJNs'"
+							/>
+							<strong :style="{ color: brightenColor(channel.color as string, 35) }">
+								{{ channel.display ?? channel.name }}
+							</strong>
 							<span v-if="index === 0" class="highlight-star"> ★</span>
 						</div>
 						<p>Total Commands Used: <strong>{{ channel.count.toLocaleString() }}</strong></p>
