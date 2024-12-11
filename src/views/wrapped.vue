@@ -199,7 +199,7 @@ onMounted(() => {
 								Handcrafted
 								<strong>{{ wrappedData.user.customCommandsMade.toLocaleString() }}</strong>
 							</div>
-							Custom Commands{{ wrappedData.user.customCommandsMade > 1 ? 's' : '' }}
+							Custom Command{{ wrappedData.user.customCommandsMade > 1 ? 's' : '' }}
 						</h2>
 					</div>
 
