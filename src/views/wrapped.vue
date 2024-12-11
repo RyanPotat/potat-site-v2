@@ -159,14 +159,14 @@ onMounted(() => {
 								Executed
 								<strong>{{ wrappedData.user.totalCommandsUsed.toLocaleString() }}</strong>
 							</div>
-							Total Commands
+							Total Command{{ wrappedData.user.totalCommandsUsed > 1 ? 's' : '' }}
 						</h2>
 						<h2 v-if="wrappedData.user.totalEmoteActions > 0" class="grid-stat-box">
 							<div>
 								Performed
 								<strong>{{ wrappedData.user.totalEmoteActions.toLocaleString() }}</strong>
 							</div>
-							Emote Actions
+							Emote Action{{ wrappedData.user.totalEmoteActions > 1 ? 's' : '' }}
 						</h2>
 						<h2 v-if="wrappedData.user.totalPotatoesFarmed > 0" class="grid-stat-box">
 							<div>
@@ -179,14 +179,14 @@ onMounted(() => {
 							Added The Bot In
 							<div>
 								<strong>{{ wrappedData.user.addedBotToChannels.toLocaleString() }}</strong>
-								Channels
+								Channel{{ wrappedData.user.addedBotToChannels > 1 ? 's' : '' }}
 							</div>
 						</h2>
 						<h2 v-if="wrappedData.user.changedPaintCount > 0" class="grid-stat-box">
 							Changed Your 7TV Paint
 							<div>
 								<strong>{{ wrappedData.user.changedPaintCount.toLocaleString() }}</strong>
-								Times
+								Time{{ wrappedData.user.changedPaintCount > 1 ? 's' : '' }}
 							</div>
 						</h2>
 						<h2 v-if="wrappedData.user.customCommandsMade > 0" class="grid-stat-box">
@@ -194,7 +194,7 @@ onMounted(() => {
 								Handcrafted
 								<strong>{{ wrappedData.user.customCommandsMade.toLocaleString() }}</strong>
 							</div>
-							Custom Commands
+							Custom Commands{{ wrappedData.user.customCommandsMade > 1 ? 's' : '' }}
 						</h2>
 					</div>
 
@@ -248,7 +248,7 @@ onMounted(() => {
 								They Also Executed
               	<strong>{{ wrappedData.channel?.totalCommandsUsed.toLocaleString() }}</strong>
 							</div>
-							Total Commands
+							Total Command{{ (wrappedData.channel?.totalCommandsUsed ?? 0) > 1 ? 's' : '' }}
             </h2>
             <h2 v-if="(wrappedData.channel?.totalEmoteActions ?? 0) > 0" class="grid-stat-box">
               <div>
