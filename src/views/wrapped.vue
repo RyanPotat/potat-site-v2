@@ -54,6 +54,7 @@ interface Wrapped {
 
 const selectedSection = ref<'User' | 'Channel' | 'Global'>('User');
 const wrappedData = ref<Wrapped | null>(null);
+const isLoading = ref(true);
 
 const redirectToHome = () => {
   window.location.href = '/';
@@ -93,12 +94,18 @@ onMounted(() => {
 			'--user-purple',
 			brightenColor(data.user.self.color, 40) || '#ae81ff'
 		);
+  }).finally(() => {
+    isLoading.value = false;
   });
 });
 </script>
 
 <template>
-  <div v-if="wrappedData" id="wrapped-container">
+	<div v-if="isLoading" class="loading-container">
+    <div class="loading-spinner"></div>
+    <p>Loading your Wrapped data...</p>
+  </div>
+  <div v-else-if="wrappedData" id="wrapped-container">
     <div class="sidebar-container">
       <nav class="sidebar">
 				<ul class="wrapped-list" role="menu">
@@ -532,6 +539,34 @@ h2.grid-stat-box:nth-child(7) {
 
 .wrapped-details p {
 	color: white;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  background-color: rgba(50, 50, 50, 0.8);
+  text-align: center;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #007bff;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 @media (max-width: 700px) {
