@@ -47,6 +47,11 @@ const routes: RouteRecordRaw[] = [
     name: 'Search',
     component: () => import('../views/emoteSearch.vue'),
   },
+  {
+    path: '/wrapped/:username',
+    name: 'Wrapped',
+    component: () => import('../views/wrapped.vue'),
+  },
 ];
 
 const router = createRouter({
