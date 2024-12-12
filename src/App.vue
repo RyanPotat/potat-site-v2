@@ -4,12 +4,14 @@ import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { StatsSocket } from './assets/socket';
 import { useRoute } from 'vue-router';
 import "normalize.css";
+import { UserState } from './types/misc';
 const route = useRoute();
 
 StatsSocket.new('wss://stats.potat.app');
 
 const isDropdownVisible = ref(false);
 const isMobileMenuVisible = ref(false);
+const username = ref<string | undefined>(undefined)
 
 const toggleDropdown = () => {
   isDropdownVisible.value = !isDropdownVisible.value;
@@ -49,6 +51,12 @@ function lazySetBackgroundImage() {
 onMounted(() => {
   document.addEventListener('click', onDocumentClick);
 
+	const userState = localStorage.getItem('userState');
+	if (typeof userState === 'string') {
+		const parsed = JSON.parse(userState) as UserState;
+		username.value = parsed.login;
+	}
+
 	if (document.readyState === 'complete') {
 		lazySetBackgroundImage();
 	} else {
@@ -78,11 +86,46 @@ watch(route, () => {
 		<li class="nav-link tools-nav-link" @click="toggleDropdown">
 			Tools
 			<ul :class="{ 'dropdown-content': true, 'visible': isDropdownVisible }">
-				<li><router-link to="/connections" class="nav-link" style="margin-bottom: 10px;">Connections</router-link></li>
-				<li><router-link to="/emotes/search" class="nav-link" style="margin-bottom: 10px;">Emote Search</router-link></li>
-				<li><a href="https://haste.potat.app" class="nav-link external-link" style="margin-bottom: 10px;">Haste</a></li>
-				<li><router-link to="/redirects" class="nav-link external-link" style="margin-bottom: 10px;">URL Shortener</router-link></li>
-				<li><router-link to="/api/docs" class="nav-link">API Docs</router-link></li>
+				<li>
+					<router-link
+					to="/connections"
+					class="nav-link"
+					style="margin-bottom: 10px;"
+					>Connections</router-link>
+				</li>
+				<li>
+					<router-link
+					to="/emotes/search"
+					class="nav-link"
+					style="margin-bottom: 10px;"
+					>Emote Search</router-link>
+				</li>
+				<li>
+					<a
+					href="https://haste.potat.app"
+					class="nav-link external-link"
+					style="margin-bottom: 10px;">Haste</a>
+				</li>
+				<li>
+					<router-link
+					to="/redirects"
+					class="nav-link external-link"
+					style="margin-bottom: 10px;"
+					>URL Shortener</router-link>
+				</li>
+				<li><router-link
+					to="/api/docs"
+					class="nav-link"
+					style="margin-bottom: 10px;"
+					>API Docs</router-link>
+				</li>
+				<li v-if="username">
+					<router-link
+					:to="`/wrapped/${username}/user`"
+					class="nav-link"
+					style="margin-bottom: 10px;"
+					>2024 Wrapped</router-link>
+				</li>
 			</ul>
 		</li>
 		<li class="login-button-container mobile-menu"><LoginButton/></li>

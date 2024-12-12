@@ -1,9 +1,9 @@
 export interface UserState {
-  value: string | null;
-}
-
-export interface AuthorizationToken {
-  value: string | null;
+  id: string;
+  login: string;
+  name: string;
+  stv_id: string;
+  is_channel: boolean;
 }
 
 export interface TokenUserData {

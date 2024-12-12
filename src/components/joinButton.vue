@@ -3,7 +3,7 @@ import { ref, reactive, computed, onMounted } from 'vue';
 import { default as eventBus } from '../assets/eventBus';
 import { delay } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
-import { AuthorizationToken, TokenUserData, UserState } from '../types/misc';
+import { TokenUserData, UserState } from '../types/misc';
 
 const
 
@@ -11,16 +11,16 @@ isShaking = ref(false),
 
 isOperationInProgress = ref(false),
 
-authorizationToken: AuthorizationToken = reactive({
+authorizationToken = reactive({
   value: localStorage.getItem('authorization')
 }),
 
-userState: UserState = reactive({
+userState = reactive({
   value: localStorage.getItem('userState')
 }),
 
 newState = reactive<{ value: boolean }>({
-  value: JSON.parse(userState.value as string)?.is_channel
+  value: (JSON.parse(userState.value as string) as UserState)?.is_channel
 }),
 
 isAuthenticated = computed<boolean>(() => {
