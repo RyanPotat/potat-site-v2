@@ -347,6 +347,22 @@ onMounted(() => {
 							</div>
 							Emote Actions Were Performed
 						</h2>
+						<h2 v-if="wrappedData.global.newChannelsThisYear > 0" class="grid-stat-box">
+							<div>
+								An Insane
+								<strong>{{ wrappedData.global?.newChannelsThisYear.toLocaleString() }}</strong>
+								New
+								</div>
+								Channels Added The Bot
+						</h2>
+						<h2 class="grid-stat-box">
+							<div>
+								Thank You For Using
+								<strong>PotatBotat</strong>
+								In 2024!
+							</div>
+
+						</h2>
           </div>
 
 					<h2>The Top Commands Across All Channels</h2>
