@@ -1,13 +1,17 @@
 <script setup lang="ts">
-import { onMounted, ref, computed } from 'vue';
+import { onMounted, ref } from 'vue';
 import { fetchBackend } from '../assets/request';
 import { brightenColor } from '../assets/utilities';
+import router from '../router';
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
 interface WrappedVanity {
   readonly pfp: string;
   readonly color: string;
   readonly display: string;
 }
+
 type WrappedNode = {
   readonly name: string;
   readonly count: number;
@@ -56,6 +60,7 @@ const selectedSection = ref<'User' | 'Channel' | 'Global'>('User');
 const wrappedData = ref<Wrapped | null>(null);
 const isLoading = ref(true);
 const computedArray = ref(['User', 'Channel', 'Global']);
+const user = route.params.username as string
 
 const redirectToHome = () => {
   window.location.href = '/';
@@ -66,11 +71,14 @@ const getWrapped = async (username: string): Promise<Wrapped> => {
 };
 
 const changeWrapped = (wrapped: 'User' | 'Channel' | 'Global') => {
+	router.push({ path: `/wrapped/${user}/${wrapped.toLowerCase()}` });
   selectedSection.value = wrapped;
 };
 
 const redirectToCommand = (name: string) => {
-	window.location.href = `/help/${name}`
+	if (name) {
+		window.location.href = `/help/${name}`
+	}
 }
 
 const redirectToChannelWrapped = (channelName: string) => {
@@ -80,7 +88,6 @@ const redirectToChannelWrapped = (channelName: string) => {
 };
 
 onMounted(() => {
-  const user = window.location.pathname.split('/wrapped/')[1];
   if (!user) {
     console.log('No user provided');
     return redirectToHome();
@@ -95,6 +102,11 @@ onMounted(() => {
 
 		if (!data.channel?.totalChatsSent || !data.channel?.prefix) {
 			computedArray.value = ['User', 'Global'];
+		}
+
+		if (route.params.type && typeof route.params.type === 'string') {
+			selectedSection.value = route.params.type.slice(0, 1).toUpperCase() +
+				route.params.type.slice(1).toLowerCase() as 'User' | 'Channel' | 'Global';
 		}
 
 		document.documentElement.style.setProperty(
@@ -213,8 +225,7 @@ onMounted(() => {
 							:key="command.name"
 							class="wrapped-details"
 							style="cursor: pointer;"
-							:href="`https://potat.app/help/${command.name}`"
-							target="_blank"
+							@click="redirectToCommand(command.name)"
 						>
 						<div>
 							<a>#</a><strong>{{ command.name }}</strong>
@@ -282,6 +293,7 @@ onMounted(() => {
 						:key="command.name"
 						class="wrapped-details"
 						style="cursor: pointer;"
+						@click="redirectToCommand(command.name)"
 					>
 					<div>
 						<a>{{ wrappedData.channel?.prefix ?? '#' }}</a><strong>{{ command.name }}</strong>
@@ -370,6 +382,7 @@ onMounted(() => {
 						v-for="(command, index) in wrappedData.global?.topCommands || []"
 						:key="command.name"
 						class="wrapped-details"
+						@click="redirectToCommand(command.name)"
 					>
 						<div>
 							<a>#</a><strong>{{ command.name }}</strong>
