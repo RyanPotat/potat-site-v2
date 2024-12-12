@@ -100,7 +100,7 @@ onMounted(() => {
     }
     wrappedData.value = data;
 
-		if (!data.channel?.totalChatsSent || !data.channel?.prefix) {
+		if (!data.channel?.totalChatsSent && !data.channel?.prefix) {
 			computedArray.value = ['User', 'Global'];
 		}
 
