@@ -64,6 +64,8 @@ export interface EmoteHistory {
   emoteLink:       string;
   actor:           'potatbotat' | 'external';
   known_bot:       boolean;
+  expires_at:      string | null;
+  is_expired:      boolean;
 }
 
 export interface ComputedExtras extends EmoteHistory {
@@ -71,6 +73,7 @@ export interface ComputedExtras extends EmoteHistory {
   set_url: string;
   method: string;
   word: string;
+  expiry: string | null;
 }
 
 export interface HistoryResponse {

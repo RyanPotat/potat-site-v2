@@ -77,6 +77,8 @@ fetchEmoteHistory = async (pagination?: string | null) => {
       let set_url: string = '';
       let method: string = '';
       let word: string = '';
+			let expiry = null;
+			let expired = null;
 
       if (!update.user_stv_pfp || update.user_stv_pfp === '//cdn.7tv.app/') {
         update.user_stv_pfp = update.user_pfp;
@@ -112,17 +114,28 @@ fetchEmoteHistory = async (pagination?: string | null) => {
         set_url = `https://www.frankerfacez.com/channel/${channel.value.login}`;
       }
 
+			if (update.expires_at) {
+				expiry = update.expires_at;
+				expired = update.is_expired ?? false;
+			}
+
       return {
         ...update,
         user_pfp: userPfp,
         user_url,
         set_url,
         method,
-        word
+        word,
+				expiry,
+				expired
       }
     });
 
     for (const update of computedHistory) {
+			if (!update) {
+				continue;
+			}
+
       const key = `${update.emote_id}:${update.ago}:${update.action}:${update.user_login}`
       imRetarded.set(key, update);
     }
@@ -202,8 +215,30 @@ onUnmounted(() => {
             </a>
           </div>
           <div class="text-content">
-            <span v-if="update.known_bot" class="actor-icon" :title="'Performed by emote management bot'">⚙️</span>
-            <span v-else-if="update.actor !== 'potatbotat'" class="actor-icon" :title="'Performed on website'">🌐</span>
+            <span
+							v-if="update.known_bot"
+							class="actor-icon"
+							:title="'Performed by emote management bot'"
+						>⚙️</span>
+
+            <span
+							v-else-if="update.actor !== 'potatbotat'"
+							class="actor-icon"
+							:title="'Performed on website'"
+						>🌐</span>
+
+						<span
+							v-else-if="update.expires_at && !update.is_expired"
+							class="actor-icon"
+							:title="`Temporary emote is set to expire after ${update.expires_at}`"
+						>⏳</span>
+
+						<span
+						  v-else-if="update.expires_at && update.is_expired"
+							class="actor-icon"
+							:title="`Temporary emote has expired after ${update.expires_at}`"
+						>💥</span>
+
             <a :href="update.user_url" target="_blank">
               <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong>
             </a>
