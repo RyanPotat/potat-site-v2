@@ -219,25 +219,25 @@ onUnmounted(() => {
 							v-if="update.known_bot"
 							class="actor-icon"
 							:title="'Performed by emote management bot'"
-						>⚙️</span>
+						>⚙️ </span>
 
             <span
 							v-else-if="update.actor !== 'potatbotat'"
 							class="actor-icon"
 							:title="'Performed on website'"
-						>🌐</span>
+						>🌐 </span>
 
 						<span
 							v-else-if="update.expires_at && !update.is_expired"
 							class="actor-icon"
 							:title="`Temporary emote is set to expire after ${update.expires_at}`"
-						>⏳</span>
+						>⏳ </span>
 
 						<span
 						  v-else-if="update.expires_at && update.is_expired"
 							class="actor-icon"
 							:title="`Temporary emote has expired after ${update.expires_at}`"
-						>💥</span>
+						>💥 </span>
 
             <a :href="update.user_url" target="_blank">
               <strong :style="{ color: brightenColor(update.user_color) }">{{ update.user_name }}</strong>
