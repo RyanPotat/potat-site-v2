@@ -1,0 +1,2773 @@
+openapi: 3.0.0
+info: 
+  title: Potato
+  version: One
+servers:
+  - url: https://api.potat.app
+paths:
+  /twitch/badges:
+    get:
+      summary: Get Twitch badge user distribution
+      tags:
+        - Twitch Info/Stats
+      description: Returns all badges seen by the bot on Twitch, ranked by the amount of users currently seen using them. Provides a count of users, and a percentage of total users that currently have the badge equipped.
+      parameters:
+        - in: query
+          name: badge
+          description: Get statistics about a specific badge, from URI encoded input.
+          schema:
+            type: string
+        - in: query
+          name: first
+          description: Limit of badges to return per request
+          schema:
+            type: integer
+        - in: query
+          name: after
+          description: The cursor used to get the next page of results. Cursor is provided by the pagination object in a successful response.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucessful request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        badge:
+                          type: string
+                          example: "NOBADGE"
+                        user_count:
+                          type: integer
+                          example: 28644640
+                        percentage:
+                          type: number
+                          format: float
+                          example: 77.6764868841285
+                        rank:
+                          type: integer
+                          example: 1
+                  duration:
+                    type: number
+                    format: float
+                    example: 5.0475
+                  statusCode:
+                    type: integer
+                    example: 200
+                  pagination:
+                    type: object
+                    properties:
+                      cursor:
+                        type: string
+                        example: "Mzp0d2l0Y2gtcmVjYXAtMjAyMw=="
+                example:
+                  data: 
+                    - badge: "NOBADGE"
+                      user_count: 28644640
+                      percentage: 77.6764868841285
+                      rank: 1
+                    - badge: "premium"
+                      user_count: 4910026
+                      percentage: 13.314657478318104
+                      rank: 2
+                    - badge: "twitch-recap-2023"
+                      user_count: 1197035
+                      percentage: 3.2460339343536084
+                      rank: 3
+                  duration: 5.0475
+                  statusCode: 200
+                  pagination: 
+                    cursor: "Mzp0d2l0Y2gtcmVjYXAtMjAyMw=="
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                    - message: "Invalid badge format. Expected alphanumeric + [-_], found: ..."
+
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Badge not found"
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Badge not found"
+                    - message: "Invalid cursor"
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                    
+  /twitch/colors:
+    get:
+      summary: Get Twitch color user distribution
+      tags:
+        - Twitch Info/Stats
+      description: Returns all Twitch user colors seen by the bot, ranked by the number of users activly using them. Provides a count of users, and a percentage of total users for each color.
+      parameters:
+        - in: query
+          name: color
+          description: Get statistics about a specific color, from URI encoded input.
+          schema:
+            type: string
+        - in: query
+          name: first
+          description: Limit of colors to return per request
+          schema:
+            type: integer
+        - in: query
+          name: after
+          description: The cursor used to get the next page of results. Cursor is provided by the pagination object in a successful response.
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Sucessful request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        color:
+                          type: string
+                          example: "NOCOLOR"
+                        user_count:
+                          type: integer
+                          example: 21445737
+                        percentage:
+                          type: number
+                          format: float
+                          example: 58.14167798192169
+                        rank:
+                          type: integer
+                          example: 1
+                    example:
+                      - color: "NOCOLOR"
+                        user_count: 21445737
+                        percentage: 58.14167798192169
+                        rank: 1
+                      - color: "#FF0000"
+                        user_count: 2403196
+                        percentage: 6.515320408873907
+                        rank: 2
+                      - color: "#8A2BE2"
+                        user_count: 1847281
+                        percentage: 5.008175612902568
+                        rank: 3
+                  duration:
+                    type: number
+                    format: float
+                    example: 9.3852
+                  statusCode:
+                    type: integer
+                    example: 200
+                  pagination:
+                    type: object
+                    properties:
+                      cursor:
+                        type: string
+                        example: "MzojOEEyQkUy"
+                example:
+                  data:
+                    - color: "NOCOLOR"
+                      user_count: 21445737
+                      percentage: 58.14167798192169
+                      rank: 1
+                    - color: "#FF0000"
+                      user_count: 2403196
+                      percentage: 6.515320408873907
+                      rank: 2
+                    - color: "#8A2BE2"
+                      user_count: 1847281
+                      percentage: 5.008175612902568
+                      rank: 3
+                  duration: 9.3852
+                  statusCode: 200
+                  pagination:
+                    cursor: "MzojOEEyQkUy"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                    - message: "Invalid color format. Expected hexadecimal color or 'none', found: ..."
+
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Badge not found"
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Color not found"
+                    - message: "Invalid cursor"
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                    
+  /twitch/emotes:
+    get:
+      summary: Get Twitch emote information
+      tags:
+        - Twitch Info/Stats
+      description: Find information about a provided Twitch emote ID, or name. To find emote by name, multiple sources will be checked if not available internally, but this will cause the response to have significant delay in some cases. To not check fallback sources provide the fallback=false parameter.
+      parameters:
+        - in: query
+          name: name
+          description: The name of the Twitch emote to lookup.
+          schema:
+            type: string
+        - in: query
+          name: id
+          description: The ID of the Twitch emote to lookup.
+          schema:
+            type: string
+        - in: query
+          name: fallback
+          description: If falsy, the API will only attempt to search the internal DB for emotes, speeding up response time.
+          schema:
+            type: boolean
+      responses:
+        '200':
+          description: Emote details data
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        channelID:
+                          type: string
+                          example: "71092938"
+                        channelLogin:
+                          type: string
+                          example: "xqc"
+                        channelName:
+                          type: string
+                          example: "xQc"
+                        emoteID:
+                          type: string
+                          example: "1035663"
+                        emoteCode:
+                          type: string
+                          example: "xqcL"
+                        emotePrefix:
+                          type: string
+                          example: "xqc"
+                        emoteSuffix:
+                          type: string
+                          example: "L"
+                        emoteURL:
+                          type: string
+                          format: uri
+                          example: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                        emoteSetID:
+                          type: string
+                          example: "19503"
+                        emoteAssetType:
+                          type: string
+                          example: "STATIC"
+                        emoteState:
+                          type: string
+                          example: "ACTIVE"
+                        emoteType:
+                          type: string
+                          example: "SUBSCRIPTIONS"
+                        emoteTier:
+                          type: integer
+                          example: 1
+                        source:
+                          type: string
+                          example: "Internal"
+                    example:
+                      - channelID: "71092938"
+                        channelLogin: "xqc"
+                        channelName: "xQc"
+                        emoteID: "1035663"
+                        emoteCode: "xqcL"
+                        emotePrefix: "xqc"
+                        emoteSuffix: "L"
+                        emoteURL: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                        emoteSetID: "19503"
+                        emoteAssetType: "STATIC"
+                        emoteState: "ACTIVE"
+                        emoteType: "SUBSCRIPTIONS"
+                        emoteTier: 1
+                        source: "Internal"
+                  duration:
+                    type: number
+                    format: float
+                    example: 82.3611
+                  statusCode:
+                    type: integer
+                    example: 200
+                example:
+                  data:
+                    - channelID: "71092938"
+                      channelLogin: "xqc"
+                      channelName: "xQc"
+                      emoteID: "1035663"
+                      emoteCode: "xqcL"
+                      emotePrefix: "xqc"
+                      emoteSuffix: "L"
+                      emoteURL: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                      emoteSetID: "19503"
+                      emoteAssetType: "STATIC"
+                      emoteState: "ACTIVE"
+                      emoteType: "SUBSCRIPTIONS"
+                      emoteTier: 1
+                      source: "Internal"
+                  duration: 82.3611
+                  statusCode: 200
+
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Limit parameter out of bounds. Expected 1-200, found: ..."
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "Too many emotes provided (Max 15)"
+                    - message: "No emotes provided"
+                    - message: "Invalid emote ID"
+                    - message: "Invalid emote name"
+                    - message: "Request failed"
+
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Badge not found"
+                example:
+                  data: []
+                  duration: 0.6319
+                  statusCode: 400
+                  errors:
+                    - message: "No emotes found"
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                    
+  /twitch/emotes/search:
+    get:
+      tags:
+        - Twitch Info/Stats
+      summary: Search for Twitch emotes by name
+      parameters:
+        - in: query
+          name: format
+          schema:
+            type: string
+            enum: [static, animated]
+          description: Filter emotes by format
+        - in: query
+          name: first
+          schema:
+            type: integer
+            default: 100
+          description: Number of results to return (1-200)
+        - in: query
+          name: starts
+          schema:
+            type: string
+          description: Search for emotes starting with the given string. Mutually exclusive with ends, matches, and includes.
+        - in: query
+          name: ends
+          schema:
+            type: string
+          description: Search for emotes ending with the given string. Mutually exclusive with starts, matches, and includes.
+        - in: query
+          name: matches
+          schema:
+            type: string
+          description: Search for emotes matching the given string. Mutually exclusive with starts, ends, and includes.
+        - in: query
+          name: includes
+          schema:
+            type: string
+          description: Search for emotes including the given string. Mutually exclusive with starts, ends, and matches.
+        - in: query
+          name: case
+          schema:
+            type: boolean
+          description: Case sensitive search
+        - in: query
+          name: after
+          schema:
+            type: string
+          description: Cursor for pagination
+      responses:
+        '200':
+          description: Emote search results
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        id:
+                          type: string
+                          example: "1035663"
+                        name:
+                          type: string
+                          example: "xqcL"
+                        format:
+                          type: string
+                          example: "STATIC"
+                        url:
+                          type: string
+                          format: uri
+                          example: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                    example:
+                      - id: "1035663"
+                        name: "xqcL"
+                        format: "STATIC"
+                        url: "https://static-cdn.jtvnw.net/emoticons/v2/1035663/default/dark/3.0"
+                  duration:
+                    type: number
+                    format: float
+                    example: 82.3611
+                  statusCode:
+                    type: integer
+                    example: 200
+                  pagination:
+                    type: object
+                    properties:
+                      cursor:
+                        type: string
+                        example: "Mzp0d2l0Y2gtcmVjYXAtMjAyMw=="
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Limit parameter out of bounds. Expected 1-200, found 2000"
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.6319
+                  statusCode:
+                    type: integer
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Invalid cursor"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+
+  /users/{username}:
+    get:
+      summary: Retrieve user information
+      tags:
+        - Internal
+      parameters:
+        - name: username
+          in: path
+          description: Comma-separated list of usernames or a single username
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful retrieval of user information
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        user:
+                          $ref: '#/components/schemas/User'
+                        channel:
+                          $ref: '#/components/schemas/Channel'
+                        potatoes:
+                          $ref: '#/components/schemas/PotatoData'
+                  statusCode:
+                    type: number
+                    example: 200
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                  statusCode:
+                    type: number
+                    example: 400
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                  statusCode:
+                    type: number
+                    example: 404
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                
+  /help:
+    get:
+      summary: Get all commands
+      tags:
+        - Internal
+      responses:
+        '200':
+          description: Successfully retrieved command data
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Command'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                          
+  /emotes/history/{id}:
+    get:
+      summary: Retrieve emote history
+      tags:
+        - Internal
+      parameters:
+        - name: id
+          in: path
+          description: Emote ID or channel username
+          required: true
+          schema:
+            type: string
+        - name: first
+          in: query
+          description: Number of records to return
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: after
+          in: query
+          description: Cursor for pagination
+          required: false
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful retrieval of emote history
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        channel:
+                          $ref: '#/components/schemas/EmoteHistoryChannel'
+                        history:
+                          type: array
+                          items:
+                            $ref: '#/components/schemas/EmoteHistoryItem'
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  statusCode:
+                    type: number
+                    example: 200
+                  pagination:
+                    type: object
+                    properties:
+                      cursor:
+                        type: string
+                      hasNextPage:
+                        type: boolean
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  statusCode:
+                    type: number
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  statusCode:
+                    type: number
+                    example: 404
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                
+  /redirect:
+    post:
+      summary: Create a redirect URL
+      tags:
+        - Internal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                url:
+                  type: string
+                  example: "https://example.com"
+              required:
+                - url
+      responses:
+        '200':
+          description: Successfully created redirect URL
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        url:
+                          type: string
+                          example: "https://redirected-url.com"
+                  duration:
+                    type: number
+                    example: 0.1234
+                  status:
+                    type: integer
+                    example: 200
+        '400':
+          description: Invalid URL or redirect creation error
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  duration:
+                    type: number
+                    example: 0.1234
+                  status:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Invalid URL"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                
+  /leaderboard:
+    get:
+      summary: Get the leaderboard
+      tags:
+        - Internal
+      parameters:
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+            default: desc
+          description: Order of the leaderboard
+        - in: query
+          name: after
+          schema:
+            type: string
+          description: Cursor for pagination
+        - in: query
+          name: first
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 30
+            default: 30
+          description: Limit the number of results
+        - in: query
+          name: skipCache
+          schema:
+            type: boolean
+            default: false
+          description: Skip cache
+        - in: query
+          name: type
+          schema:
+            type: string
+            enum: [potatoes, trivia, scramble, paints, badges, emoteschannel, emotesuser]
+            default: potatoes
+          description: Type of leaderboard. If none provided, defaults to potatoes.
+      responses:
+        '200':
+          description: Successfully retrieved leaderboard data
+          content:
+            application/json:
+              example:
+                data:
+                  - bestName: "potatobot"
+                    farmSize: 900
+                    farmName: "Applesauce farm"
+                    prestige: 0
+                    potatoCount: 1000000000000000
+                    user_pfp: "https://xd.lol/a_pfp/3.0"
+                    user_color: "#FFFFFF"
+                statusCode: 200
+                duration: 0.1234
+                pagination:
+                  cursor: "bGVhZGVyYm9hcmQ6OTo4NjU4OTU0NDE="
+                  hasNextPage: true
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              example:
+                data: []
+                statusCode: 400
+                duration: 0.1234
+                errors:
+                  - message: "Invalid cursor"
+                  - message: "Inavalid type"
+        '404':
+          description: No results found
+          content:
+            application/json:
+              example:
+                data: []
+                statusCode: 404
+                duration: 0.1234
+                errors:
+                  - message: "No results found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              example:
+                data: []
+                statusCode: 500
+                duration: 0.1234
+                errors:
+                  - message: "Internal Server Error"
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              example:
+                data: []
+                statusCode: 429
+                duration: 0.1234
+                errors:
+                  - message: "Rate Limit Reached"
+                          
+  /execute:
+    post:
+      summary: Execute a command
+      description: Execute a command as if you were running it from chat. The channel will always default to your own.
+      tags: 
+        - Internal
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text:
+                  type: string
+                  description: The input text to be processed
+                  example: "#massping look mom im using a command!"
+      responses:
+        '200':
+          description: Command executed successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    example:
+                    - text: "Successful command invocation response"
+                      error: "Error executing command"
+                      reply: "true"
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  statusCode:
+                    type: integer
+                    example: 200
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "No input provided."
+                    example:
+                      - message: "No input provided."
+                  statusCode:
+                    type: integer
+                    example: 400
+        '404':
+          description: Not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Command invocation didn't return any result."
+                    example:
+                      - message: "Command invocation didn't return any result."
+                  statusCode:
+                    type: integer
+                    example: 404
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+
+  /channel/listen-events:
+    get:
+      summary: Get Listen Events
+      description: Retrieves listen events for a specified channel.
+      tags:
+        - Channel
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The user ID of the channel.
+      responses:
+        '200':
+          description: Successful retrieval of listen events
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ListenEvent'
+                  statusCode:
+                    type: integer
+                  duration:
+                    type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                  duration:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+              examples:
+                invalidId:
+                  summary: Invalid ID
+                  value:
+                    data: []
+                    statusCode: 400
+                    duration: '0.002s'
+                    errors:
+                      - message: Invalid channel ID
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                  duration:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+              examples:
+                notFound:
+                  summary: No Events Found
+                  value:
+                    data: []
+                    statusCode: 404
+                    duration: '0.003s'
+                    errors:
+                      - message: No events found.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+    post:
+      summary: Add a new listen event for a channel
+      description: Adds a new listen event to a specified channel.
+      tags:
+        - Channel
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                channel_name:
+                  type: string
+                  description: Name of the channel.
+                  example: "example_channel"
+                type:
+                  type: string
+                  description: Type of the event.
+                  example: "follow"
+                message:
+                  type: string
+                  description: Message to be sent.
+                  example: "Thank you for following!"
+                whisper:
+                  type: boolean
+                  description: Whether to send the message as a whisper.
+                  example: false
+                announced:
+                  type: boolean
+                  description: Whether the event is announced.
+                  example: true
+              required:
+                - channel_name
+                - type
+                - message
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the channel
+          example: "123456"
+      responses:
+        '200':
+          description: Successfully added the listen event
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                    example: 200
+                  duration:
+                    type: number
+                    format: float
+                    example: 123.45
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: ""
+        '400':
+          description: Bad request due to invalid channel ID or notification parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                    example: 400
+                  duration:
+                    type: number
+                    format: float
+                    example: 123.45
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Invalid channel ID"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '418':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAmbassador'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+    delete:
+      summary: Delete Listen Events
+      description: Deletes listen events for a specified channel and type.
+      tags:
+        - Channel
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The user ID of the channel.
+        - name: channelID
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The channel ID of the event.
+        - name: type
+          in: query
+          required: true
+          schema:
+            type: string
+          description: The type of event to delete.
+      responses:
+        '204':
+          description: Event(s) successfully deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                  duration:
+                    type: string
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                  duration:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+              examples:
+                missingId:
+                  summary: Missing ID
+                  value:
+                    data: []
+                    statusCode: 400
+                    duration: '0.002s'
+                    errors:
+                      - message: "Missing required parameter: id"
+                invalidId:
+                  summary: Invalid ID
+                  value:
+                    data: []
+                    statusCode: 400
+                    duration: '0.003s'
+                    errors:
+                      - message: Invalid channel ID
+                missingChannelID:
+                  summary: Missing Channel ID
+                  value:
+                    data: []
+                    statusCode: 400
+                    duration: '0.002s'
+                    errors:
+                      - message: "Missing required parameter: channelID"
+                missingType:
+                  summary: Missing Type
+                  value:
+                    data: []
+                    statusCode: 400
+                    duration: '0.002s'
+                    errors:
+                      - message: "Missing required parameter: type"
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                  duration:
+                    type: string
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+              examples:
+                notFound:
+                  summary: No Events Found
+                  value:
+                    data: []
+                    statusCode: 404
+                    duration: '0.003s'
+                    errors:
+                      - message: No events found.
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '418':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAmbassador'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                
+  /channel/commands:
+    get:
+      summary: Get channel commands
+      tags:
+        - Channel
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Channel ID
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 200
+          description: Limit the number of results
+      responses:
+        '200':
+          description: Successfully retrieved channel commands
+          content:
+            application/json:
+              example:
+                data:
+                  - command_id: 267
+                    channel_id: 865895441
+                    user_id: 457260003
+                    user_trigger_ids: []
+                    user_ignore_ids: []
+                    trigger: "^!uwu"
+                    response: ""
+                    active: true
+                    active_online: true
+                    active_offline: true
+                    reply: false
+                    whisper: false
+                    announce: false
+                    cooldown: 4000
+                    delay: 0
+                    use_count: 2
+                    created: "2024-06-26T07:15:14.192926"
+                    modified: "2024-06-26T07:15:14.192926"
+                    run_command: "pipe gpt {1+} | uwu"
+                statusCode: 200
+                duration: 0.1234
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              example:
+                data: []
+                statusCode: 400
+                duration: 0.1234
+                errors:
+                  - message: "Invalid limit parameter. Expected 1-100, found: 201"
+        '404':
+          description: No results found
+          content:
+            application/json:
+              example:
+                data: []
+                statusCode: 404
+                duration: 0.1234
+                errors:
+                  - message: "Channel not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                
+    delete:
+      summary: Delete a channel command
+      tags:
+        - Channel
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+          description: Channel ID
+        - in: query
+          name: command_id
+          schema:
+            type: string
+          required: true
+          description: Command ID
+      responses:
+        '204':
+          description: Command deleted successfully
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              example:
+                data: []
+                statusCode: 400
+                duration: 0.1234
+                errors:
+                  - message: "Invalid/missing command ID"
+        '404':
+          description: Channel or command not found
+          content:
+            application/json:
+              example:
+                data: []
+                statusCode: 404
+                duration: 0.1234
+                errors:
+                  - message: "Command not found"
+        '418':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAmbassador'
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+
+
+  /channel/command-settings:
+    get:
+      summary: Get command settings for a channel
+      tags:
+        - Channel
+      parameters:
+        - name: id
+          in: query
+          description: ID of the channel
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommandSettings'
+                  statusCode:
+                    type: number
+                    example: 200
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                  statusCode:
+                    type: number
+                    example: 400
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '418':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedSignInRequired'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+
+    put:
+      summary: Update command settings for a channel
+      tags:
+        - Channel
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: id
+          in: query
+          description: ID of the channel
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                update:
+                  type: object
+                  properties:
+                    is_enabled:
+                      type: boolean
+                    offline_only:
+                      type: boolean
+                    permission:
+                      type: string
+                      enum: [none, subscribers, vip, moderators, broadcaster]
+                    custom_cooldown:
+                      type: number
+                    channel_usage:
+                      type: number
+                    silent_errors:
+                      type: boolean
+                    users_blacklisted:
+                      type: array
+                      items:
+                        type: number
+                    users_whitelisted:
+                      type: array
+                      items:
+                        type: number
+                    allow_bots:
+                      type: boolean
+                type:
+                  type: string
+                  enum: [all, command, category]
+                  description: Type of update
+                  example: all
+                command:
+                  type: string
+                  description: Name of the command (required if type is command)
+                category:
+                  type: string
+                  description: Name of the category (required if type is category)
+              required:
+                - update
+                - type
+      responses:
+        '200':
+          description: Successful update
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/CommandSettings'
+                  statusCode:
+                    type: number
+                    example: 200
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+        '400':
+          description: Invalid request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                  statusCode:
+                    type: number
+                    example: 400
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '418':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedSignInRequired'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+    delete:
+      summary: Reset command settings for a channel
+      description: Resets the command settings to their default values for a specified channel, command, or category.
+      tags:
+        - Channel
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID of the channel
+          example: "123456"
+        - in: query
+          name: command
+          schema:
+            type: string
+          required: false
+          description: Name of the command
+          example: "example_command"
+        - in: query
+          name: category
+          schema:
+            type: string
+          required: false
+          description: Category of the commands
+          example: "example_category"
+      responses:
+        '204':
+          description: Successfully reset the command settings
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                    example: 204
+                  duration:
+                    type: number
+                    format: float
+                    example: 123.45
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: ""
+        '400':
+          description: Bad request due to invalid channel ID or notification parameters
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                    example: 400
+                  duration:
+                    type: number
+                    format: float
+                    example: 123.45
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Invalid channel ID"
+        '404':
+          description: Command or category not found
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                  statusCode:
+                    type: integer
+                    example: 404
+                  duration:
+                    type: number
+                    format: float
+                    example: 123.45
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                          example: "Command not found"
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '418':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAmbassador'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+                
+  /join:
+    post:
+      summary: Join a Twitch channel
+      description: Join a Twitch channel with the bot.
+      tags:
+        - Internal
+      security:
+        - bearerAuth: []
+      parameters:
+        - name: prefix
+          in: query
+          description: Prefix for bot commands
+          schema:
+            type: string
+        - name: offline_only
+          in: query
+          description: Offline only setting
+          schema:
+            type: boolean
+          example: true
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                prefix:
+                  type: string
+                  description: Prefix for bot commands
+                  example: "#"
+      responses:
+        '200':
+          description: Successfully joined the channel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        success:
+                          type: string
+                          example: Joined channel {channelName}
+                  statusCode:
+                    type: integer
+                    example: 200
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  statusCode:
+                    type: integer
+                    example: 400
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    example:
+                      - message: "Invalid request format"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  statusCode:
+                    type: integer
+                    example: 401
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    example:
+                      - message: "Bot is currently banned on Twitch, unable to join."
+        '403':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  statusCode:
+                    type: integer
+                    example: 403
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    example:
+                      - message: "Bot is currently banned in this channel, unable to join."
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: object
+                    items: {}
+                    example: []
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  statusCode:
+                    type: integer
+                    example: 409
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+                    example:
+                      - message: "Bot is currently joined and active in this channel."
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '418':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedSignInRequired'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+
+  /part:
+    delete:
+      summary: Part the bot from a channel
+      tags: 
+        - Internal
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: Successfully parted from the channel
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        success:
+                          type: string
+                          example: Parted channel {channelName}
+                  statusCode:
+                    type: integer
+                    example: 200
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items: {}
+                    example: []
+                  statusCode:
+                    type: integer
+                    example: 400
+                  duration:
+                    type: number
+                    format: float
+                    example: 0.1234
+                  errors:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        message:
+                          type: string
+        '500':
+          description: Internal server error
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ServerError'
+        '418':
+          description: Forbidden
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UnauthorizedAmbassador'
+        '429':
+          description: Rate Limit Reached
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/RateLimitResponse'
+
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    CommandSettings:
+      type: object
+      properties:
+        is_enabled:
+          type: boolean
+        offline_only:
+          type: boolean
+        permission:
+          type: string
+          enum: [none, subscribers, vip, moderators, broadcaster]
+        custom_cooldown:
+          type: number
+        silent_errors:
+          type: boolean
+        users_blacklisted:
+          type: array
+          items:
+            type: number
+        users_whitelisted:
+          type: array
+          items:
+            type: number
+        allow_bots:
+          type: boolean
+    User:
+      type: object
+      properties:
+        id:
+          type: number
+          example: 1
+        user_id:
+          type: number
+          example: 457260003
+        username:
+          type: string
+          example: "ryanpotat"
+        first_seen:
+          type: string
+          format: date-time
+          example: "2023-04-22T08:56:08.876Z"
+        level:
+          type: number
+          example: 4
+        language:
+          type: string
+          example: "english"
+        bttv_id:
+          type: string
+          example: "6359db802c6b4f8448ccda8e"
+        stv_id:
+          type: string
+          example: "62b91373a71bddc849d2a019"
+        display:
+          type: string
+          example: "RyanPotat"
+        is_bot:
+          type: boolean
+          example: false
+        is_selfbot:
+          type: boolean
+          example: true
+        platform:
+          type: string
+          example: "twitch"
+        channel_id:
+          type: string
+          nullable: true
+          example: null
+        chatroom_id:
+          type: string
+          nullable: true
+          example: null
+        ffz_id:
+          type: number
+          example: 1502493
+    Channel:
+      type: object
+      properties:
+        joinedAt:
+          type: string
+          format: date-time
+          example: "2023-04-22T09:16:57.420Z"
+        prefix:
+          type: string
+          example: "#"
+        isChannel:
+          type: boolean
+    PotatoData:
+      type: object
+      properties:
+        joinedAt:
+          type: string
+          format: date-time
+        count:
+          type: number
+        prestige:
+          type: number
+        rank:
+          type: number
+        taxMultiplier:
+          type: number
+        verbose:
+          type: boolean
+        potato:
+          type: object
+          properties:
+            readyAt:
+              type: string
+              format: date-time
+            ready:
+              type: boolean
+            usage:
+              type: number
+            averageResponse:
+              type: number
+        cdr:
+          type: object
+          properties:
+            readyAt:
+              type: string
+              format: date-time
+            ready:
+              type: boolean
+        trample:
+          type: object
+          properties:
+            readyAt:
+              type: string
+              format: date-time
+            ready:
+              type: boolean
+            trampleCount:
+              type: number
+            trampledCount:
+              type: number
+            trampledBy:
+              type: string
+        steal:
+          type: object
+          properties:
+            readyAt:
+              type: string
+              format: date-time
+            ready:
+              type: boolean
+            stolenCount:
+              type: number
+            theftCount:
+              type: number
+            stoleBy:
+              type: string
+            stolenAmount:
+              type: number
+        eat:
+          type: object
+          properties:
+            readyAt:
+              type: string
+              format: date-time
+            ready:
+              type: boolean
+        quiz:
+          type: object
+          properties:
+            readyAt:
+              type: string
+              format: date-time
+            ready:
+              type: boolean
+            attempted:
+              type: number
+            completed:
+              type: number
+        gamble:
+          type: object
+          properties:
+            winCount:
+              type: number
+            loseCount:
+              type: number
+            totalWins:
+              type: number
+            totalLosses:
+              type: number
+        duel:
+          type: object
+          properties:
+            winCount:
+              type: number
+            loseCount:
+              type: number
+            totalWins:
+              type: number
+            totalLosses:
+              type: number
+            caughtLosses:
+              type: number
+    EmoteHistoryChannel:
+      type: object
+      properties:
+        pfp:
+          type: string
+        bestName:
+          type: string
+        login:
+          type: string
+    EmoteHistoryItem:
+      type: object
+      properties:
+        provider:
+          type: string
+        user_login:
+          type: string
+        user_name:
+          type: string
+        user_ffz_id:
+          type: string
+        user_bttv_id:
+          type: string
+        user_stv_id:
+          type: string
+        bestUserName:
+          type: string
+        set_name:
+          type: string
+        user_color:
+          type: string
+        ago:
+          type: string
+        user_stv_pfp:
+          type: string
+        user_pfp:
+          type: string
+        emoteURL:
+          type: string
+        emoteLink:
+          type: string
+    RateLimitResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+          example: []
+        duration:
+          type: number
+          format: float
+          example: 0
+        statusCode:
+          type: integer
+          example: 429
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            - message: "Potato rate limit reached."
+    Command:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "emotehistory"
+        description:
+          type: string
+          example: "Display the history of additions/removals/aliases of emotes by PotatBotat in a given channel. If none specified it defaults to the current channel."
+        title:
+          type: string
+          example: "Bot emote action history"
+        usage:
+          type: string
+          example: "#emotehistory <channel>"
+        category:
+          type: string
+          example: "emotes"
+        aliases:
+          type: array
+          items:
+            type: string
+            example: "emotelog"
+        flags:
+          type: array
+          items:
+            type: object
+            properties:
+              name:
+                type: string
+                example: "limit"
+              type:
+                type: string
+                example: "string"
+              level:
+                type: integer
+                example: 1
+              required:
+                type: boolean
+                example: false
+              description:
+                type: string
+                example: "Limit of the results to display. Default is 100. Max is 300."
+              usage:
+                type: string
+                example: "#emotehistory <channel> limit:<number>"
+        cooldown:
+          type: integer
+          example: 5000
+        level:
+          type: integer
+          example: 1
+        conditions:
+          type: object
+          properties:
+            whisperable:
+              type: boolean
+              example: true
+            ignoreBots:
+              type: boolean
+              example: true
+        whitelist:
+          type: array
+          items:
+            type: string
+        blacklist:
+          type: array
+          items:
+            type: string
+        usageCount:
+          type: integer
+          example: 0
+        silent:
+          type: boolean
+          example: false
+        isDisabled:
+          type: boolean
+          example: false
+        safedSettings:
+          type: object
+          properties:
+            conditions:
+              type: object
+              properties:
+                whisperable:
+                  type: boolean
+                  example: true
+                ignoreBots:
+                  type: boolean
+                  example: true
+            cooldown:
+              type: integer
+              example: 5000
+        fileName:
+          type: string
+          example: "Emotes-history.js"
+    ListenEvent:
+      type: object
+      properties:
+        user_id:
+          type: integer
+          example: 865895441
+        username:
+          type: string
+          example: potatbotat
+        channel_id:
+          type: integer
+          example: 865895441
+        channel_login:
+          type: string
+          example: potatbotat
+        channel_name:
+          type: string
+          example: PotatBotat
+        active:
+          type: boolean
+          example: true
+        type:
+          type: string
+          example: live
+        message:
+          type: string
+          example: ''
+        whisper:
+          type: boolean
+          example: false
+        announced:
+          type: boolean
+          example: false
+        platform:
+          type: string
+          example: twitch
+    ServerError:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+          example: []
+        statusCode:
+          type: integer
+          example: 500
+        duration:
+          type: number
+          format: float
+          example: 0.1234
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            - message: "Internal Server Error"
+    UnauthorizedAmbassador:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+          example: []
+        statusCode:
+          type: integer
+          example: 418
+        duration:
+          type: number
+          format: float
+          example: 0.1234
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            - message: "Unauthorized: You are not an ambassador for this channel."
+    UnauthorizedSignInRequired:
+      type: object
+      properties:
+        data:
+          type: array
+          items: {}
+          example: []
+        statusCode:
+          type: integer
+          example: 418
+        duration:
+          type: number
+          format: float
+          example: 0.1234
+        errors:
+          type: array
+          items:
+            type: object
+            properties:
+              message:
+                type: string
+          example:
+            - message: "Unauthorized: Login Required"

@@ -8,7 +8,7 @@ import SwaggerUIStandalonePreset from '@/assets/swagger-ui/swagger-ui-standalone
 export default defineComponent({
   mounted() {
     SwaggerUI({
-      url: 'https://i.potat.app/swagger.yaml',
+      url: '/swagger.yaml',
       dom_id: '#swagger-ui',
       presets: [
         SwaggerUI.presets.apis,
