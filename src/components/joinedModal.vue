@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { onMounted, ref } from 'vue';
   import eventBus from '../assets/eventBus';
-	const showModal = ref(true);
+	const showModal = ref(false);
 
 	onMounted(() => {
 		eventBus.$on('join-success-popup', () => {
