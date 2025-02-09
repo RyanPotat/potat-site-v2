@@ -1,12 +1,31 @@
-import { ExtendedOptions, GenericResponse, ParsedRes } from "../types/request";
+/* eslint-disable import/no-unresolved */
+// eslint-disable-next-line import/extensions
+import { ExtendedOptions, GenericResponse, ParsedRes } from '../types/request';
 
-export async function makeRequest<T = any>(
+async function parseResponse<T>(res: Response): Promise<ParsedRes<T>> {
+  const blob = await res.blob();
+
+  try {
+    return {
+      statusCode:
+      res.status,
+      ...JSON.parse(await blob.text()),
+    } as ParsedRes<T>;
+  } catch {
+    // @ts-expect-error i dont care
+    return (await blob.text()) as unknown as T;
+  }
+}
+
+export async function makeRequest<T = unknown>(
   url: string,
-  options?: ExtendedOptions
+  options?: ExtendedOptions,
 ): Promise< ParsedRes<T>> {
   if (options?.params) {
     const filteredParams = Object.fromEntries(
-      Object.entries(options.params).filter(([_, value]) => value !== undefined && value !== null)
+      Object
+        .entries(options.params)
+        .filter(([, value]) => value !== undefined && value !== null),
     );
     url += `?${new URLSearchParams(filteredParams as Record<string, string>)}`;
   }
@@ -14,7 +33,7 @@ export async function makeRequest<T = any>(
   if (options?.auth) {
     options.headers = {
       ...options.headers,
-      authorization: 'Bearer ' + localStorage.getItem('authorization')
+      authorization: `Bearer ${localStorage.getItem('authorization')}`,
     };
   }
 
@@ -22,19 +41,14 @@ export async function makeRequest<T = any>(
   return parseResponse<T>(response);
 }
 
-async function parseResponse<T>(res: Response): Promise<ParsedRes<T>> {
-  const blob = await res.blob();
-
-  try { return { statusCode: res.status, ...JSON.parse(await blob.text()) } as ParsedRes<T>; }
-  // @ts-expect-error - this is intended
-  catch { return await blob.text() as T }
-}
-
-export async function fetchBackend<T = any>(
-  url: string, 
-  options?: ExtendedOptions
+export async function fetchBackend<T = unknown>(
+  url: string,
+  options?: ExtendedOptions,
 ): Promise<ParsedRes<GenericResponse<T>>> {
-  const result = await makeRequest<GenericResponse<T>>(`https://api.potat.app/${url}`, options);
+  const result = await makeRequest<GenericResponse<T>>(
+    `https://api.potat.app/${url}`,
+    options,
+  );
 
   if (result.errors?.length) {
     console.error(result.errors);
