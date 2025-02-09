@@ -1,7 +1,7 @@
 <script setup lang="ts">
 	import { onMounted, ref } from 'vue';
   import eventBus from '../assets/eventBus';
-	const showModal = ref(false);
+	const showModal = ref(true);
 
 	onMounted(() => {
 		eventBus.$on('join-success-popup', () => {
@@ -14,41 +14,36 @@
 <template>
 	<div v-if="showModal" class="modal-overlay">
 		<div class="modal">
-			<h2><strong>Successfully Joined The Bot!</strong> Next Steps...</h2>
+			<h2><strong>Successfully Added The Bot to your channel!</strong></h2>
+			<h2>Next Steps...</h2>
 			<ul>
 				<li>
 						Give the bot
 						<span class="tooltip">
-							<strong>moderator status</strong>
+							moderator status
 							<span class="tooltip-text">
 								Due to
-									<a
-										href="https://discuss.dev.twitch.com/t/giving-broadcasters-control-concurrent-join-limits-for-irc-and-eventsub/54997"
-										target="_blank"
-									>Twitch Chat Bot Changes</a>, the bot needs to be a moderator in your channel to function properly
+								<a
+									href="https://discuss.dev.twitch.com/t/giving-broadcasters-control-concurrent-join-limits-for-irc-and-eventsub/54997"
+									target="_blank"
+								>Twitch Chat Bot Changes</a>
+								, the bot needs to be a moderator in your channel to function properly
 							</span>
 						</span>
 						in your channel
 				</li>
 				<li>
-					Make sure to check out
-					<a href="/help" target="_blank" rel="noopener noreferrer">commands page</a>
-					to learn how to use the bot!
-				</li>
-				<li>
-					Join our
-					<a href="https://discord.gg/nG4m5JpD3Y" target="_blank">Discord</a>
-					for support and feature suggestions!
+					Add the bot as an
+					<span class="tooltip">
+						editor
+						<span class="tooltip-text">
+							In order to add and remove emotes in your channel, PotatBotat must be an editor with one or more services below
+						</span>
+					</span>
+					for any of the following services you use
 				</li>
 			</ul>
-				Add the bot as an
-				<span class="tooltip">
-					<strong>editor</strong>
-					<span class="tooltip-text">
-						In order to add and remove emotes in your channel, PotatBotat must be an editor with one or more services below
-					</span>
-				</span>
-				for any of the following services you use
+
 			<div class="providers">
 				<a href="https://www.frankerfacez.com/channel/mine" target="_blank">
 					FFZ
@@ -68,6 +63,46 @@
 						<img src="https://7tv.app/favicon.svg" alt="7TV" title="7TV"/>
 					</button>
 				</a>
+			</div>
+			<div>
+				<h2><strong>Tips:</strong></h2>
+			</div>
+			<ul>
+				<li>
+					The bot is offline-only by default, use the
+					<a
+						href="/help/offline"
+						target="_blank"
+						rel="noopener noreferrer"
+					>always</a>
+					command to toggle this
+				</li>
+				<li>
+					Use the
+					<a
+						href="/help/ambassador"
+						target="_blank"
+						rel="noopener noreferrer"
+					>ambassador</a>
+					command to allow your mods to also configure the bot
+				</li>
+				<li>
+					Make sure to check out
+					<a
+						href="/help"
+						target="_blank"
+						rel="noopener noreferrer"
+					>commands page</a>
+					to learn more about how to use the bot!
+				</li>
+				<li>
+					Join our
+					<a href="https://discord.gg/nG4m5JpD3Y" target="_blank">Discord</a>
+					for support and feature suggestions!
+				</li>
+			</ul>
+			<div>
+				<img style="margin-bottom: 20px" src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_31e94cbd642e4807b3ce6e28146b8202/default/dark/3.0"/>
 			</div>
 			<button @click="showModal = false" style="background-color: #6441a4;">Close</button>
 		</div>
