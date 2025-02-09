@@ -3,13 +3,19 @@ import { ref, onMounted, onUnmounted } from 'vue';
 import { useRoute } from 'vue-router';
 import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
-import { Channel, ComputedExtras, HistoryResponse } from '../types/emotes';
+import { SimpleChannel, ComputedExtras, HistoryResponse } from '../types/emotes';
+
+interface ProviderInfo {
+	logo: string;
+	home: string;
+	name: string;
+}
 
 let observer: IntersectionObserver;
 
 const
 
-providers = {
+providers: Record<string, ProviderInfo>  = {
   '7TV': {
     logo: 'https://cdn.7tv.app/emote/63915e53209bcb04cf0aa45d/2x.avif',
     home: 'https://7tv.app/',
@@ -40,7 +46,7 @@ username = ref(route.params.username),
 history = ref<ComputedExtras[]>([]),
 cursor = ref<string | null>(null),
 imRetarded = new Map(),
-channel = ref<Channel>({
+channel = ref<SimpleChannel>({
   pfp: '',
   bestName: '',
   login: '',

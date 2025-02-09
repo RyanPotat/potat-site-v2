@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import LoginButton from './components/loginButton.vue';
+import JoinedModal from './components/joinedModal.vue';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { StatsSocket } from './assets/socket';
 import { useRoute } from 'vue-router';
@@ -11,7 +12,7 @@ StatsSocket.new('wss://stats.potat.app');
 
 const isDropdownVisible = ref(false);
 const isMobileMenuVisible = ref(false);
-const username = ref<string | undefined>(undefined)
+const username = ref<string | undefined>(undefined);
 
 const toggleDropdown = () => {
   isDropdownVisible.value = !isDropdownVisible.value;
@@ -78,6 +79,8 @@ watch(route, () => {
 });
 </script>
 <template>
+   <JoinedModal />
+
 	<ul :class="{ 'top-bar': true, 'mobile-menu-visible': isMobileMenuVisible }">
 		<li class="mobile-menu mobile-menu-toggle"><a class="nav-link" @click="toggleMobileMenu">Menu</a></li>
 		<li><router-link to="/" class="nav-link">Home</router-link></li>

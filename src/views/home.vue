@@ -36,9 +36,6 @@ import TwitchChat from '../components/twitchChat.vue';
 </template>
 
 <style scoped>
-/** vegas https://cdn.7tv.app/misc/img_paints/tc23lasvegas.webp */
-/** rotterdam https://cdn.7tv.app/emote/667c887f387822a16b8f57ed/3x.webp */
-
 .home-container {
 	display: grid;
 	grid-template-columns: 1fr auto;
@@ -46,15 +43,18 @@ import TwitchChat from '../components/twitchChat.vue';
 	gap: 8px 20px;
 	padding: 10px;
 }
+
 .fk-old-layout {
 	grid-area: 1 / 1 / 2 / 3;
 	display: flex;
 	align-items: center;
 	justify-content: center;
 }
+
 .potat-home {
 	margin: 20px;
 }
+
 .title-box {
   background-color: rgba(31, 31, 31, 0.8);
   border-radius: 15px;
@@ -66,23 +66,27 @@ import TwitchChat from '../components/twitchChat.vue';
 		font-weight: 400;
 	}
 }
+
 .paint span {
 	font-size: 42px;
-  background-image: url('https://cdn.7tv.app/emote/667c887f387822a16b8f57ed/3x.webp');
+  background-image: url('/paint.webp');
   filter: drop-shadow(#9d31a5 0px 0px 0.1px);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
   background-size: 100% auto;
 }
+
 .join-container {
 	padding: 40px 0;
 	text-align: center;
 }
+
 .twitch-iframe {
 	grid-area: 2 / 2 / 2 / 3;
 	min-width: 420px;
 }
+
 .widgets-container {
 	grid-area: 2 / 1 / 2 / 2;
 	display: flex;
@@ -91,6 +95,7 @@ import TwitchChat from '../components/twitchChat.vue';
 	flex-wrap: wrap;
 	gap: 8px;
 }
+
 h1 {
   margin-top: 0px;
   margin-bottom: 10px;
@@ -108,10 +113,10 @@ h2 {
 }
 
 @media (max-width: 960px) {
-
 	.twitch-iframe {
 		min-width: auto;
 	}
+
 	.join-container {
 		padding: 0;
 		button {
@@ -124,6 +129,7 @@ h2 {
 		flex-direction: column;
 		align-items: initial;
 	}
+
   .home-container {
 		display: flex;
 		flex-direction: column;

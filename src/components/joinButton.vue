@@ -58,7 +58,9 @@ join = async () => {
 
     isOperationInProgress.value = false;
     return shakeButton();
-  }
+  } else {
+		eventBus.$emit('join-success-popup');
+	}
 
   await delay(3000);
   isOperationInProgress.value = false;
@@ -109,7 +111,7 @@ onMounted(async () => {
 
   if (isAuthenticated.value) {
     const user = JSON.parse(userState.value as string);
-    const userData = await fetchBackend(`users/${user?.login}`)
+    const userData = await fetchBackend<{ channel: any }>(`users/${user?.login}`)
     newState.value = userData.data?.[0]?.channel?.state === 'JOINED';
   }
 });
