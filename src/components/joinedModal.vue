@@ -101,9 +101,6 @@
 					for support and feature suggestions!
 				</li>
 			</ul>
-			<div>
-				<img style="margin-bottom: 20px" src="https://static-cdn.jtvnw.net/emoticons/v2/emotesv2_31e94cbd642e4807b3ce6e28146b8202/default/dark/3.0"/>
-			</div>
 			<button @click="showModal = false" style="background-color: #6441a4;">Close</button>
 		</div>
 	</div>
