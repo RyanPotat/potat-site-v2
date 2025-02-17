@@ -45,7 +45,7 @@ join = async () => {
   newState.value = true;
 
   const result = await fetchBackend('join', { method: 'POST', auth: true })
-  if ([401, 418].includes(result?.statusCode)) {
+  if (result?.statusCode !== 200) {
     console.log('Signing out due to error:', result?.errors?.[0]?.message);
 
     eventBus.$emit(
