@@ -22,16 +22,27 @@ interface Leaderboard {
   user_color: string;
 }
 
+interface BadgeStat {
+  badge: string;
+  user_count: number;
+  percentage: number;
+  rank: number;
+  url?: string;
+  clickAction?: string;
+  name: string;
+}
+
 const LeaderboardTypes = [
   'commandschannel',
   'emoteschannel',
+  'twitchbadges',
   'commandsuser',
   'emotesuser',
   'scramble',
   'potatoes',
   'trivia',
   'paints',
-  'badges'
+  'badges',
 ] as const;
 
 type LeaderboardTypes = (typeof LeaderboardTypes)[number];
@@ -55,6 +66,7 @@ loserOrLeader = ref<boolean>(order === 'asc' ? true : false),
 type = ref<LeaderboardTypes>(inputType ?? 'potatoes'),
 cursor = ref<string | undefined>(undefined),
 leaderboarders = ref<Leaderboard[]>([]),
+badgeStats = ref<BadgeStat[]>([]),
 map = new Map(),
 loading = ref(false),
 
@@ -66,20 +78,33 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
 	loading.value = true;
 
 	try {
-		const response = await fetchBackend<Leaderboard>(`leaderboard`, {
-			params: {
-				order: loserOrLeader.value ? 'asc' : 'desc',
-				after: last,
-				type
-			}
-		});
+    if (type === 'twitchbadges') {
+      const response = await fetchBackend<BadgeStat>(`twitch/badges`, {
+        params: { first: 200 }
+      }).then(res => res?.data?.map(b => {
+        if (b.badge === 'NOBADGE') return;
+        if (!b.url) return b;
+        const lastSlashIndex = b.url.lastIndexOf("/");
+        b.url = b.url.substring(0, lastSlashIndex + 1) + "3";
+        b.rank = b.rank -1;
+        return b;
+      }).filter(Boolean))
+      badgeStats.value = response as BadgeStat[];
+    } else {
+      const response = await fetchBackend<Leaderboard>(`leaderboard`, {
+        params: {
+          order: loserOrLeader.value ? 'asc' : 'desc',
+          after: last,
+          type
+        }
+      });
 
-		for (const user of response.data) {
-			map.set(user.bestName, user);
-		}
-
-		leaderboarders.value = [...map.values()];
-		cursor.value = response?.pagination?.cursor;
+      for (const user of response.data) {
+        map.set(user.bestName, user);
+      }
+      leaderboarders.value = [...map.values()];
+      cursor.value = response?.pagination?.cursor;
+    }
 	} finally {
 		loading.value = false;
 	}
@@ -136,9 +161,25 @@ onUnmounted(() => {
           <option value="emotesuser">User Emote Actions</option>
           <option value="commandschannel">Channel Commands Used</option>
           <option value="commandsuser">User Commands Used</option>
+          <option value="twitchbadges">Twitch Global Badges</option>
         </select>
     </div>
-    <ul class="leaderboard-list" v-if="leaderboarders.length">
+    <ul v-if="badgeStats.length && type === 'twitchbadges'" class="leaderboard-list">
+      <li v-for="badge in badgeStats" :key="badge.badge" class="leaderboard-item">
+        <div class="badge-picture">
+          <a :href="badge.clickAction" target="_blank">
+            <img :src="badge.url" alt="Badge"/>
+          </a>
+        </div>
+        <div class="text-content">
+          <div><strong>Badge:</strong> {{ badge.name ?? badge.badge }}</div>
+          <div><strong>Users:</strong> {{ badge.user_count.toLocaleString() }}</div>
+          <div><strong>Percentage:</strong> {{ badge.percentage.toFixed(6) }}%</div>
+          <div><strong>Rank:</strong> {{ badge.rank }}</div>
+        </div>
+      </li>
+    </ul>
+    <ul class="leaderboard-list" v-if="leaderboarders.length && type !== 'twitchbadges'">
       <li v-for="user in leaderboarders" :key="user.bestName" class="leaderboard-item">
         <div class="profile-picture">
           <a :href="`https://twitch.tv/${user.bestName.toLowerCase()}`" target="_blank">
@@ -270,5 +311,12 @@ onUnmounted(() => {
 
 .leaderboard-list::-webkit-scrollbar-thumb {
   background: transparent;
+}
+
+.badge-picture img {
+  width: 80px;
+  height: 80px;
+  margin-right: 10px;
+  margin-left: 10px
 }
 </style>
