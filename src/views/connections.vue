@@ -75,6 +75,14 @@ onMounted(() => {
           <img src="https://upload.wikimedia.org/wikipedia/commons/6/61/AniList_logo.svg" class="icon"/> Anilist
         </button>
 
+        <button
+          style="background-color:#00e701" 
+          :class="{ shake: buttonToShake === 'KICK' }" 
+          @click="connect('KICK')"
+        >
+          <img src="https://dev.kick.com/wp-content/uploads/2025/02/download-1.png" class="icon"/> Kick
+        </button>
+
         <button 
           style="background-color:#5865F2" 
           :class="{ shake: buttonToShake === 'DISCORD' }" 
@@ -131,10 +139,10 @@ button {
   font-size: 16px;
   color: white;
   border: none;
-  border-radius: 4px;
   font-size: 18px;
   cursor: pointer;
   text-align: center;
+  border-radius: 15px;
 }
 
 button .icon {
@@ -144,6 +152,7 @@ button .icon {
 
 button:hover {
   filter: brightness(0.9);
+  transform: scale(1.05);
 }
 
 .shake {
