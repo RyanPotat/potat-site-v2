@@ -60,13 +60,10 @@ const route = useRoute();
 let inputType = (route.query.type || route.params.type)?.toString().toLowerCase() as LeaderboardTypes;
 inputType =  inputType && LeaderboardTypes.includes(inputType) ? inputType : 'potatoes';
 
-const alias = route.path.includes('loserboard') ? 'loserboard' : 'leaderboard';
 let order = (route.query.order as string)?.toLowerCase();
-
 if (!order || !['asc', 'desc'].includes(order)) {
-	order = alias === 'leaderboard' ? 'desc' : 'asc';
+	order = route.path.includes('loserboard') ? 'asc' : 'desc';
 }
-
 
 const
 
@@ -97,8 +94,15 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
         b.url = b.url.substring(0, lastSlashIndex + 1) + "3";
         b.rank = b.rank -1;
         return b;
-      }).filter(Boolean))
-      badgeStats.value = response as BadgeStat[];
+      }).filter(Boolean)as BadgeStat[]);
+
+      badgeStats.value = response.sort((a, b) => {
+        if (loserOrLeader.value) {
+          return b.rank - a.rank;
+        } else {
+          return a.rank - b.rank;
+        }
+      });
     } else if (type === 'twitchcolors') {
       const response = await fetchBackend<ColorStat>(`twitch/colors`, {
         params: { 
@@ -153,6 +157,9 @@ fetchNewType = () => {
   leaderboarders.value = [];
   map.clear();
   cursor.value = undefined;
+  if (type.value === 'twitchcolors') {
+    loserOrLeader.value = false;
+  }
   fetchLeaderboard(type.value, undefined);
 },
 
