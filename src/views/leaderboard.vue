@@ -22,20 +22,28 @@ interface Leaderboard {
   user_color: string;
 }
 
-interface BadgeStat {
-  badge: string;
+interface Stat {
   user_count: number;
   percentage: number;
   rank: number;
+}
+
+type ColorStat = {
+  color: string;
+} & Stat;
+
+type BadgeStat = {
+  badge: string;
   url?: string;
   clickAction?: string;
   name: string;
-}
+} & Stat
 
 const LeaderboardTypes = [
   'commandschannel',
   'emoteschannel',
   'twitchbadges',
+  'twitchcolors',
   'commandsuser',
   'emotesuser',
   'scramble',
@@ -67,6 +75,7 @@ type = ref<LeaderboardTypes>(inputType ?? 'potatoes'),
 cursor = ref<string | undefined>(undefined),
 leaderboarders = ref<Leaderboard[]>([]),
 badgeStats = ref<BadgeStat[]>([]),
+colorStats = ref<ColorStat[]>([]),
 map = new Map(),
 loading = ref(false),
 
@@ -90,6 +99,24 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
         return b;
       }).filter(Boolean))
       badgeStats.value = response as BadgeStat[];
+    } else if (type === 'twitchcolors') {
+      const response = await fetchBackend<ColorStat>(`twitch/colors`, {
+        params: { 
+          first: 200,
+          after: last,
+        }
+      });
+      const colors = response?.data?.map(c => {
+        if (c.color === 'NOCOLOR') return;
+        c.rank = c.rank -1;
+        return c;
+      }).filter(Boolean) as ColorStat[];
+
+      for (const color of colors) {
+        map.set(color.color, color);
+      }
+      colorStats.value = [...map.values()].sort((a, b) => a.rank - b.rank);
+      cursor.value = response?.pagination?.cursor;
     } else {
       const response = await fetchBackend<Leaderboard>(`leaderboard`, {
         params: {
@@ -102,7 +129,7 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
       for (const user of response.data) {
         map.set(user.bestName, user);
       }
-      leaderboarders.value = [...map.values()];
+      leaderboarders.value = [...map.values()]
       cursor.value = response?.pagination?.cursor;
     }
 	} finally {
@@ -162,8 +189,20 @@ onUnmounted(() => {
           <option value="commandschannel">Channel Commands Used</option>
           <option value="commandsuser">User Commands Used</option>
           <option value="twitchbadges">Twitch Global Badges</option>
+          <option value="twitchcolors">Twitch Chat Colors</option>
         </select>
     </div>
+    <ul v-if="colorStats.length && type === 'twitchcolors'" class="leaderboard-list">
+      <li v-for="color in colorStats" :key="color.color" class="leaderboard-item">
+        <div class="color-bar" :style="{ backgroundColor: color.color }"></div>
+        <div class="text-content">
+          <div><strong>Color:</strong> {{ color.color }}</div>
+          <div><strong>Users Seen:</strong> {{ color.user_count.toLocaleString() }}</div>
+          <div><strong>Percentage:</strong> {{ color.percentage.toFixed(6) }}%</div>
+          <div><strong>Rank:</strong> {{ color.rank }}</div>
+        </div>
+      </li>
+    </ul>
     <ul v-if="badgeStats.length && type === 'twitchbadges'" class="leaderboard-list">
       <li v-for="badge in badgeStats" :key="badge.badge" class="leaderboard-item">
         <div class="badge-picture">
@@ -173,7 +212,7 @@ onUnmounted(() => {
         </div>
         <div class="text-content">
           <div><strong>Badge:</strong> {{ badge.name ?? badge.badge }}</div>
-          <div><strong>Users:</strong> {{ badge.user_count.toLocaleString() }}</div>
+          <div><strong>Users Seen:</strong> {{ badge.user_count.toLocaleString() }}</div>
           <div><strong>Percentage:</strong> {{ badge.percentage.toFixed(6) }}%</div>
           <div><strong>Rank:</strong> {{ badge.rank }}</div>
         </div>
@@ -318,5 +357,12 @@ onUnmounted(() => {
   height: 80px;
   margin-right: 10px;
   margin-left: 10px
+}
+
+.color-bar {
+  width: 200px;
+  height: 80px;
+  border-radius: 4px;
+  margin-right: 10px;
 }
 </style>
