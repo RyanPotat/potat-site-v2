@@ -43,10 +43,11 @@ const flashButton = () => {
 };
 
 const assignUser = async (): Promise<void> => {
-  if (!isAuthenticated.value) return;
+  if (!isAuthenticated.value) {
+    return;
+  }
 
   const data = await fetchBackend<TwitchUser>('twitch', { auth: true })
-
   if ([401, 418].includes(data?.statusCode)) {
     console.log('Signing out due to error:', data?.errors?.[0]?.message);
     signOut();
@@ -74,7 +75,9 @@ onMounted((): void => {
   const handleMessage = (event: MessageEvent) => {
     const { id, login, name, stv_id, token, is_channel } = event.data;
 
-    if (!token) return;
+    if (!token) {
+      return;
+    }
 
     localStorage.setItem('authorization', token);
     localStorage.setItem(
@@ -105,7 +108,7 @@ onMounted((): void => {
 
 <template>
   <template v-if="isAuthenticated">
-    <div class="twitch-user">
+    <div class="twitch-user" @click="signOut">
       <img box-shadow="0 0 0 2px #8763b8" v-if="twitchUser && twitchUser.twitch_pfp"
         :src="twitchUser.stv_pfp ? twitchUser.stv_pfp : twitchUser.twitch_pfp" alt="Twitch Profile Picture"
         class="profile-picture" />
