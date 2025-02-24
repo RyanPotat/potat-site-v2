@@ -43,6 +43,7 @@ type BadgeStat = {
 type PaintStat = {
   id: string;
   paint: Paint;
+  owners: number;
 } & Stat
 
 const LeaderboardTypes = [
@@ -254,8 +255,9 @@ onUnmounted(() => {
     <ul v-if="paintStats.length && type === 'paintstats'" class="leaderboard-list">
       <li v-for="paint in paintStats" :key="paint.id" class="leaderboard-item">
         <div class="text-content">
-          <div><strong>Users Seen:</strong> {{ paint.user_count.toLocaleString() }}</div>
-          <div><strong>Percentage:</strong> {{ paint.percentage.toFixed(2) }}%</div>
+          <div><strong>Active Users:</strong> {{ paint.user_count.toLocaleString() }}</div>
+          <div><strong>Owners:</strong> {{ paint.owners?.toLocaleString() }}</div>
+          <div><strong>Percentage:</strong> {{ paint.percentage.toFixed(3) }}%</div>
           <div><strong>Rank:</strong> {{ paint.rank }}</div>
         </div>
         <div class="paint-span" :style="computePaintStyle(paint.paint)">
