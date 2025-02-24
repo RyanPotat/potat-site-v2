@@ -4,6 +4,7 @@ import { brightenColor } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
 import { useRoute } from 'vue-router';
 import router from '../router';
+import { computePaintStyle, Paint } from '../assets/applyPaint';
 
 interface Leaderboard {
   bestName: string;
@@ -37,6 +38,11 @@ type BadgeStat = {
   url?: string;
   clickAction?: string;
   name: string;
+} & Stat;
+
+type PaintStat = {
+  id: string;
+  paint: Paint;
 } & Stat
 
 const LeaderboardTypes = [
@@ -46,6 +52,7 @@ const LeaderboardTypes = [
   'twitchcolors',
   'commandsuser',
   'emotesuser',
+  'paintstats',
   'scramble',
   'potatoes',
   'trivia',
@@ -73,6 +80,7 @@ cursor = ref<string | undefined>(undefined),
 leaderboarders = ref<Leaderboard[]>([]),
 badgeStats = ref<BadgeStat[]>([]),
 colorStats = ref<ColorStat[]>([]),
+paintStats = ref<PaintStat[]>([]),
 map = new Map(),
 loading = ref(false),
 
@@ -119,8 +127,22 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
       for (const color of colors) {
         map.set(color.color, color);
       }
+
       colorStats.value = [...map.values()].sort((a, b) => a.rank - b.rank);
       cursor.value = response?.pagination?.cursor;
+    } else if (type === 'paintstats') {
+      const response = await fetchBackend<PaintStat>('paints')
+        .then(res => res.data);
+
+      console.log(response[0])
+
+      paintStats.value = response.sort((a, b) => {
+        if (loserOrLeader.value) {
+          return a.percentage - b.percentage;
+        } else {
+          return b.percentage - a.percentage;
+        }
+      });
     } else {
       const response = await fetchBackend<Leaderboard>(`leaderboard`, {
         params: {
@@ -189,16 +211,18 @@ onUnmounted(() => {
           <option value="potatoes">Potatoes</option>
           <option value="trivia">Trivia</option>
           <option value="scramble">Unscramble</option>
-          <option value="paints">7TV Paints</option>
-          <option value="badges">7TV Badges</option>
+          <option value="paints">Most 7TV Paint Changes</option>
+          <option value="badges">Most 7TV Badge Changes</option>
           <option value="emoteschannel">Channel Emotes Actions</option>
           <option value="emotesuser">User Emote Actions</option>
           <option value="commandschannel">Channel Commands Used</option>
           <option value="commandsuser">User Commands Used</option>
           <option value="twitchbadges">Twitch Global Badges</option>
           <option value="twitchcolors">Twitch Chat Colors</option>
+          <option value="paintstats">Top 7TV Paints</option>
         </select>
     </div>
+
     <ul v-if="colorStats.length && type === 'twitchcolors'" class="leaderboard-list">
       <li v-for="color in colorStats" :key="color.color" class="leaderboard-item">
         <div class="color-bar" :style="{ backgroundColor: color.color }"></div>
@@ -210,6 +234,7 @@ onUnmounted(() => {
         </div>
       </li>
     </ul>
+
     <ul v-if="badgeStats.length && type === 'twitchbadges'" class="leaderboard-list">
       <li v-for="badge in badgeStats" :key="badge.badge" class="leaderboard-item">
         <div class="badge-picture">
@@ -225,6 +250,20 @@ onUnmounted(() => {
         </div>
       </li>
     </ul>
+
+    <ul v-if="paintStats.length && type === 'paintstats'" class="leaderboard-list">
+      <li v-for="paint in paintStats" :key="paint.id" class="leaderboard-item">
+        <div class="text-content">
+          <div><strong>Users Seen:</strong> {{ paint.user_count.toLocaleString() }}</div>
+          <div><strong>Percentage:</strong> {{ paint.percentage.toFixed(2) }}%</div>
+          <div><strong>Rank:</strong> {{ paint.rank }}</div>
+        </div>
+        <div class="paint-span" :style="computePaintStyle(paint.paint)">
+          {{ paint.paint?.name?.trim() }}
+        </div>
+      </li>
+    </ul>
+
     <ul class="leaderboard-list" v-if="leaderboarders.length && type !== 'twitchbadges'">
       <li v-for="user in leaderboarders" :key="user.bestName" class="leaderboard-item">
         <div class="profile-picture">
@@ -371,5 +410,13 @@ onUnmounted(() => {
   height: 80px;
   border-radius: 4px;
   margin-right: 10px;
+}
+
+.paint-span {
+  font-size: 3rem;
+  width: 300;
+  height: 80px;
+  margin-right: 10px;
+  margin-left: 10px
 }
 </style>
