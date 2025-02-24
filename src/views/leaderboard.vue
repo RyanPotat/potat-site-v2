@@ -44,7 +44,23 @@ type PaintStat = {
   id: string;
   paint: Paint;
   owners: number;
-} & Stat
+} & Stat;
+
+interface BadgeRawData {
+  id: string;
+  kind: string;
+  name: string;
+  description: string;
+  tooltip: string;
+  tag: string;
+  url?: string
+}
+
+type StvBadgeStat = {
+  badge: BadgeRawData;
+  id: string;
+  owners: number;
+} & Stat;
 
 const LeaderboardTypes = [
   'commandschannel',
@@ -54,6 +70,7 @@ const LeaderboardTypes = [
   'commandsuser',
   'emotesuser',
   'paintstats',
+  'badgestats',
   'scramble',
   'potatoes',
   'trivia',
@@ -82,6 +99,7 @@ leaderboarders = ref<Leaderboard[]>([]),
 badgeStats = ref<BadgeStat[]>([]),
 colorStats = ref<ColorStat[]>([]),
 paintStats = ref<PaintStat[]>([]),
+stvBadgeStats = ref<StvBadgeStat[]>([]),
 map = new Map(),
 loading = ref(false),
 
@@ -135,9 +153,23 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
       const response = await fetchBackend<PaintStat>('paints')
         .then(res => res.data);
 
-      console.log(response[0])
-
       paintStats.value = response.sort((a, b) => {
+        if (loserOrLeader.value) {
+          return a.percentage - b.percentage;
+        } else {
+          return b.percentage - a.percentage;
+        }
+      });
+    } else if (type === 'badgestats') {
+      const response = await fetchBackend<StvBadgeStat>('badges')
+        .then(res => res.data);
+
+      const toBadgeUrl = (id: string): string => `https://cdn.7tv.app/badge/${id}/4x.webp`;
+      
+      stvBadgeStats.value = response.map(e => {
+        e.badge.url = toBadgeUrl(e.badge.id);
+        return e;
+      }).sort((a, b) => {
         if (loserOrLeader.value) {
           return a.percentage - b.percentage;
         } else {
@@ -221,6 +253,7 @@ onUnmounted(() => {
           <option value="twitchbadges">Twitch Global Badges</option>
           <option value="twitchcolors">Twitch Chat Colors</option>
           <option value="paintstats">Top 7TV Paints</option>
+          <option value="badgestats">Top 7TV Badges</option>
         </select>
     </div>
 
@@ -262,6 +295,22 @@ onUnmounted(() => {
         </div>
         <div class="paint-span" :style="computePaintStyle(paint.paint)">
           {{ paint.paint?.name?.trim() }}
+        </div>
+      </li>
+    </ul>
+
+    <ul v-if="stvBadgeStats.length && type === 'badgestats'" class="leaderboard-list">
+      <li v-for="badge in stvBadgeStats" :key="badge.id" class="leaderboard-item">
+        <div class="badge-picture">
+          <a>
+            <img :src="badge.badge?.url" alt="Badge"/>
+          </a>
+        </div>
+        <div class="text-content">
+          <div><strong>Active Users:</strong> {{ badge.user_count.toLocaleString() }}</div>
+          <div><strong>Owners:</strong> {{ badge.owners?.toLocaleString() }}</div>
+          <div><strong>Percentage:</strong> {{ badge.percentage.toFixed(3) }}%</div>
+          <div><strong>Rank:</strong> {{ badge.rank }}</div>
         </div>
       </li>
     </ul>
