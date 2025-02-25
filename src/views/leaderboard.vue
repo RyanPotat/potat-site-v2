@@ -166,16 +166,20 @@ fetchLeaderboard = async (type: LeaderboardTypes, last?: string | undefined) => 
 
       const toBadgeUrl = (id: string): string => `https://cdn.7tv.app/badge/${id}/4x.webp`;
       
-      stvBadgeStats.value = response.map(e => {
-        e.badge.url = toBadgeUrl(e.badge.id);
-        return e;
-      }).sort((a, b) => {
-        if (loserOrLeader.value) {
-          return a.percentage - b.percentage;
-        } else {
-          return b.percentage - a.percentage;
-        }
-      });
+      stvBadgeStats.value = response
+        .map(e => {
+          if (!e.badge?.id) return;
+          e.badge.url = toBadgeUrl(e.badge.id);
+          return e;
+        })
+        .filter((e): e is StvBadgeStat => Boolean(e))
+        .sort((a, b) => {
+          if (loserOrLeader.value) {
+            return a.percentage - b.percentage;
+          } else {
+            return b.percentage - a.percentage;
+          }
+        });
     } else {
       const response = await fetchBackend<Leaderboard>(`leaderboard`, {
         params: {
