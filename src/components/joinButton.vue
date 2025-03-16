@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted } from 'vue';
 import { default as eventBus } from '../assets/eventBus';
-import { delay } from '../assets/utilities';
+import { brightenColor, delay } from '../assets/utilities';
 import { fetchBackend } from '../assets/request';
-import { TokenUserData, UserState } from '../types/misc';
+import { TokenUserData, TwitchUser, UserState } from '../types/misc';
+import { applyPaint } from '../assets/applyPaint';
 
 const
 
@@ -31,12 +32,69 @@ isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
 }),
 
+assignUser = async (): Promise<void> => {
+  if (!isAuthenticated.value) {
+    return;
+  }
+
+  const data = await fetchBackend<TwitchUser>('twitch', { auth: true })
+  if ([401, 418].includes(data?.statusCode)) {
+    console.log('Signing out due to error:', data?.errors?.[0]?.message);
+    signOut();
+    return eventBus.$emit('signOut');
+  }
+
+  const userData = data.data[0];
+  
+  eventBus.$emit('userState', userData);
+
+  if (userData?.chatColor && !userData?.userPaint) {
+    const adjustedColor = brightenColor(userData.chatColor);
+    document.querySelector('.twitch-user span')?.setAttribute('style', `color: ${adjustedColor}`);
+  }
+
+  if (userData?.userPaint) applyPaint(userData.userPaint, '.twitch-user span');
+},
+
+handleMessage = (event: MessageEvent) => {
+  const { id, login, name, stv_id, token, is_channel } = event.data;
+
+  if (!token) {
+    return;
+  }
+
+  localStorage.setItem('authorization', token);
+  localStorage.setItem(
+    'userState',
+    JSON.stringify({ id, login, name, stv_id, is_channel })
+  );
+
+  authorizationToken.value = token;
+  eventBus.$emit('newToken', {
+    token,
+    user: JSON.stringify({ id, login, name, stv_id, is_channel }),
+  });
+
+  eventBus.$on('signOut', () => {
+    signOut();
+  });
+
+  userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
+  assignUser();
+
+  if (!is_channel) {
+    join();
+  }
+},
+
 signIn = (): void => {
   window.open(
 		`https://api.${window.location.host}/login`,
 		'_blank',
 		'width=600,height=400'
 	);
+
+  window.addEventListener('message', handleMessage);
 },
 
 signOut = (): void => {

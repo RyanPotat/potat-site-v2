@@ -65,6 +65,36 @@ const assignUser = async (): Promise<void> => {
   if (userData?.userPaint) applyPaint(userData.userPaint, '.twitch-user span');
 }
 
+const handleMessage = (event: MessageEvent) => {
+  const { id, login, name, stv_id, token, is_channel } = event.data;
+
+  if (!token) {
+    return;
+  }
+
+  localStorage.setItem('authorization', token);
+  localStorage.setItem(
+    'userState',
+    JSON.stringify({ id, login, name, stv_id, is_channel })
+  );
+
+  authToken.value = token;
+
+  eventBus.$emit('newToken', {
+    token,
+    user: JSON.stringify({ id, login, name, stv_id, is_channel }),
+  });
+
+  eventBus.$on('signOut', () => {
+    signOut();
+  });
+
+  userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
+  assignUser();
+
+  window.removeEventListener('message', handleMessage);
+};
+
 onMounted((): void => {
   assignUser();
 
@@ -72,34 +102,9 @@ onMounted((): void => {
     flashButton();
   });
 
-  const handleMessage = (event: MessageEvent) => {
-    const { id, login, name, stv_id, token, is_channel } = event.data;
-
-    if (!token) {
-      return;
-    }
-
-    localStorage.setItem('authorization', token);
-    localStorage.setItem(
-      'userState',
-      JSON.stringify({ id, login, name, stv_id, is_channel })
-    );
-
-    authToken.value = token;
-    eventBus.$emit('newToken', {
-      token,
-      user: JSON.stringify({ id, login, name, stv_id, is_channel }),
-    });
-
-
-    eventBus.$on('signOut', () => {
-      signOut();
-    });
-
-    userState.value = JSON.stringify({ id, login, name, stv_id, is_channel });
-    assignUser();
-    window.removeEventListener('message', handleMessage);
-  };
+  eventBus.$on('userState', (newState: string) => {
+    userState.value = newState;
+  });
 
   window.addEventListener('message', handleMessage);
 });
