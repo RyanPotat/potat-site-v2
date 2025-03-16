@@ -31,6 +31,14 @@ isChannel = computed<boolean>(() => {
   return userState.value !== null && newState.value;
 }),
 
+signIn = (): void => {
+  window.open(
+		`https://api.${window.location.host}/login`,
+		'_blank',
+		'width=600,height=400'
+	);
+},
+
 signOut = (): void => {
   localStorage.clear();
   userState.value = null;
@@ -140,7 +148,7 @@ onMounted(async () => {
     <template v-else>
       <button
         class="join-button"
-        @click="shakeButton"
+        @click="signIn"
         :class="{ 'shake': isShaking }"
       >Join</button>
     </template>
